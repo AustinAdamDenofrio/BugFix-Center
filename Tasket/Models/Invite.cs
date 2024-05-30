@@ -1,7 +1,7 @@
 ﻿using Microsoft.Build.Evaluation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Tasket.Client.Components.Models;
+using Tasket.Client.Models;
 using Tasket.Data;
 using Tasket.Helper;
 
@@ -11,7 +11,7 @@ namespace Tasket.Models
     {
         #region Private Variables
         private DateTimeOffset _inviteDate;
-        private DateTimeOffset _joinDate;
+        private DateTimeOffset? _joinDate;
         #endregion
 
 
@@ -25,10 +25,10 @@ namespace Tasket.Models
         }
 
         [Required]
-        public DateTimeOffset JoinDate
+        public DateTimeOffset? JoinDate
         {
-            get => _joinDate.ToLocalTime();
-            set => _joinDate = value.ToUniversalTime();
+            get => _joinDate?.ToLocalTime();
+            set => _joinDate = value?.ToUniversalTime();
         }
         public Guid CompanyToken { get; set; }
 
@@ -59,10 +59,11 @@ namespace Tasket.Models
         public int ProjectId { get; set; }
         public virtual Project? Project { get; set; }
 
-        public Guid? InvitorId { get; set; }
+        [Required]
+        public string? InvitorId { get; set; }
         public virtual ApplicationUser? Invitor { get; set; }
 
-        public Guid? InviteeId { get; set; }
+        public string? InviteeId { get; set; }
         public virtual ApplicationUser? Invitee { get; set; }
     }
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Tasket.Client.Components.Models;
+using Tasket.Client.Models;
 using Tasket.Helper;
 using Tasket.Models;
 

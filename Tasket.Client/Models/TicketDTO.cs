@@ -2,7 +2,7 @@
 using System.Net.Mail;
 using System.Xml.Linq;
 
-namespace Tasket.Client.Components.Models
+namespace Tasket.Client.Models
 {
     public class TicketDTO
     {
@@ -33,12 +33,18 @@ namespace Tasket.Client.Components.Models
         public TicketPriority Priority { get; set; }
         public TicketType Type { get; set; }
         public TicketStatus Status { get; set; }
+
+        public int ProjectId { get; set; }
         public ProjectDTO? Project { get; set; }
 
         [Required]
-        public virtual UserDTO? SubmitterUser { get; set; }
-        public virtual UserDTO? DeveloperUser { get; set; }
-        public virtual ICollection<TicketCommentDTO> Comments { get; set; } = new HashSet<TicketCommentDTO>();
-        public virtual ICollection<TicketAttachmentDTO> Attachments { get; set; } = new HashSet<TicketAttachmentDTO>();
+        public string? SubmitterUserId { get; set; }
+        public UserDTO? SubmitterUser { get; set; }
+
+        public string? DeveloperUserId { get; set; }
+        public UserDTO? DeveloperUser { get; set; }
+
+        public ICollection<TicketCommentDTO> Comments { get; set; } = new HashSet<TicketCommentDTO>();
+        public ICollection<TicketAttachmentDTO> Attachments { get; set; } = new HashSet<TicketAttachmentDTO>();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net.Sockets;
 
-namespace Tasket.Client.Components.Models
+namespace Tasket.Client.Models
 {
     public class TicketCommentDTO
     {

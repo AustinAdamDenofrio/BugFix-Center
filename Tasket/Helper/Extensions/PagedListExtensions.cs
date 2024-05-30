@@ -1,5 +1,5 @@
-﻿using Tasket.Client.Components.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Tasket.Client.Models;
 
 namespace Tasket.Helper.Extensions
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Tasket.Client;
-using Tasket.Client.Components.Models;
+using Tasket.Client.Models;
 using Tasket.Data;
 using Tasket.Helper;
 
@@ -22,7 +22,12 @@ namespace Tasket.Models
             get => _created.ToLocalTime();
             set => _created = value.ToUniversalTime();
         }
+
+        public int TicketId { get; set; }
         public virtual Ticket? Ticket { get; set; }
+
+        [Required]
+        public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
     }
 

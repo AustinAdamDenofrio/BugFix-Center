@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Services\Interfaces\" />
+    <Folder Include="Services\Interfaces\" />
     <Folder Include="Components\UIs\" />
   </ItemGroup>
 

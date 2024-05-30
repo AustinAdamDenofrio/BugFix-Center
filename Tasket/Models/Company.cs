@@ -1,17 +1,20 @@
-﻿using Tasket.Client.Components.Models;
-using Tasket.Helper
+﻿using Tasket.Helper;
 using Tasket.Data;
+using System.ComponentModel.DataAnnotations;
+using Tasket.Client.Models;
 
 namespace Tasket.Models
 {
     public class Company
     {
         public int Id { get; set; }
+
+        [Required]
         public string? Name { get; set; }
         public string? Description { get; set; }
 
 
-        public Guid ImageId {  get; set; }
+        public Guid? ImageId {  get; set; }
         public virtual FileUpload? Image { get; set; }
         public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
         public ICollection<ApplicationUser> Members { get; set; } = new HashSet<ApplicationUser>();

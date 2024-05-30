@@ -1,4 +1,4 @@
-﻿namespace Tasket.Client.Components.Models
+﻿namespace Tasket.Client.Models
 {
     public class PagedList<T> where T : class
     {

@@ -1,4 +1,5 @@
-﻿using Tasket.Client.Components.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Tasket.Client.Models;
 using Tasket.Data;
 using Tasket.Helper;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -12,6 +13,8 @@ namespace Tasket.Models
         #endregion
 
         public int Id { get; set; }
+
+        [Required]
         public string? FileName { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset Created
@@ -19,10 +22,16 @@ namespace Tasket.Models
             get => _created.ToLocalTime();
             set => _created = value.ToUniversalTime();
         }
-        
 
+        [Required]
+        public Guid? UploadId { get; set; }
         public virtual FileUpload? Upload { get; set; }
+
+        [Required]
+        public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
+
+        public int TicketId { get; set; }
         public virtual Ticket? Ticket { get; set; }
     }
 

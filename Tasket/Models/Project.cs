@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Tasket.Client.Components.Models;
+using Tasket.Client.Models;
 using Tasket.Data;
 using Tasket.Helper;
 
@@ -44,8 +44,7 @@ namespace Tasket.Models
         public bool Archived { get; set; }
 
 
-        //Why are we getting this?
-        //public int CompanyId { get; set; }
+        public int CompanyId { get; set; }
         public virtual Company? Company { get; set; }
 
         public virtual ICollection<ApplicationUser> Members { get; set; } = new HashSet<ApplicationUser>();

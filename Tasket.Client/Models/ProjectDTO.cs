@@ -1,4 +1,6 @@
-﻿namespace Tasket.Client.Components.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tasket.Client.Models
 {
     public class ProjectDTO
     {
@@ -9,7 +11,11 @@
         #endregion
 
         public int Id { get; set; }
+
+        [Required]
         public string? Name { get; set; }
+
+        [Required]
         public string? Description { get; set; }
         public DateTimeOffset Created
         {

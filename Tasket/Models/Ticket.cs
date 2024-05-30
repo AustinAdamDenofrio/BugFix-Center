@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using Tasket.Client.Components.Models;
+using Tasket.Client.Models;
 using Tasket.Data;
 using Tasket.Helper;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -36,11 +36,16 @@ namespace Tasket.Models
         public TicketPriority Priority { get; set; }
         public TicketType Type { get; set; }
         public TicketStatus Status { get; set; }
+        public int ProjectId { get; set; }
         public virtual Project? Project { get; set; }
 
         [Required]
+        public string? SubmitterUserId { get; set; }
         public virtual ApplicationUser? SubmitterUser { get; set; }
+
+        public string? DeveloperUserId { get; set; }
         public virtual ApplicationUser? DeveloperUser { get; set; }
+
         public virtual ICollection<TicketComment> Comments { get; set; } = new HashSet<TicketComment>();
         public virtual ICollection<TicketAttachment> Attachments { get; set; } = new HashSet<TicketAttachment>();
     }

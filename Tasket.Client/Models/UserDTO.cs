@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Tasket.Client.Components.Models
+namespace Tasket.Client.Models
 {
     public class UserDTO
     {
