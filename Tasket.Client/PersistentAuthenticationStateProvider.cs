@@ -34,7 +34,8 @@ namespace Tasket.Client
                 new Claim(nameof(UserInfo.FirstName), userInfo.FirstName),
                 new Claim(nameof(UserInfo.LastName), userInfo.LastName),
                 new Claim(nameof(UserInfo.ProfilePictureUrl), userInfo.ProfilePictureUrl),
-                .. userInfo.Roles.Select(role => new Claim(ClaimTypes.Role, role))
+                .. userInfo.Roles.Select(role => new Claim(ClaimTypes.Role, role)),
+                new Claim("CompanyId", userInfo.CompanyId.ToString())
             ];
 
             authenticationStateTask = Task.FromResult(

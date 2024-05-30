@@ -93,10 +93,10 @@ namespace Tasket.Components.Account
                 string? firstName = principal.FindFirst(nameof(UserInfo.FirstName))?.Value;
                 string? lasttName = principal.FindFirst(nameof(UserInfo.LastName))?.Value;
                 string? profilePictureUrl = principal.FindFirst(nameof(UserInfo.ProfilePictureUrl))?.Value;
+                string? companyId = principal.FindFirst("CompanyId")?.Value;
 
 
-
-                if (userId != null && email != null && firstName != null && lasttName != null && profilePictureUrl != null)
+                if (userId != null && email != null && firstName != null && lasttName != null && profilePictureUrl != null && companyId != null)
                 {
                     state.PersistAsJson(nameof(UserInfo), new UserInfo
                     {
@@ -104,7 +104,9 @@ namespace Tasket.Components.Account
                         Email = email,
                         FirstName = firstName,
                         LastName = lasttName,
-                        ProfilePictureUrl = profilePictureUrl
+                        ProfilePictureUrl = profilePictureUrl,
+                        Roles = [.. principal.FindAll(ClaimTypes.Role).Select(claim => claim.Value)],
+                        CompanyId = int.Parse(companyId)
                     });
                     ;
                 }

@@ -23,8 +23,7 @@ namespace Tasket.Models
             get => _inviteDate.ToLocalTime();
             set => _inviteDate = value.ToUniversalTime();
         }
-
-        [Required]
+           
         public DateTimeOffset? JoinDate
         {
             get => _joinDate?.ToLocalTime();

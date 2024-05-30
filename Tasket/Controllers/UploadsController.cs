@@ -17,7 +17,7 @@ namespace Tasket.Controllers
         public async Task<IActionResult> GetImage(Guid id)
         {
 
-            FileUpload? image = await context.Images.FirstOrDefaultAsync(i => i.Id == id);
+            FileUpload? image = await context.Files.FirstOrDefaultAsync(i => i.Id == id);
             //Turnery Statement
             return image == null ? NotFound() : File(image.Data!, image.Type!);
 
