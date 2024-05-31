@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-//using Tasket.Client.Components.Services.Interfaces;
+using Tasket.Client.Services;
+using Tasket.Client.Services.Interfaces;
 using Tasket.Components;
 using Tasket.Components.Account;
 using Tasket.Data;
 using Tasket.Services;
-//using Tasket.Services.Interfaces;
+using Tasket.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +31,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = DataUtility.GetConnectionString(builder.Configuration)
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -54,6 +56,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, SendGridService>();
 builder.Services.AddSingleton<IEmailSender, SendGridService>();
+
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectDTOService, ProjectDTOService>();
 
 //AddScoped Intefaces
 

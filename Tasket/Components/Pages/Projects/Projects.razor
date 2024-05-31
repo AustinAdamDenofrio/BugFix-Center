@@ -1,0 +1,48 @@
+﻿@page "/projects"
+
+@rendermode InteractiveServer
+
+
+@inject IProjectDTOService ProjectService
+
+
+<PageTitle>Projects</PageTitle>
+<h3>Projects</h3>
+
+@*Add a page for if there is no values*@
+
+@foreach (ProjectDTO project in projects)
+{
+    <div @key="project.Id">
+        <ProjectCard Project="project"/>
+    </div>
+}
+
+@* <BlazorPageScript.PageScript Src="./Components/Pages/Posts/BlogDetails.razor.js" /> *@
+
+@code {
+    #region Parameters
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+
+
+    #region State
+    IEnumerable<ProjectDTO> projects = [];
+
+    UserInfo? userInfo;
+    #endregion
+
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        projects = await ProjectService.GetAllProjectsAsync(userInfo!.CompanyId);
+    }
+
+    #endregion
+}
