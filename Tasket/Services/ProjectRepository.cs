@@ -15,13 +15,15 @@ namespace Tasket.Services
         {
             _dbContextFactory = dbContextFactory;
         }
+
+
         #region Get list
         public async Task<IEnumerable<Project>> GetAllProjectsAsync(int companyId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             IEnumerable<Project> projects = await context.Projects
-                                                .Where(p => p.Archived == false && p.CompanyId == companyId)
+                                                .Where(p => p.CompanyId == companyId)
                                                 .ToListAsync();
             return projects;
         }
@@ -54,31 +56,17 @@ namespace Tasket.Services
 
 
         #region Update DB item/items
-        //Task<Project> AddProjectAsync(Project project, int companyId);
-        //Task UpdateProjectAsync(Project project, int companyId);
-        //Task ArchiveProjectAsync(int projectId, int companyId);
-        //Task RestoreProjectAsync(int projectId, int companyId);
+        public async Task<Project> AddProjectAsync(Project project, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
-        //Task<IEnumerable<Project>> IProjectRepository.GetAllProjectsAsync(int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            project.Created = DateTime.Now;
 
-        //Task<IEnumerable<Project>> IProjectRepository.GetArchivedProjectsAsync(int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            context.Projects.Add(project);
+            await context.SaveChangesAsync();
 
-        //Task<Project?> IProjectRepository.GetProjectByIdAsync(int projectId, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public Task<Project> AddProjectAsync(Project project, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
+            return project;
+        }
         public async Task UpdateProjectAsync(Project project, int companyId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
@@ -91,16 +79,37 @@ namespace Tasket.Services
                 await context.SaveChangesAsync();
             }
         }
+        public async Task ArchiveProjectAsync(int projectId, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
-        //Task IProjectRepository.ArchiveProjectAsync(int projectId, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            Project? project = await context.Projects
+                                    .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+            if (project is not null)
+            {
+                project.Archived = true;
+                context.Projects.Update(project);
+                await context.SaveChangesAsync();
+            }
+        }
+        public async Task RestoreProjectAsync(int projectId, int companyId)
+        {
 
-        //Task IProjectRepository.RestoreProjectAsync(int projectId, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            Project? project = await context.Projects
+                                    .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+            if (project is not null)
+            {
+                project.Archived = false;
+                context.Projects.Update(project);
+                await context.SaveChangesAsync();
+            }
+        }
         #endregion
+
+
+
+
     }
 }

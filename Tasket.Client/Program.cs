@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Tasket.Client;
-//using Tasket.Client.Components.Services;
-//using Tasket.Client.Components.Services.Interfaces;
+using Tasket.Client.Services;
+using Tasket.Client.Services.Interfaces;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -15,6 +15,6 @@ builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticat
 builder.Services.AddScoped(ps => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 // InterFacee
-
+builder.Services.AddScoped<IProjectDTOService, WASMProjectDTOService>();
 
 await builder.Build().RunAsync();

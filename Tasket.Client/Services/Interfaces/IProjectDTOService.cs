@@ -10,15 +10,19 @@ namespace Tasket.Client.Services.Interfaces
         Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId);
         #endregion
 
+
+
         #region Get One Item
         Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId);
         #endregion
 
+
+
         #region Update DB item/items
-        //Task<ProjectDTO> AddProjectAsync(ProjectDTO project, int companyId);
+        Task<ProjectDTO> AddProjectAsync(ProjectDTO project, int companyId);
         Task UpdateProjectAsync(ProjectDTO project, int companyId);
-        //Task ArchiveProjectAsync(int projectId, int companyId);
-        //Task RestoreProjectAsync(int projectId, int companyId);
+        Task ArchiveProjectAsync(int projectId, int companyId);
+        Task RestoreProjectAsync(int projectId, int companyId);
         #endregion
     }
 }

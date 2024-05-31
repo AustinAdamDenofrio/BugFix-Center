@@ -1,7 +1,5 @@
 ﻿@page "/projects/archived"
 
-@rendermode InteractiveServer
-
 
 @inject IProjectDTOService ProjectService
 
@@ -14,7 +12,7 @@
 @foreach (ProjectDTO project in projects)
 {
     <div @key="project.Id">
-        <ProjectCard Project="project"/>
+        <ProjectCard Project="project" @rendermode="InteractiveWebAssembly" />
     </div>
 }
 

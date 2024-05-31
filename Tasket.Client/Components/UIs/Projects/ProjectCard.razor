@@ -1,4 +1,5 @@
-﻿@inject IProjectDTOService ProjectService
+﻿
+@inject IProjectDTOService ProjectService
 
 
 @if (Project is not null)
@@ -35,47 +36,7 @@
     <div class="row">
         <div class="col">
             <div class="collapse" id="collapse@(Project.Id)">
-                <EditForm Context="contextEditForm" Model="Project" OnValidSubmit="HandleSubmit" class="row needs-validation g-4">
-                    <DataAnnotationsValidator />
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label"></label>
-                            <InputText @bind-Value="Project.Name"
-                                       class="form-control">
-                            </InputText>
-                            <ValidationMessage For="() => Project.Name" />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label"></label>
-                            <InputText @bind-Value="Project.Description"
-                                       class="form-control">
-                            </InputText>
-                            <ValidationMessage For="() => Project.Description" />
-                        </div>
-
-                        <div class="hstack">
-                            <a class="btn btn-outline-secondary mt-3 me-1" type="button"
-                               data-bs-toggle="collapse"
-                               href="#collapse@(Project.Id)"
-                               role="button"
-                               aria-expanded="false"
-                               aria-controls="collapse@(Project.Id)">
-                                Cancel
-                            </a>
-                            <button class="btn btn-primary mt-3"
-                                    type="submit"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapse@(Project.Id)"
-                                    aria-expanded="false"
-                                    aria-controls="collapse@(Project.Id)">
-                                Comment
-                            </button>
-                        </div>
-
-
-                    </div>
-                    <ValidationSummary />
-                </EditForm>
+                <ProjectForm Project="Project" @rendermode="InteractiveWebAssembly"/>
             </div>
         </div>
     </div>
@@ -150,9 +111,8 @@
             try
             {
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-                Project.Archived = true;
 
-                await ProjectService.UpdateProjectAsync(Project, userInfo!.CompanyId);
+                await ProjectService.ArchiveProjectAsync(Project.Id, userInfo!.CompanyId);
             }
             catch (Exception ex)
             {
@@ -168,36 +128,14 @@
             try
             {
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-                Project.Archived = false;
 
-                await ProjectService.UpdateProjectAsync(Project, userInfo!.CompanyId);
+                await ProjectService.RestoreProjectAsync(Project.Id, userInfo!.CompanyId);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
         }
-    }
-
-    private async Task HandleSubmit()
-    {
-        // try
-        // {
-        //     if (newComment is not null)
-        //     {
-        //         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-        //         // newComment.BlogPostId = BlogPostId;
-        //         // await CommentService.CreateCommentAsync(newComment, userInfo!.UserId);
-
-        //         // Comments = await CommentService.GetCommentsByBlogPostIdAsync(BlogPostId);
-        //     }
-
-        // }
-        // catch (Exception ex)
-        // {
-        //     // Console.WriteLine(ex);
-        //     // errorMessage = "An error occurred while trying to grab comments";
-        // }
     }
     #endregion
 }

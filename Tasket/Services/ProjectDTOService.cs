@@ -47,6 +47,7 @@ namespace Tasket.Client.Services
         #endregion
 
 
+
         #region Update DB Item/Items
         public async Task UpdateProjectAsync(ProjectDTO project, int companyId)
         {
@@ -60,6 +61,7 @@ namespace Tasket.Client.Services
                 projectToUpdate.StartDate = project.StartDate;
                 projectToUpdate.EndDate = project.EndDate;
                 projectToUpdate.Archived = project.Archived;
+                projectToUpdate.Priority = project.Priority;
 
                 //if (project.Members is not null)
                 //{
@@ -76,26 +78,37 @@ namespace Tasket.Client.Services
                 await _repository.UpdateProjectAsync(projectToUpdate, companyId);
             }
         }
+        public async Task<ProjectDTO> AddProjectAsync(ProjectDTO project, int companyId)
+        {
+            Project newProject = new Project()
+            {
+                Name = project.Name,
+                Description = project.Description,
+                Created = DateTimeOffset.Now,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Priority = project.Priority,
+                Archived = project.Archived,
+                CompanyId = companyId,
+            };
+
+            return (await _repository.AddProjectAsync(newProject, companyId)).ToDTO();
+        }
+        public async Task ArchiveProjectAsync(int projectId, int companyId)
+        {
+            await _repository.ArchiveProjectAsync(projectId, companyId);
+        }
+        public async Task RestoreProjectAsync(int projectId, int companyId)
+        {
+            await _repository.RestoreProjectAsync(projectId, companyId);
+        }
         #endregion
 
 
-        //public Task<ProjectDTO> AddProjectAsync(ProjectDTO project, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public Task ArchiveProjectAsync(int projectId, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
 
 
 
-        //public Task RestoreProjectAsync(int projectId, int companyId)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
     }
 }

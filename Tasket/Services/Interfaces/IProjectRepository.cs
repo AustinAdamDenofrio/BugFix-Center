@@ -18,10 +18,10 @@ namespace Tasket.Services.Interfaces
 
 
         #region Update DB item/items
-        //Task<Project> AddProjectAsync(Project project, int companyId);
+        Task<Project> AddProjectAsync(Project project, int companyId);
         Task UpdateProjectAsync(Project project, int companyId);
-        //Task ArchiveProjectAsync(int projectId, int companyId);
-        //Task RestoreProjectAsync(int projectId, int companyId);
+        Task ArchiveProjectAsync(int projectId, int companyId);
+        Task RestoreProjectAsync(int projectId, int companyId);
         #endregion
     }
 }

@@ -22,4 +22,8 @@
     <PackageReference Include="TinyMCE.Blazor" Version="1.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\UIs\Projects\" />
+  </ItemGroup>
+
 </Project>

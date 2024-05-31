@@ -1,6 +1,5 @@
 ﻿@page "/projects"
-
-@rendermode InteractiveServer
+@using Tasket.Components.Layout
 
 
 @inject IProjectDTOService ProjectService
@@ -10,15 +9,38 @@
 <h3>Projects</h3>
 
 @*Add a page for if there is no values*@
+            <div class="hstack gap-2">
+                <a class="nav-link fs-4 fw-semibold px-0 py-2 text-primary"
+                   type="button"
+                   data-bs-toggle="collapse"
+                   href="#NewComment"
+                   role="button"
+                   aria-expanded="false"
+                   aria-controls="NewComment"
+                   aria-label="new comment">
+                    Add New comment
+                    <i class="ai-edit-alt fs-xl ms-2" aria-label="New Comment"></i>
+                </a>
+            </div>
+            <div class="row pb-5 pb-md-5 justify-content-center justify-content-md-start">
+                <div class="col">
+                    <div class="collapse" id="NewComment">
+                        <ProjectForm Project="new ProjectDTO()"
+                         @rendermode="InteractiveWebAssembly" />
+                    </div>
+                </div>
+            </div>
+            <hr />
 
 @foreach (ProjectDTO project in projects)
 {
     <div @key="project.Id">
-        <ProjectCard Project="project"/>
+        <ProjectCard Project="project" @rendermode="InteractiveWebAssembly" />
     </div>
 }
 
-@* <BlazorPageScript.PageScript Src="./Components/Pages/Posts/BlogDetails.razor.js" /> *@
+@* this component will execute the exported onUpdate function when the page updates *@
+<BlazorPageScript.PageScript Src="./Components/Pages/Projects/Projects.razor.js"/>
 
 @code {
     #region Parameters

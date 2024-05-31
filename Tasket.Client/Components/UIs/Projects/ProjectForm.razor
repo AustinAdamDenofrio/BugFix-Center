@@ -1,0 +1,139 @@
+﻿@inject IProjectDTOService ProjectService
+
+@if (Project is not null)
+{
+    <EditForm Model="Project" OnValidSubmit="HandleSubmit" class="row">
+        <DataAnnotationsValidator />
+        <div class="col-lg-4">
+            <div class="mb-2">
+                <label class="form-label">Title</label>
+                <InputText class="form-control" @bind-Value="Project.Name"></InputText>
+                <ValidationMessage For="() => Project.Name" />
+            </div>
+           @*<div class="mb-2">
+                @foreach (UserDTO member in Project.Members)
+                {
+                    <label class="form-label">Category</label>
+                    <InputCheckbox class="form-control" @bind-Value="">
+
+                    </InputCheckbox>
+                    <ValidationMessage For="() => Project" />
+                }
+            </div> *@
+        </div>
+        <div class="col-lg-8 vstack gap-2">
+            <div class="flex-fill vstack">
+                <label class="form-label">Content</label>
+                <TinyMCE.Blazor.Editor ScriptSrc="/tinymce/tinymce.min.js"
+                                       @bind-Value="Project.Description"
+                                       Field="() => Project.Description"
+                                       ClassName="rich-text-editor"
+                                       Conf="editorConfig" />
+                <ValidationMessage For="() => Project.Description" />
+            </div>
+        </div>
+        <div class="col-12 text-end">
+@*             <div class="form-check">
+                <label class="form-check-label">
+                    <InputCheckbox class="form-check-input" @bind-Value="Project.Archived">
+                    </InputCheckbox>
+                    Archived?
+                </label>
+            </div> *@
+            <a type="button" class="btn btn-outline-secondary me-2">
+                Cancel
+            </a>
+
+            @if (Project.Archived == true)
+            {
+                <button type="submit" class="btn btn-outline-primary">
+                    Create as Archived
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary">
+                    Save &amp; Create
+                </button>
+            }
+        </div>
+        <ValidationSummary />
+    </EditForm>
+
+}
+
+@code {
+
+    #region Parameters
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public ProjectDTO? Project { get; set; }
+    #endregion
+
+
+
+    #region States
+    UserInfo? userInfo;
+
+    ProjectDTO? newProject;
+    // tinyMCE config
+    private static readonly Dictionary<string, object> editorConfig = new()
+    {
+        { "toolbar", "undo redo | bold italic underline | link codesample " },
+        { "plugins", "anchor autolink link charmap preview table codesample" },
+        { "default_link_target", "_blank" },
+        { "link_assume_external_targets", true },
+        { "link_context_toolbar", true },
+        { "codesample_languages", new object[] {
+                new { text = "HTML/XML", value = "markup" },
+                new { text = "JavaScript", value = "javascript" },
+                new { text = "CSS", value = "css" },
+                new { text = "C#", value = "csharp" },
+                new { text = "Razor", value = "razor" },
+                new { text = "JSON", value = "json" },
+    }
+        },
+        { "codesample_global_prismjs", true },
+        { "promotion", false },
+        { "height", "350px" },
+        //Try changing to a px or remove that section
+    };
+    #endregion
+
+
+
+
+    #region Methods
+    private async Task HandleSubmit()
+    {
+        if (Project?.Id == 0 && Project is not null)
+        {
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                newProject = await ProjectService.AddProjectAsync(Project, userInfo!.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }            
+        }
+        else if (Project is not null)
+        {
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                await ProjectService.UpdateProjectAsync(Project, userInfo!.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+    #endregion
+}
