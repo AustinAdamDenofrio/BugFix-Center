@@ -84,10 +84,16 @@ namespace Tasket.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             Project? project = await context.Projects
+                                    .Include(p => p.Tickets)
                                     .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+
             if (project is not null)
             {
                 project.Archived = true;
+                foreach (Ticket ticket in project.Tickets)
+                {
+                    ticket.Archived = true;
+                }
                 context.Projects.Update(project);
                 await context.SaveChangesAsync();
             }
@@ -98,10 +104,16 @@ namespace Tasket.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             Project? project = await context.Projects
+                                    .Include(p => p.Tickets)
                                     .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
             if (project is not null)
             {
                 project.Archived = false;
+                foreach (Ticket ticket in project.Tickets) 
+                { 
+                    ticket.Archived = false;
+                }
+
                 context.Projects.Update(project);
                 await context.SaveChangesAsync();
             }

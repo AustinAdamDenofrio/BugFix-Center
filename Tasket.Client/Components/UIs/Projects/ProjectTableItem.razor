@@ -1,0 +1,52 @@
+﻿@inject IProjectDTOService ProjectService
+
+
+@if (Project is not null)
+{
+    <td>@Project.Name</td>
+    <td>@((MarkupString)Project.Description!)</td>
+    <td>@Project.StartDate.ToString("g")</td>
+    <td>@Project.EndDate.ToString("g")</td>
+    <td>@Project.Priority</td>
+    <td>
+        <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/projects/@Project.Id">
+            details
+        </a>
+    </td>
+}
+@code {
+    #region Parameters
+    [Parameter, EditorRequired]
+    public ProjectDTO? Project { get; set; }
+
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+
+
+    #region State
+    UserInfo? userInfo;
+    #endregion
+
+
+    #region Methods
+    private async Task ArchiveProjectAsync()
+    {
+        if (Project is not null)
+        {
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                await ProjectService.ArchiveProjectAsync(Project.Id, userInfo!.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+    #endregion
+}

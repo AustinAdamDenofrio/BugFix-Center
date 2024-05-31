@@ -1,0 +1,86 @@
+﻿@page "/projects/archived"
+@rendermode InteractiveAuto
+
+@inject IProjectDTOService ProjectService
+
+
+<PageTitle>Archive Projects</PageTitle>
+<h3>Project Archives</h3>
+
+@*Add a page for if there is no values*@
+
+<div class="d-flex justify-content-center">
+    <h3>Project Archives</h3>
+</div>
+
+
+
+@if (projects is not null)
+{
+    @if (projects.Any(p => p.Priority == ProjectPriority.Urgent) == true)
+    {
+        <h3 class="lead">Urgent Projects:</h3>
+        <div class="row row-cols-1 row-cols-sm-5 g-2 justify-content-center">
+            @foreach (ProjectDTO project in projects)
+            {
+                if (project.Priority == ProjectPriority.Urgent)
+                {
+
+                    <div class="col">
+                        <div class="card border-0 bg-secondary-subtle rounded-5 mb-4">
+                            <ProjectPriorityCard Project="project" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ProjectDTO project in projects)
+            {
+                <tr @key="project.Id">
+                    <ProjectTableItem Project="project" />
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    #region Parameters
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+
+
+    #region State
+    IEnumerable<ProjectDTO> projects = [];
+
+    UserInfo? userInfo;
+    #endregion
+
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        projects = await ProjectService.GetArchivedProjectsAsync(userInfo!.CompanyId);
+    }
+
+    #endregion
+}

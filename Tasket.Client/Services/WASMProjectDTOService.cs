@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.ComponentModel.Design;
+using System.Net.Http.Json;
 using System.Xml.Linq;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
@@ -25,9 +26,6 @@ namespace Tasket.Client.Services
 
 
         #region Update DB item or items
-        #endregion
-
-
         public async Task<ProjectDTO> AddProjectAsync(ProjectDTO newProject, int companyId)
         {
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/projects", newProject);
@@ -36,35 +34,44 @@ namespace Tasket.Client.Services
             ProjectDTO? projectDTO = await response.Content.ReadFromJsonAsync<ProjectDTO>();
             return projectDTO!;
         }
+        #endregion
 
-        public Task ArchiveProjectAsync(int projectId, int companyId)
+
+
+        public async Task ArchiveProjectAsync(int projectId, int companyId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/archive/{projectId}", projectId);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
+        public async Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
         {
-            throw new NotImplementedException();
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects") ?? [];
+            return projects;
         }
 
-        public Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
+        public async Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
         {
-            throw new NotImplementedException();
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects/archive") ?? [];
+            return projects;
         }
 
-        public Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
+        public async Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
         {
-            throw new NotImplementedException();
+            ProjectDTO? project = await _httpClient.GetFromJsonAsync<ProjectDTO>($"api/projects/{projectId}");
+            return project;
         }
 
-        public Task RestoreProjectAsync(int projectId, int companyId)
+        public async Task RestoreProjectAsync(int projectId, int companyId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/restore/{projectId}", projectId);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task UpdateProjectAsync(ProjectDTO project, int companyId)
+        public async Task UpdateProjectAsync(ProjectDTO updatedProject, int companyId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/update/{updatedProject.Id}", updatedProject);
+            response.EnsureSuccessStatusCode();
         }
     }
 }
