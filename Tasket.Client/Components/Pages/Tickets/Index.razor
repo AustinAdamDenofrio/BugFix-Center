@@ -1,0 +1,50 @@
+﻿@page "/tickets"
+
+<PageTitle>Tickets | All Tickets</PageTitle>
+@if(tickets is not null){
+    <h1>Tickets</h1>
+
+    <div class="row">
+        <div class="col">
+            @foreach(TicketDTO ticket in tickets)
+            {
+                @if(ticket.Archived == false && ticket.ArchivedByProject == false)
+                {
+                    <div>
+                        <TicketCard />
+                    </div>
+                }
+            }
+        </div>
+        <div class="col">
+            @foreach (TicketDTO ticket in tickets)
+            {
+                @if (ticket.Archived == true)
+                {
+                    <div>
+                        <TicketCard />
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="row">
+        <TicketForm></TicketForm>
+    </div>
+}
+@code {
+    #region Parameters
+
+    #endregion
+
+
+
+    #region States
+    IEnumerable<TicketDTO> tickets = [];
+    #endregion
+
+
+    #region Methods
+
+    #endregion
+}

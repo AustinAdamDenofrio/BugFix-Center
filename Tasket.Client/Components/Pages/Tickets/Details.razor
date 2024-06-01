@@ -1,0 +1,13 @@
+﻿@page "/tickets/{ticketId:int}"
+
+@code {
+
+    #region Parameters
+    [Parameter]
+    public int TicketId { get; set; }
+
+
+    // [CascadingParameter]
+    // private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+}

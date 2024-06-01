@@ -1,0 +1,196 @@
+﻿@if (Ticket is not null)
+{
+@*     <EditForm Model="Ticket" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="border bg-light shadow-lg border-2 py-2 col-6">
+            <div class="row p-2 g-3 justify-content-center">
+                <div class="col-12 col-md-10 my-5">
+                    <div class="row g-2" action="#">
+                        <div class="col-12 col-md-6">
+                            <label for="Name" class="form-label">
+                                Name
+                            </label>
+                            <InputText @bind-Value="Ticket"
+                                       id="Name"
+                                       class="form-control"
+                                       placeholder="Name"
+                                       aria-label="Name" />
+                            <ValidationMessage For="() => Ticket" />
+                        </div>
+                        <div class="col-12">
+                            <label for="Description" class="form-label">
+                                Description
+                            </label>
+                            <InputTextArea @bind-Value="Ticket"
+                                           id="Description"
+                                           row="4"
+                                           class="form-control"
+                                           placeholder="Description"
+                                           aria-label="Description" />
+                            <ValidationMessage For="() => Ticket" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="startDate">
+                                Start Date
+                            </label>
+                            <InputDate id="startDate" @bind-Value="Ticket" class="form-control" />
+                            <ValidationMessage For="() => Ticket" />
+
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="endDate">
+                                End Date
+                            </label>
+                            <InputDate id="endDate" @bind-Value="Ticket" class="form-control" />
+                            <ValidationMessage For="() => Ticket.StartDate" />
+                        </div> *@
+@*                         <div class="mb-2 col-2">
+                            <label class="form-label">Category</label>
+                            <InputSelect class="form-control" @bind-Value="Ticket">
+                                @foreach (ProjectPriority priority in Enum.GetValues(typeof(ProjectPriority)))
+                                {
+                                    <option value="@priority">@priority.GetDisplayName()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => Ticket.Priority" />
+                        </div> *@
+
+
+@*                         <div class="col-12 hstack justify-content-end gap-3">
+                            @if (Ticket.Archived == true)
+                            {
+                                <div class="text-end">
+                                    <a class="btn btn-lg btn-outline-primary" type="submit" @onclick="RestoreProjectAsync">
+                                        Restore from Archive
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <a class="btn btn-lg btn-outline-secondary" href="/projects">
+                                        Cancel
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-lg btn-primary" type="submit">
+                                        Save
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-end">
+                                    <a class="btn btn-lg btn-outline-primary" type="submit" @onclick="ArchiveProjectAsync">
+                                        Archive
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <a class="btn btn-lg btn-outline-secondary" href="/projects">
+                                        Cancel
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-lg btn-primary" type="submit">
+                                        Save
+                                    </button>
+                                </div>
+                            }
+
+                        </div> *@
+@*                     </div>
+                </div>
+            </div>
+        </div>
+    </EditForm> *@
+}
+
+@code {
+    #region Parameters
+    [Parameter]
+    public int TicketId { get; set; }
+
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+
+
+    #region State
+    private UserInfo? userInfo;
+
+    private ProjectDTO? Ticket;
+    #endregion
+
+
+
+    #region Methods
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+            // Ticket = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo!.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        // if (Ticket is not null)
+        // {
+
+        //     userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        //     await ProjectService.UpdateProjectAsync(Ticket, userInfo!.CompanyId);
+
+
+        //     Nav.NavigateTo($"/projects");
+        // }
+    }
+
+    private async Task ArchiveProjectAsync()
+    {
+        // if (Ticket is not null)
+        // {
+        //     try
+        //     {
+        //         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        //         await ProjectService.ArchiveProjectAsync(Ticket.Id, userInfo!.CompanyId);
+
+
+        //         Nav.NavigateTo("/projects");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.WriteLine(ex);
+        //     }
+        // }
+    }
+
+    private async Task RestoreProjectAsync()
+    {
+        // if (Ticket is not null)
+        // {
+        //     try
+        //     {
+        //         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        //         await ProjectService.RestoreProjectAsync(Ticket.Id, userInfo!.CompanyId);
+
+
+        //         Nav.NavigateTo("/projects");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.WriteLine(ex);
+        //     }
+        // }
+    }
+
+    #endregion
+}
