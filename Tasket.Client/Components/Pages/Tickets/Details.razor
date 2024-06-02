@@ -1,5 +1,80 @@
 ﻿@page "/tickets/{ticketId:int}"
 
+@inject ITicketDTOService TicketService
+
+
+@* @ticket.Title *@
+@* @ticket.Description *@
+@* @ticket.Created *@
+@* @ticket.Updated *@
+@* @ticket.Archived *@
+@* @ticket.ArchivedByProject *@
+@* @ticket.Priority *@
+@* @ticket.Type *@
+@* @ticket.Status *@
+@* @ticket.Project.Name Include link to project details*@
+@* @ticket.SubmitterUser.FullName *@
+@* @ticket.DeveloperUser.FullName *@
+
+
+
+@if (ticket is not null)
+{
+    <div class="row">
+        <div class="col-6">
+
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    @ticket.Title
+                </div>
+                <div class="card-body">
+                    <p class="card-text">@ticket.Description</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        @ticket.Project?.Name
+                        <p>Ticket Maker: @ticket.SubmitterUser?.FullName</p>
+                        <p>Assigned to: @ticket.DeveloperUser?.FullName</p>
+                    </li>
+                    <li class="list-group-item">
+                        <p>
+                            Created Date: @ticket.Created.ToString("d")
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <p>
+                            Updated Date: @ticket.Updated!.Value.ToString("d")
+                        </p>
+
+                    </li>
+                    <li class="list-group-item">
+                        @if (ticket.ArchivedByProject == true || ticket.Archived == true)
+                        {
+                            <h5><span class="badge text-bg-secondary">Archived</span></h5>
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <h5><span class="badge text-bg-secondary">@ticket.Priority</span></h5>
+                        <h5><span class="badge text-bg-secondary">@ticket.Type</span></h5>
+                        <h5><span class="badge text-bg-secondary">@ticket.Status</span></h5>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
+                            Button with data-bs-target
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-6 collapse" id="collapse">
+            <TicketForm Ticket="ticket" />
+        </div>
+    </div>
+}
 @code {
 
     #region Parameters
@@ -7,7 +82,35 @@
     public int TicketId { get; set; }
 
 
-    // [CascadingParameter]
-    // private Task<AuthenticationState>? AuthStateTask { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+    #region States
+    UserInfo? userInfo;
+
+
+    TicketDTO? ticket = new TicketDTO();
+    #endregion
+
+
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        try
+        {
+            // ticket = await TicketService.GetTicketByIdAsync(TicketId, userInfo!.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+
+
     #endregion
 }

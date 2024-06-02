@@ -1,5 +1,52 @@
-﻿<h3>TicketCard</h3>
+﻿@if (Ticket is not null)
+{
+    <a class="card-body pb-3 text-decoration-none" href="/projects/@Ticket.Id">
+        <h3 class="h4 my-3">@Ticket.Title</h3>
+        <p class="my-3">@((MarkupString)Ticket.Description!)</p>
+        <p class="my-3">@Ticket.</p>
+        <p class="my-3 fw-bold">Due: @Ticket.Created.ToString("d")</p>
+        <div class="d-flex align-items-center">
+            @if (Ticket.Archived == true)
+            {
+                <h6 class=""><span class="badge text-bg-secondary">Archived</span></h6>
+            }
+            <a class="fs-sm fw-semibold btn btn-primary mx-3 mb-3 ms-auto" type="button" href="/tickets/@Ticket.Id">
+                Edit
+            </a>
+        </div>
+    </a>
+}
+@* @Ticket.Title
+@Ticket.Description
+@Ticket.Created
+@Ticket.Updated
+@Ticket.Archived
+@Ticket.ArchivedByProject
+@Ticket.Priority
+@Ticket.Type
+@Ticket.Status
+@Ticket.Project.Name 
+@Ticket.SubmitterUser.FullName
+@Ticket.DeveloperUser.FullName *@
+
+@*Loop for a list of Comments*@
+@Ticket.
+@Ticket.
+
 
 @code {
+    #region Parameters
+    [Parameter, EditorRequired]
+    public TicketDTO? Ticket { get; set; }
+    #endregion
+        
+    #region States
+    #endregion
+
+
+
+    #region Methods
+    #endregion
+
 
 }

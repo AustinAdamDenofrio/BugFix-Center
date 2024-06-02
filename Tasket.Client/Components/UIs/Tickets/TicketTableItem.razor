@@ -1,0 +1,51 @@
+﻿@inject ITicketDTOService TicketService
+
+
+@if (Ticket is not null)
+{
+    @* @ticket.Title *@
+    @* @ticket.Description *@
+    @* @ticket.Created *@
+    @* @ticket.Updated *@
+    @* @ticket.Archived *@
+    @* @ticket.ArchivedByProject *@
+    @* @ticket.Priority *@
+    @* @ticket.Type *@
+    @* @ticket.Status *@
+    @* @ticket.Project.Name Include link to project details*@
+    @* @ticket.SubmitterUser.FullName *@
+    @* @ticket.DeveloperUser.FullName *@
+
+
+    <td>@Ticket.Title</td>
+    <td>@Ticket.Description</td>
+    <td>@Ticket.Created.ToString("g")</td>
+    <td>@Ticket.Project</td>
+    <td>@Ticket.Priority</td>
+    <td>@Ticket.Type</td>
+    <td>@Ticket.Status</td>
+    <td>
+        <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/tickets/@Ticket.Id">
+            details
+        </a>
+    </td>
+}
+
+@code {
+
+    #region Parameters
+    [Parameter, EditorRequired]
+    public TicketDTO? Ticket { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+
+
+    #region State
+    UserInfo? userInfo;
+    #endregion
+
+}
+

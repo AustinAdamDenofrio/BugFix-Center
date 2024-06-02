@@ -1,65 +1,34 @@
-﻿
-@inject IProjectDTOService ProjectService
-
-
-@if (Project is not null)
+﻿@if (Project is not null)
 {
-    <h4>
-        @Project.Name
-    </h4>
-    <div class="hstack">
-        @if (Project.Archived == false)
-        {
-            <button class="fs-sm fw-semibold px-0 py-2 btn btn-outline-danger me-3" type="button" @onclick="ArchiveProjectAsync">
-                Archive
-            </button>
-        }
-        else
-        {
-            <button class="btn btn-danger fs-sm fw-semibold px-0 py-2 me-3" type="button" @onclick="UnarchiveProjectAsync">
-                Remove from Archive
-            </button>
-        }
-        <a class="btn btn-warning fs-sm fw-semibold px-2 py-2"
-           type="button"
-           data-bs-toggle="collapse"
-           href="#collapse@(Project.Id)"
-           role="button"
-           aria-expanded="false"
-           aria-controls="collapse@(Project.Id)"
-           aria-label="Edit">
-            <i class="ai-pencil fs-xl ms-2 text-warning" aria-label="Edit"></i>
-            Edit
-        </a>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="collapse" id="collapse@(Project.Id)">
-                <ProjectForm Project="Project"/>
-            </div>
+    <a class="card-body pb-3 text-decoration-none" href="/projects/@Project.Id">
+        <svg class="d-block mt-1 mt-sm-0 mb-4" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <g class="text-info">
+                <path d="M34.9811 16.2655C34.3635 26.3194 26.3194 34.3634 16.2656 34.981V40H40V16.2655H34.9811Z" fill="currentColor"></path>
+            </g>
+            <g class="text-info">
+                <path d="M15.0195 30.0413C23.3152 30.0413 30.0403 23.3163 30.0403 15.0205H15.0195V30.0413Z" fill="currentColor"></path>
+            </g>
+            <g class="text-primary">
+                <path d="M29.1953 10.0415C27.141 4.19328 21.571 0 15.0208 0C6.725 0 0 6.725 0 15.0208C0 21.571 4.19328 27.141 10.0415 29.1953V10.0415H29.1953Z" fill="currentColor"></path>
+            </g>
+        </svg>
+        <h3 class="h4 my-3">@Project.Name</h3>
+        <p class="my-3">@((MarkupString)Project.Description!)</p>
+        <p class="my-3 fw-bold">Due: @Project.EndDate.ToString("d")</p>
+        <div class="d-flex align-items-center">
+            @if (Project.Archived == true)
+            {
+                <h6 class=""><span class="badge text-bg-secondary">Archived</span></h6>
+            }
+            <a class="fs-sm fw-semibold btn btn-primary mx-3 mb-3 ms-auto" type="button" href="/projects/edit/@Project.Id">
+                Edit
+            </a>
         </div>
-    </div>
-
-
-
- @*    <table class="table">
-        <thead class="table-light">
-            ...
-        </thead>
-        <tbody>
-            ...
-        </tbody>
-    </table> *@
-
+    </a>    
 }
-
 @code {
+
     #region Parameters
-    [CascadingParameter]
-    public Task<AuthenticationState>? AuthStateTask { get; set; }
-
-
     [Parameter, EditorRequired]
     public ProjectDTO? Project { get; set; }
     #endregion
@@ -67,75 +36,6 @@
 
 
     #region State
-    IEnumerable<ProjectDTO> projects = [];
-
     UserInfo? userInfo;
-
-    // tinyMCE config
-    private static readonly Dictionary<string, object> editorConfig = new()
-    {
-        { "toolbar", "undo redo | bold italic underline | link codesample " },
-        { "plugins", "anchor autolink link charmap preview table codesample" },
-        { "default_link_target", "_blank" },
-        { "link_assume_external_targets", true },
-        { "link_context_toolbar", true },
-        { "codesample_languages", new object[] {
-                new { text = "HTML/XML", value = "markup" },
-                new { text = "JavaScript", value = "javascript" },
-                new { text = "CSS", value = "css" },
-                new { text = "C#", value = "csharp" },
-                new { text = "Razor", value = "razor" },
-                new { text = "JSON", value = "json" },
-    }
-        },
-        { "codesample_global_prismjs", true },
-        { "promotion", false },
-        { "height", "350px" },
-        //Try changing to a px or remove that section
-    };
-    #endregion
-
-
-
-    #region Methods
-    protected override async Task OnInitializedAsync()
-    {
-        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-    }
-
-
-    private async Task ArchiveProjectAsync()
-    {
-        if (Project is not null)
-        {
-            try
-            {
-                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-
-                await ProjectService.ArchiveProjectAsync(Project.Id, userInfo!.CompanyId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }            
-        }
-    }
-
-    private async Task UnarchiveProjectAsync()
-    {
-        if (Project is not null)
-        {
-            try
-            {
-                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-
-                await ProjectService.RestoreProjectAsync(Project.Id, userInfo!.CompanyId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-    }
     #endregion
 }

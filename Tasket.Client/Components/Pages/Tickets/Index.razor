@@ -1,39 +1,48 @@
 ﻿@page "/tickets"
 
-<PageTitle>Tickets | All Tickets</PageTitle>
-@if(tickets is not null){
-    <h1>Tickets</h1>
+@inject ITicketDTOService TicketService
 
-    <div class="row">
-        <div class="col">
-            @foreach(TicketDTO ticket in tickets)
-            {
-                @if(ticket.Archived == false && ticket.ArchivedByProject == false)
-                {
-                    <div>
-                        <TicketCard />
-                    </div>
-                }
-            }
-        </div>
-        <div class="col">
+<PageTitle>Tickets | All Tickets</PageTitle>
+
+<div class="mb-3">
+    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Add Ticket
+    </button>
+    <div class="collapse" id="collapseExample">
+        <TicketForm Ticket="new TicketDTO()" />
+    </div>
+</div>
+
+@if (tickets is not null)
+{
+
+    //If any are due today make them appear with the card and have a details button
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Created Date</th>
+                <th scope="col">Project</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Type</th>
+                <th scope="col">Statuse</th>
+            </tr>
+        </thead>
+        <tbody>
             @foreach (TicketDTO ticket in tickets)
             {
-                @if (ticket.Archived == true)
-                {
-                    <div>
-                        <TicketCard />
-                    </div>
-                }
+                <tr @key="ticket.Id">
+                    <TicketTableItem Ticket="ticket" />
+                </tr>
             }
-        </div>
-    </div>
-    <div class="row">
-        <TicketForm></TicketForm>
-    </div>
+        </tbody>
+    </table>
 }
 @code {
     #region Parameters
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
 
     #endregion
 
@@ -41,10 +50,19 @@
 
     #region States
     IEnumerable<TicketDTO> tickets = [];
+
+
+    UserInfo? userInfo;
     #endregion
 
 
     #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+    }
 
     #endregion
 }
