@@ -25,8 +25,8 @@ namespace Tasket.Client.Models
         }
         public DateTimeOffset? Updated
         {
-            get { return _updated?.ToLocalTime(); }
-            set { _updated = value?.ToUniversalTime(); }
+            get => _updated?.ToLocalTime();
+            set => _updated = value?.ToUniversalTime();
         }
         public bool Archived { get; set; }
         public bool ArchivedByProject { get; set; }

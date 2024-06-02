@@ -52,6 +52,12 @@ namespace Tasket.Models
                 TicketId = ticketAttachment.Id
             };
 
+            if (ticketAttachment.User is not null)
+            {
+                UserDTO userDTO = ticketAttachment.User.ToDTO();
+                dto.User = userDTO;
+            }
+
             return dto;
         }
 

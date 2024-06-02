@@ -72,12 +72,14 @@ namespace Tasket.Models
             //ToDo: Members
             foreach (ApplicationUser member in project.Members)
             {
+                member.Projects.Clear();
                 dto.Members.Add(member.ToDTO());
             }
 
             //ToDo: Tickets
             foreach (Ticket ticket in project.Tickets)
             {
+                ticket.Project!.Tickets.Clear();
                 dto.Tickets.Add(ticket.ToDTO());
             }
 

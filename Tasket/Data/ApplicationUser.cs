@@ -46,6 +46,7 @@ namespace Tasket.Data
                 FirstName = appUser.FirstName,
                 LastName = appUser.LastName,
                 Email = appUser.Email,
+                //make be a different imageurl, maybe profleimgurl
                 ImageUrl = appUser.ProfilePictureId.HasValue ? $"/api/uploads/{appUser.ProfilePictureId}" : UploadHelper.DefaultCompanyPicture,
             };
 

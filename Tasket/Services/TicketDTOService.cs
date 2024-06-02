@@ -34,6 +34,19 @@ namespace Tasket.Services
 
 
         #region Get Item
+        public async Task<TicketDTO?> GetTicketByIdAsync(int ticketId, int companyId)
+        {
+            Ticket? ticket = await _repository.GetTicketByIdAsync(ticketId, companyId);
+
+            return ticket?.ToDTO();
+        }
+        #endregion
+
+
+
+
+
+        #region Update DB item
         public async Task<TicketDTO> AddTicketAsync(TicketDTO ticket, int companyId)
         {
             Ticket newTicket = new Ticket()
@@ -41,52 +54,52 @@ namespace Tasket.Services
                 Title = ticket.Title,
                 Description = ticket.Description,
                 Created = DateTimeOffset.Now,
-                Updated = DateTimeOffset.Now,
-                Archived = ticket.Archived,
                 ArchivedByProject = ticket.ArchivedByProject,
+                Status = TicketStatus.New,
                 Priority = ticket.Priority,
                 ProjectId = ticket.ProjectId,
                 SubmitterUserId = ticket.SubmitterUserId,
                 DeveloperUserId = ticket.DeveloperUserId,
-                Status = TicketStatus.New,
             };
-
-            //List<FileUpload> attachments = [];
-
-            //foreach (TicketAttachmentDTO attachment in ticket.Attachments)
-            //{
-            //    if (attachment.AttachmentUrl?.StartsWith("data") == true)
-            //    {
-            //        try
-            //        {
-            //            attachments = UploadHelper.GetImageUpload(attachment.AttachmentUrl);
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Console.WriteLine(ex);
-            //        }
-            //    }
-            //}
 
             newTicket = await _repository.AddTicketAsync(newTicket, companyId);
             
 
             return (await _repository.AddTicketAsync(newTicket, companyId)).ToDTO();
         }
+        public async Task UpdateTicketAsync(TicketDTO ticket, int companyId, string userId)
+        {
+            //remove attachments from ticket before adding in new attachments
+
+            Ticket? ticketToUpdate = await _repository.GetTicketByIdAsync(ticket.Id, companyId);
+
+            if (ticketToUpdate is not null)
+            {
+                ticketToUpdate.Title = ticket.Title;
+                ticketToUpdate.Description = ticket.Description;
+                ticketToUpdate.Updated = DateTimeOffset.Now;
+                ticketToUpdate.Archived = ticket.Archived;
+                ticketToUpdate.ArchivedByProject = ticket.ArchivedByProject;
+                ticketToUpdate.Priority = ticket.Priority;
+                ticketToUpdate.Type = ticket.Type;
+                ticketToUpdate.Status = ticket.Status;
+                ticketToUpdate.DeveloperUserId = ticket.DeveloperUserId;
+
+                await _repository.UpdateTicketAsync(ticketToUpdate, companyId, userId);
+            }
+        }
+        public async Task ArchiveTicketAsync(int ticketId, int companyId)
+        {
+            await _repository.ArchiveTicketAsync(ticketId, companyId);
+        }
+        public async Task RestoreTicketAsync(int ticketId, int companyId)
+        {
+            await _repository.RestoreTicketAsync(ticketId, companyId);
+        }
+
         #endregion
 
 
 
-        #region Update DB item
-
-        #endregion
-
-
-        //public async Task<TicketDTO?> GetTicketByIdAsync(int ticketId, int companyId)
-        //{
-        //    Ticket? ticket = await _repository.GetTicketByIdAsync(ticketId, companyId);
-
-        //    return ticket.ToDTO();
-        //}
     }
 }

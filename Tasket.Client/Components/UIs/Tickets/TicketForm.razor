@@ -1,4 +1,7 @@
-﻿@if (Ticket is not null)
+﻿@inject ITicketDTOService TicketService
+@inject NavigationManager Nav
+
+@if (Ticket is not null)
 {
     <EditForm Model="Ticket" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator />
@@ -41,7 +44,7 @@
                         </div>
                         <div class="mb-2 col-5">
                             <label class="form-label">Type</label>
-                            <InputSelect class="form-control" @bind-Value="Ticket.Priority">
+                            <InputSelect class="form-control" @bind-Value="Ticket.Type">
                                 @foreach (TicketType type in Enum.GetValues(typeof(TicketType)))
                                 {
                                     <option value="@type">@type.GetDisplayName()</option>
@@ -49,31 +52,18 @@
                             </InputSelect>
                             <ValidationMessage For="() => Ticket.Type" />
                         </div>
-
-                        @* Select a developer to work on the project
-                    <div class="mb-2 col-2">
-                    <label class="form-label">Type</label>
-                    <InputSelect class="form-control" @bind-Value="ticket.Priority">
-                    @foreach ()
-                    {
-                    <option value="@type"></option>
-                    }
-                    </InputSelect>
-                    <ValidationMessage For="() => ticket.Type" />
-                    </div> *@
-
                         <div class="col-12 hstack justify-content-end gap-3">
                             @if (Ticket.Archived == true || Ticket.ArchivedByProject == true)
                             {
                                 <div class="text-start me-auto">
-                                    <a class="btn btn-lg btn-outline-primary" type="submit" @onclick="RestoreProjectAsync">
-                                        Restore from Archive
+                                    <a class="btn btn-lg btn-outline-primary" type="button" @onclick="RestoreProjectAsync">
+                                        Restore
                                     </a>
                                 </div>
                                 <div class="text-end">
-                                    <a class="btn btn-lg btn-outline-secondary" href="/projects">
+                                    <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
                                         Cancel
-                                    </a>
+                                    </button>
                                 </div>
                                 <div class="text-end">
                                     <button class="btn btn-lg btn-primary" type="submit">
@@ -84,14 +74,14 @@
                             else
                             {
                                 <div class="text-start me-auto">
-                                    <a class="btn btn-lg btn-outline-primary" type="submit" @onclick="ArchiveProjectAsync">
+                                    <a class="btn btn-lg btn-outline-primary" type="button" @onclick="ArchiveProjectAsync">
                                         Archive
                                     </a>
                                 </div>
                                 <div class="text-end">
-                                    <a class="btn btn-lg btn-outline-secondary" href="/projects">
+                                    <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
                                         Cancel
-                                    </a>
+                                    </button>
                                 </div>
                                 <div class="text-end">
                                     <button class="btn btn-lg btn-primary" type="submit">
@@ -114,8 +104,15 @@
     public TicketDTO? Ticket { get; set; }
 
 
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<TicketDTO> OnSubmit { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnArchive { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnRestore { get; set; }
     #endregion
 
 
@@ -127,73 +124,51 @@
 
 
     #region Methods
-    protected override async Task OnParametersSetAsync()
+
+
+
+
+    private async Task HandleSubmit()
     {
         try
         {
-            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-
-            // Ticket = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo!.CompanyId);
+            await OnSubmit.InvokeAsync(Ticket);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-    }
 
-    private async Task HandleSubmit()
-    {
-        // if (Ticket is not null)
-        // {
-
-        //     userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-
-        //     await ProjectService.UpdateProjectAsync(Ticket, userInfo!.CompanyId);
-
-
-        //     Nav.NavigateTo($"/projects");
-        // }
     }
 
     private async Task ArchiveProjectAsync()
     {
-        // if (Ticket is not null)
-        // {
-        //     try
-        //     {
-        //         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-
-        //         await ProjectService.ArchiveProjectAsync(Ticket.Id, userInfo!.CompanyId);
-
-
-        //         Nav.NavigateTo("/projects");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine(ex);
-        //     }
-        // }
+        if (Ticket is not null)
+        {
+            try
+            {
+                await OnArchive.InvokeAsync(Ticket.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
     }
 
     private async Task RestoreProjectAsync()
     {
-        // if (Ticket is not null)
-        // {
-        //     try
-        //     {
-        //         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-
-        //         await ProjectService.RestoreProjectAsync(Ticket.Id, userInfo!.CompanyId);
-
-
-        //         Nav.NavigateTo("/projects");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine(ex);
-        //     }
-        // }
+        if (Ticket is not null)
+        {
+            try
+            {
+                await OnRestore.InvokeAsync(Ticket.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
     }
-
     #endregion
 }

@@ -21,6 +21,7 @@ namespace Tasket.Models
         public string? Title { get; set; }
         [Required]
         public string? Description { get; set; }
+
         public DateTimeOffset Created
         {
             get => _created.ToLocalTime();
@@ -28,8 +29,8 @@ namespace Tasket.Models
         }
         public DateTimeOffset? Updated
         {
-            get { return _updated; }
-            set { _updated = value?.ToUniversalTime(); }
+            get => _updated?.ToLocalTime(); 
+            set => _updated = value?.ToUniversalTime(); 
         }
         public bool Archived { get; set; }
         public bool ArchivedByProject { get; set; }
@@ -67,21 +68,39 @@ namespace Tasket.Models
                 Priority = ticket.Priority,
                 Type = ticket.Type,
                 Status = ticket.Status,
-                SubmitterUser = ticket.SubmitterUser?.ToDTO(),
-                DeveloperUser = ticket.DeveloperUser?.ToDTO(),
+                SubmitterUserId = ticket.SubmitterUserId,
+                DeveloperUserId = ticket.DeveloperUserId,
+                ProjectId = ticket.ProjectId,
             };
 
-            if (ticket.Project != null) dto.Project = ticket.Project.ToDTO();
+            if(ticket.Project is not null)
+            {
+                ProjectDTO projectDTO = ticket.Project.ToDTO();
+                dto.Project = projectDTO;
+            }
+
+            if (ticket.SubmitterUser is not null)
+            {
+                UserDTO userDTO = ticket.SubmitterUser.ToDTO();
+                dto.SubmitterUser = userDTO;
+            }
+
+            if (ticket.DeveloperUser is not null)
+            {
+                UserDTO userDTO = ticket.DeveloperUser.ToDTO();
+                dto.SubmitterUser = userDTO;
+            }
 
             foreach (TicketComment comment in ticket.Comments)
             {
-                dto.Comments.Add(comment.ToDTO());
+                TicketCommentDTO ticketCommentDTO = comment.ToDTO();
+                dto.Comments.Add(ticketCommentDTO);
             }
 
-            foreach (TicketAttachment ticketAttachment in ticket.Attachments)
+            foreach (TicketAttachment attachment in ticket.Attachments)
             {
-                TicketAttachmentDTO attachmentDto = ticketAttachment.ToDTO();
-                dto.Attachments.Add(attachmentDto);
+                TicketAttachmentDTO ticketAttachmentDTO = attachment.ToDTO();
+                dto.Attachments.Add(ticketAttachmentDTO);
             }
 
             return dto;

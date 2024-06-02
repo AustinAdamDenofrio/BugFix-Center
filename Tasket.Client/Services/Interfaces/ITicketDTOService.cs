@@ -12,20 +12,19 @@ namespace Tasket.Client.Services.Interfaces
 
 
         #region Get One Item
-        Task<TicketDTO> AddTicketAsync(TicketDTO ticket, int companyId);
+        Task<TicketDTO?> GetTicketByIdAsync(int ticketId, int companyId);
         #endregion
-        //Task<TicketDTO?> GetTicketByIdAsync(int ticketId, int companyId);
 
 
 
         #region Update DB Item/Items
-
+        Task<TicketDTO> AddTicketAsync(TicketDTO ticket, int companyId);
+        Task UpdateTicketAsync(TicketDTO ticket, int companyId, string userId);
+        Task ArchiveTicketAsync(int ticketId, int companyId);
+        Task RestoreTicketAsync(int ticketId, int companyId);
         #endregion
 
 
-        //Task<Ticket> UpdateTicketAsync(Ticket ticket, int companyId, string userId);
 
-        //Task ArchiveTicketAsync(int ticketId, int companyId);
-        //Task RestoreTicketAsync(int ticketId, int companyId);
     }
 }

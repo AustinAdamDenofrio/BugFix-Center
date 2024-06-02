@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
+using Swashbuckle.AspNetCore.Filters;
 using Tasket.Client.Services;
 using Tasket.Client.Services.Interfaces;
 using Tasket.Components;
@@ -64,6 +68,34 @@ builder.Services.AddScoped<ITicketDTOService, TicketDTOService>();
 
 //AddScoped Intefaces
 
+#region Scalar
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(opts =>
+{
+    opts.SwaggerDoc("v1", new() { Title = "Tasket", Version = "v1" });
+
+    // Add this if you want to use tokens to test the API
+    opts.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = HeaderNames.Authorization,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+    });
+
+    //Add this if you want to use cookies to test the API
+    opts.AddSecurityDefinition("Cookie", new OpenApiSecurityScheme
+    {
+        Name = ".AspNetCore.Identity.Application",
+        In = ParameterLocation.Cookie,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Cookie",
+    });
+
+    opts.OperationFilter<SecurityRequirementsOperationFilter>();
+});
+#endregion
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -71,18 +103,23 @@ using (var scope = app.Services.CreateScope())
     await DataUtility.ManageDataAsync(scope.ServiceProvider);
 }
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseWebAssemblyDebugging();
-        app.UseMigrationsEndPoint();
-    }
-    else
-    {
-        app.UseExceptionHandler("/Error", createScopeForErrors: true);
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
-    }
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+    app.UseMigrationsEndPoint();
+
+    #region Swagger
+    app.UseSwagger(o => o.RouteTemplate = "/openapi/{documentName}.json");
+    app.MapScalarApiReference(); //  /scalar/v1
+    #endregion
+}
+else
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
 
