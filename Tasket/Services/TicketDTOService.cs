@@ -38,6 +38,7 @@ namespace Tasket.Services
 
             return dtos;
         }
+
         #endregion
 
 
@@ -135,12 +136,9 @@ namespace Tasket.Services
 
             TicketComment? commentToUpdate = await _repository.GetCommentByIdAsync(comment.Id, companyId);
 
-            if (commentToUpdate == null) 
+            if (commentToUpdate is not null) 
             { 
-                commentToUpdate!.Content = comment.Content;
-                commentToUpdate.Created = comment.Created;
-                commentToUpdate.TicketId = comment.TicketId;
-                commentToUpdate.UserId = comment.UserId;
+                commentToUpdate.Content = comment.Content;
 
                 await _repository.UpdateCommentAsync(commentToUpdate, userId);
             }

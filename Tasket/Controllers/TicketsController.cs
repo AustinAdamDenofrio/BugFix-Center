@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using NuGet.Protocol.Core.Types;
+using System.Net.Sockets;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
 using Tasket.Data;
@@ -143,6 +145,126 @@ namespace Tasket.Controllers
                 else
                 {
                     return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem();
+            }
+        }
+
+
+
+
+
+        [HttpPost("comments/{commentId:int}")]
+        public async Task<IActionResult> AddCommentAsync([FromRoute] int commentId, [FromBody] TicketCommentDTO comment)
+        {
+            try
+            {
+                if (comment.Id == commentId && _companyId is not null)
+                {
+                    await _ticketService.AddCommentAsync(comment, _companyId.Value);
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem();
+            }
+        }
+
+
+        [HttpDelete("comments/{commentId:int}")]
+        public async Task<IActionResult> DeleteCommentAsync([FromRoute] int commentId)
+        {
+            try
+            {
+                if (_companyId is not null)
+                {
+                    await _ticketService.DeleteCommentAsync(commentId, _companyId.Value);
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem();
+            }
+        }
+
+
+        [HttpPut("comments/{commentId:int}")]
+        public async Task<IActionResult> UpdateCommentAsync([FromRoute] int commentId, [FromBody] TicketCommentDTO comment)
+        {
+            try
+            {
+                if (_companyId is not null && commentId == comment.Id)
+                {
+                    await _ticketService.UpdateCommentAsync(comment, _companyId.Value, _userId);
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem();
+            }
+        }
+
+
+        [HttpGet("comments/comment/{commentId:int}")]
+        public async Task<ActionResult<TicketCommentDTO?>> GetCommentByIdAsync([FromRoute] int ticketCommentId)
+        {
+            try
+            {
+                TicketCommentDTO? comments = await _ticketService.GetCommentByIdAsync(ticketCommentId, _companyId!.Value);
+
+                if (comments == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return Ok(comments);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem();
+            }
+        }
+
+
+        [HttpGet("comments/{ticketId:int}")]
+        public async Task<ActionResult<IEnumerable<TicketCommentDTO>>> GetTicketCommentsAsync([FromRoute] int ticketId)
+        {
+            try
+            {
+                IEnumerable<TicketCommentDTO> comments = await _ticketService.GetTicketCommentsAsync(ticketId, _companyId!.Value);
+
+                if (comments == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return Ok(comments);
                 }
             }
             catch (Exception ex)

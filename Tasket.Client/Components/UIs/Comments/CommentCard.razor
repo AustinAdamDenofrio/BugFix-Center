@@ -1,5 +1,116 @@
-﻿<h3>CommentCard</h3>
+﻿@inject ITicketDTOService TicketService
 
+@if (Comment is not null)
+{
+    <div class="">
+        <table class="table align-middle w-100" style="min-width: 450px;">
+            <tbody>
+                <tr>
+                    <td class="border-0 py-1 px-0">
+                        <p>
+                            @Comment.Content
+                        </p>
+                    </td>
+                    <td class="border-0 py-1 pe-0 ps-3 ps-sm-4">
+                        <div class="fs-sm text-body-secondary mb-2">Created</div>
+                        <div class="fs-sm fw-medium text-dark">@Comment.Created.ToString("d")</div>
+                    </td>
+                    <td class="border-0 py-1 pe-0 ps-3 ps-sm-4">
+                        <div class="fs-sm text-body-secondary mb-2">By</div>
+                        <div class="fs-sm fw-medium text-dark">@Comment.User!.FullName</div>
+                    </td>
+                    <td class="border-0 text-end py-1 pe-0 ps-3 ps-sm-4">
+                        <div class="fs-sm text-body-secondary mb-2">Ticket #</div>
+                        <div class="fs-sm fw-medium text-dark">@Comment.Id</div>
+                    </td>
+                    <td class="border-0 text-end py-1 pe-0 ps-3 ps-sm-4">
+                        <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="collapse@(Comment.Id)">
+                <CommentForm Comment="Comment"
+                             OnSubmit="HandleSubmitComment" />            
+        </div>
+    </div>
+
+
+
+
+}
 @code {
+    #region Parameters
+    [Parameter]
+    public TicketCommentDTO? Comment { get; set; }
 
+    [Parameter]
+    public int TicketId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<TicketCommentDTO> HandleOnSubmit { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+    #endregion
+
+
+
+    #region State
+    private UserInfo? userInfo;
+    #endregion
+
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        if (Comment!.UserId is null)
+        {
+            Comment!.UserId = userInfo!.UserId;
+        }
+        if (Comment!.TicketId == 0)
+        {
+            Comment!.TicketId = TicketId;
+        }
+    }
+
+
+    private async Task HandleSubmitComment(TicketCommentDTO formComment)
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+            await HandleOnSubmit.InvokeAsync(formComment);
+            Comment = await TicketService.GetCommentByIdAsync(TicketId, userInfo!.CompanyId);
+
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+
+    private async Task HandleDelete()
+    {
+        try
+        {
+            await OnDelete.InvokeAsync(Comment!.Id);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+    #endregion
 }

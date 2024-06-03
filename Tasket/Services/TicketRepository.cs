@@ -41,7 +41,7 @@ namespace Tasket.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             IEnumerable<TicketComment> ticketComments = await context.TicketComments
-                                                    .Where(t => t.Id == ticketId && t.Ticket!.Project!.CompanyId == companyId)
+                                                    .Where(t => t.TicketId == ticketId && t.User!.CompanyId == companyId)
                                                     .OrderBy(t => t.Created)
                                                     .Include(c => c.User)
                                                     .Include(c => c.Ticket)

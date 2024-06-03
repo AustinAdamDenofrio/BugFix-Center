@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Json;
+using System.Net.Sockets;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
 
@@ -59,29 +60,33 @@ namespace Tasket.Client.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId)
+        public async Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId)
         {
-            throw new NotImplementedException();
+            IEnumerable<TicketCommentDTO> comments = await _httpClient.GetFromJsonAsync<IEnumerable<TicketCommentDTO>>($"api/tickets/comments/{ticketId}") ?? [];
+            return comments;
         }
 
-        public Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketId, int companyId)
+        public async Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketId, int companyId)
         {
-            throw new NotImplementedException();
+            TicketCommentDTO? ticket = await _httpClient.GetFromJsonAsync<TicketCommentDTO>($"api/tickets/comments/comment/{ticketId}");
+            return ticket;
         }
 
-        public Task AddCommentAsync(TicketCommentDTO comment, int companyId)
+        public async Task AddCommentAsync(TicketCommentDTO comment, int companyId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"api/tickets/comments/{comment.Id}", comment);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task DeleteCommentAsync(int commentId, int companyId)
+        public async Task DeleteCommentAsync(int commentId, int companyId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage? response = await _httpClient.DeleteAsync($"api/tickets/comments/{commentId}");
         }
 
-        public Task UpdateCommentAsync(TicketCommentDTO comment, int companyId, string userId)
+        public async Task UpdateCommentAsync(TicketCommentDTO comment, int companyId, string userId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/tickets/comments/{comment.Id}", comment);
+            response.EnsureSuccessStatusCode();
         }
         #endregion
 
