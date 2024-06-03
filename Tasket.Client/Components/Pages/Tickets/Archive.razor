@@ -1,5 +1,128 @@
 ﻿@page "/tickets/archive"
 
-@code {
+@rendermode InteractiveAuto
 
+@inject ITicketDTOService TicketService
+
+<PageTitle>Tickets | All Tickets</PageTitle>
+
+<div class="mb-3">
+    <div class="collapse" id="collapse">
+        <TicketForm Ticket="new TicketDTO(){SubmitterUserId = userInfo!.UserId}"
+                    OnArchive="HandleArchive"
+                    OnRestore="HandleRestore"
+                    OnSubmit="HandleSubmit" />
+    </div>
+</div>
+
+@if (tickets is not null)
+{
+
+    //If any are due today make them appear with the card and have a details button
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Created Date</th>
+                <th scope="col">Project</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Type</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (TicketDTO ticket in tickets)
+            {
+                if (ticket.Archived == true || ticket.ArchivedByProject == true)
+                {
+                    <tr @key="ticket.Id">
+                        <TicketTableItem Ticket="ticket" />
+                    </tr>                    
+                }
+            }
+        </tbody>
+    </table>
+}
+@code {
+    #region Parameters
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    #endregion
+
+
+
+    #region States
+    IEnumerable<TicketDTO> tickets = [];
+
+    UserInfo? userInfo;
+    #endregion
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+    }
+    private async Task HandleSubmit(TicketDTO ticketForm)
+    {
+        if (ticketForm is not null)
+        {
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                await TicketService.AddTicketAsync(ticketForm, userInfo!.CompanyId);
+
+                tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
+    private async Task HandleArchive(int formTicketId)
+    {
+        if (formTicketId != 0)
+        {
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                await TicketService.ArchiveTicketAsync(formTicketId, userInfo!.CompanyId);
+
+                tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
+    private async Task HandleRestore(int formTicketId)
+    {
+        if (formTicketId != 0)
+        {
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                await TicketService.RestoreTicketAsync(formTicketId, userInfo!.CompanyId);
+
+                tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+    #endregion
 }

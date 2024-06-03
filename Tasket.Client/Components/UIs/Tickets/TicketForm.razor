@@ -1,4 +1,5 @@
 ﻿@inject ITicketDTOService TicketService
+@inject IProjectDTOService ProjectService
 @inject NavigationManager Nav
 
 @if (Ticket is not null)
@@ -52,49 +53,56 @@
                             </InputSelect>
                             <ValidationMessage For="() => Ticket.Type" />
                         </div>
+                        @if (Ticket.Project is null)
+                        {
+                            <div class="mb-2 col-5">
+                                <label class="form-label">Project</label>
+                                <InputSelect class="form-control" @bind-Value="Ticket.ProjectId">
+                                    @foreach (ProjectDTO project in projects)
+                                    {
+                                        <option value="@project.Id">@project.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => Ticket.ProjectId" />
+                            </div>
+                        }
                         <div class="col-12 hstack justify-content-end gap-3">
-                            @if (Ticket.Archived == true || Ticket.ArchivedByProject == true)
+                            @if (Ticket.Id != 0)
                             {
-                                <div class="text-start me-auto">
-                                    <a class="btn btn-lg btn-outline-primary" type="button" @onclick="RestoreProjectAsync">
-                                        Restore
-                                    </a>
-                                </div>
-                                <div class="text-end">
-                                    <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
-                                        Cancel
-                                    </button>
-                                </div>
-                                <div class="text-end">
-                                    <button class="btn btn-lg btn-primary" type="submit">
-                                        Save
-                                    </button>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="text-start me-auto">
-                                    <a class="btn btn-lg btn-outline-primary" type="button" @onclick="ArchiveProjectAsync">
-                                        Archive
-                                    </a>
-                                </div>
-                                <div class="text-end">
-                                    <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
-                                        Cancel
-                                    </button>
-                                </div>
-                                <div class="text-end">
-                                    <button class="btn btn-lg btn-primary" type="submit">
-                                        Save
-                                    </button>
-                                </div>
+                                @if (Ticket.Archived == true || Ticket.ArchivedByProject == true)
+                                {
+                                    <div class="text-start me-auto">
+                                        <a class="btn btn-lg btn-outline-primary" type="button" @onclick="RestoreProjectAsync">
+                                            Restore
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-start me-auto">
+                                        <a class="btn btn-lg btn-outline-primary" type="button" @onclick="ArchiveProjectAsync">
+                                            Archive
+                                        </a>
+                                    </div>
+                                }
                             }
 
+                            <div class="text-end">
+                                <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
+                                    Cancel
+                                </button>
+                            </div>
+                            <div class="text-end">
+                                <button class="btn btn-lg btn-primary" type="submit">
+                                    Save
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <ValidationSummary />
     </EditForm>
 }
 
@@ -103,6 +111,8 @@
     [Parameter]
     public TicketDTO? Ticket { get; set; }
 
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
 
 
     [Parameter, EditorRequired]
@@ -119,12 +129,26 @@
 
     #region State
     private UserInfo? userInfo;
+    private IEnumerable<ProjectDTO> projects = [];
     #endregion
 
 
 
     #region Methods
+    protected override async Task OnParametersSetAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
+        if (Ticket!.Project is null)
+        {
+            projects = await ProjectService.GetAllProjectsAsync(userInfo!.CompanyId);
+        }
+
+        if (Ticket!.SubmitterUserId is null)
+        {
+            Ticket!.SubmitterUserId = userInfo!.UserId;
+        }
+    }
 
 
 
@@ -132,6 +156,10 @@
     {
         try
         {
+            if (Ticket!.SubmitterUserId is null)
+            {
+                Ticket!.SubmitterUserId = userInfo!.UserId;
+            }
             await OnSubmit.InvokeAsync(Ticket);
         }
         catch (Exception ex)

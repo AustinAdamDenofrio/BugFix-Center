@@ -17,10 +17,25 @@ namespace Tasket.Client.Services
 
 
         #region Get List of Items
+        public async Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
+        {
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects") ?? [];
+            return projects;
+        }
+        public async Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
+        {
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects/archive") ?? [];
+            return projects;
+        }
         #endregion
 
 
         #region Get Item
+        public async Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
+        {
+            ProjectDTO? project = await _httpClient.GetFromJsonAsync<ProjectDTO>($"api/projects/{projectId}");
+            return project;
+        }
         #endregion
 
 
@@ -34,44 +49,27 @@ namespace Tasket.Client.Services
             ProjectDTO? projectDTO = await response.Content.ReadFromJsonAsync<ProjectDTO>();
             return projectDTO!;
         }
-        #endregion
-
-
-
         public async Task ArchiveProjectAsync(int projectId, int companyId)
         {
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/archive/{projectId}", projectId);
             response.EnsureSuccessStatusCode();
         }
-
-        public async Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
-        {
-            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects") ?? [];
-            return projects;
-        }
-
-        public async Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
-        {
-            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects/archive") ?? [];
-            return projects;
-        }
-
-        public async Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
-        {
-            ProjectDTO? project = await _httpClient.GetFromJsonAsync<ProjectDTO>($"api/projects/{projectId}");
-            return project;
-        }
-
         public async Task RestoreProjectAsync(int projectId, int companyId)
         {
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/restore/{projectId}", projectId);
             response.EnsureSuccessStatusCode();
         }
-
         public async Task UpdateProjectAsync(ProjectDTO updatedProject, int companyId)
         {
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/update/{updatedProject.Id}", updatedProject);
             response.EnsureSuccessStatusCode();
         }
+        #endregion
+
+
+
+
+
+
     }
 }

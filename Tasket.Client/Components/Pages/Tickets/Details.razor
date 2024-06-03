@@ -1,22 +1,8 @@
 ﻿@page "/tickets/index/{ticketId:int}"
 
-@rendermode InteractiveServer
+@rendermode InteractiveAuto
 
 @inject ITicketDTOService TicketService
-
-
-@* @ticket.Title *@
-@* @ticket.Description *@
-@* @ticket.Created *@
-@* @ticket.Updated *@
-@* @ticket.Archived *@
-@* @ticket.ArchivedByProject *@
-@* @ticket.Priority *@
-@* @ticket.Type *@
-@* @ticket.Status *@
-@* @ticket.Project.Name Include link to project details*@
-@* @ticket.SubmitterUser.FullName *@
-@* @ticket.DeveloperUser.FullName *@
 
 
 @if (ticket is not null)

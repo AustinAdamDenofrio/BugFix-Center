@@ -45,14 +45,13 @@ namespace Tasket.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             Ticket? ticket = await context.Tickets
-                                    .Where(t => t.Project!.CompanyId == companyId)
                                     .Include(t => t.SubmitterUser)
                                     .Include(t => t.DeveloperUser)
                                     .Include(t => t.Attachments)
                                         .ThenInclude(a => a.Upload)
                                     .Include(t => t.Comments)
                                     .Include(t => t.Project)
-                                    .FirstOrDefaultAsync(t => t.Id == ticketId);
+                                    .FirstOrDefaultAsync(t => t.Id == ticketId && t.Project!.CompanyId == companyId);
             return ticket;
         }
 

@@ -13,7 +13,6 @@ namespace Tasket.Controllers
     public class ProjectsController(IProjectDTOService _projectService) : ControllerBase
     {
 
-        //Figure out Authorization
         private int? _companyId => User.FindFirst("CompanyId") != null ? int.Parse(User.FindFirst("CompanyId")!.Value) : null;
 
 

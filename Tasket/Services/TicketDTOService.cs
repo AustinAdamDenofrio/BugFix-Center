@@ -31,8 +31,6 @@ namespace Tasket.Services
 
 
 
-
-
         #region Get Item
         public async Task<TicketDTO?> GetTicketByIdAsync(int ticketId, int companyId)
         {
@@ -41,8 +39,6 @@ namespace Tasket.Services
             return ticket?.ToDTO();
         }
         #endregion
-
-
 
 
 
@@ -63,7 +59,7 @@ namespace Tasket.Services
             };
 
             newTicket = await _repository.AddTicketAsync(newTicket, companyId);
-            
+
 
             return (await _repository.AddTicketAsync(newTicket, companyId)).ToDTO();
         }
@@ -96,7 +92,6 @@ namespace Tasket.Services
         {
             await _repository.RestoreTicketAsync(ticketId, companyId);
         }
-
         #endregion
 
 

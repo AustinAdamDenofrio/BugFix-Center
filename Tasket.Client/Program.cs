@@ -16,5 +16,6 @@ builder.Services.AddScoped(ps => new HttpClient { BaseAddress = new Uri(builder.
 
 // InterFacee
 builder.Services.AddScoped<IProjectDTOService, WASMProjectDTOService>();
+builder.Services.AddScoped<ITicketDTOService, WASMTicketDTOService>();
 
 await builder.Build().RunAsync();
