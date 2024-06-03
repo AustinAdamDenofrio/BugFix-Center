@@ -1,110 +1,20 @@
 ﻿@implements IDisposable
 
+@inject IProjectDTOService ProjectService
 @inject NavigationManager NavigationManager
-
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Tasket</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/tickets">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Tickets
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="projects">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Projects
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="projects/archived">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Archived Projects
-            </NavLink>
-        </div>
-
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="tasker">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tasker
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- Navbar. Remove 'fixed-top' class to make the navigation bar scrollable with the page -->
-<header class="navbar navbar-expand-lg fixed-top bg-light">
+<header class="navbar navbar-expand-lg fixed-top bg-primary">
     <div class="container">
 
         <!-- Navbar brand (Logo) -->
 
         <a class="navbar-brand pe-sm-3" href="/">
-            <span class="text-primary flex-shrink-0 me-2">
+@*             <span class="text-primary flex-shrink-0 me-2">
                 <img width="40" height="32" src="Images/Logo_Dark_NoText.svg" />
-            </span>
-            Current Blogs
+            </span> *@
+            Tasket
         </a>
 
         <!-- Mobile menu toggler (Hamburger) -->
@@ -124,33 +34,37 @@
 
                 <li class="nav-item dropdown">
                     <NavLink class="nav-link dropdown-toggle" href="categories" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        Project
+                        Categories
                     </NavLink>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/">All Projects</a></li>
-                        <li><a class="dropdown-item" href="/category/@category.Id">@category.Name</a></li>
+                        <li><a class="dropdown-item" href="projects">All Projects</a></li>
+                        <li><a class="dropdown-item" href="projects/archived">Archived</a></li>
+                        @foreach (ProjectDTO project in projects)
+                        {
+                            <li><a class="dropdown-item" href="/projects/@project.Id">@project.Name</a></li>
+                        }
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown ">
                     <NavLink class="nav-link dropdown-toggle" href="categories" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                         Tickets
                     </NavLink>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/">All Catagories</a></li>
-                        <li><a class="dropdown-item" href="/category/@category.Id">@category.Name</a></li>
+                        <li><a class="dropdown-item" href="tickets">All tickets</a></li>
+                        <li><a class="dropdown-item" href="/tickets">Due this sprint</a></li>
+                        <li><a class="dropdown-item" href="/tickets/archived">Archived</a></li>
                     </ul>
                 </li>
 
                 @*Author Menu Only*@
-                <AuthorizeView Roles="Author">
+                <AuthorizeView>
                     <li class="nav-item dropdown ms-lg-auto">
                         <NavLink class="nav-link dropdown-toggle" href="Author" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                            Author Menu
+                            Admin Menu
                         </NavLink>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/author/categories">Manage Categories</a></li>
-                            <li><a class="dropdown-item" href="/author/blogposts">Manage Posts</a></li>
-                            <li><a class="dropdown-item" href="/blogposts/create">New Post</a></li>
+                            <li><a class="dropdown-item" href="/author/categories">Manage Projects</a></li>
+                            <li><a class="dropdown-item" href="/author/blogposts">Manage Tickets</a></li>
                         </ul>
                     </li>
                 </AuthorizeView>
@@ -192,16 +106,22 @@
                     </NotAuthorized>
                     <!-- ToDo: Push account to the right side -->
                 </AuthorizeView>
-
-
-
             </ul>
-
         </nav>
     </div>
 </header>
 @code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+
+
+
+    UserInfo? userInfo;
+
     private string? currentUrl;
+
+    private IEnumerable<ProjectDTO> projects = [];
 
     protected override void OnInitialized()
     {
@@ -218,6 +138,20 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        try
+        {
+            projects = await ProjectService.GetAllProjectsAsync(userInfo!.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 }
 

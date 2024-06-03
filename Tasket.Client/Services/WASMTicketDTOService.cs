@@ -58,6 +58,31 @@ namespace Tasket.Client.Services
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/tickets/restore/{ticketId}", ticketId);
             response.EnsureSuccessStatusCode();
         }
+
+        public Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketId, int companyId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddCommentAsync(TicketCommentDTO comment, int companyId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteCommentAsync(TicketCommentDTO comment, int companyId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateCommentAsync(TicketCommentDTO comment, int userId)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
 

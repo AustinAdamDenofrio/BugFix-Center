@@ -24,6 +24,7 @@ namespace Tasket.Services
 
             IEnumerable<Project> projects = await context.Projects
                                                 .Where(p => p.CompanyId == companyId)
+                                                .Include(p => p.Tickets)
                                                 .ToListAsync();
             return projects;
         }

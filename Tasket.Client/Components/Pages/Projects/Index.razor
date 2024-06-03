@@ -9,7 +9,7 @@
 <PageTitle>Projects</PageTitle>
 <div class="vstack justify-content-center align-items-start mb-5">
     <h3>All Projects</h3>
-    <div>
+    <div >
         <a class="btn btn-outline-primary fw-bold" href="/projects/create">Add Project</a>
     </div>
 </div>
@@ -21,7 +21,7 @@
     @if (projects.Any(p => p.Priority == ProjectPriority.Urgent) == true)
     {
         <h3 class="lead">Urgent Projects:</h3>
-        <div class="row row-cols-1 row-cols-sm-5 g-2 justify-content-center">
+        <div class="row row-cols-1 row-cols-sm-3 g-2 justify-content-center">
             @foreach (ProjectDTO project in projects)
             {
                 if (project.Priority == ProjectPriority.Urgent)

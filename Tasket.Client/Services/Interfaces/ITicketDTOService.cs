@@ -26,5 +26,24 @@ namespace Tasket.Client.Services.Interfaces
 
 
 
+
+
+        #region Comments
+        #region Get List Items
+        Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId);
+        #endregion
+
+
+        #region Get One Item
+        Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketId, int companyId);
+        #endregion
+
+
+        #region Update DB Item (Returns Nothing)
+        Task AddCommentAsync(TicketCommentDTO comment, int companyId);
+        Task DeleteCommentAsync(int commentId, int companyId);
+        Task UpdateCommentAsync(TicketCommentDTO comment, string userId);
+        #endregion
+        #endregion
     }
 }

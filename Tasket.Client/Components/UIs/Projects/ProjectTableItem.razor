@@ -5,8 +5,8 @@
 {
     <td>@Project.Name</td>
     <td>@((MarkupString)Project.Description!)</td>
-    <td>@Project.StartDate.ToString("g")</td>
-    <td>@Project.EndDate.ToString("g")</td>
+    <td>@Project.StartDate.ToString("d")</td>
+    <td>@Project.EndDate.ToString("d")</td>
     <td>@Project.Priority</td>
     <td>
         <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/projects/@Project.Id">

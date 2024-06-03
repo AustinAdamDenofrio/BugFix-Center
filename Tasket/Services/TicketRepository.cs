@@ -30,9 +30,23 @@ namespace Tasket.Services
                                                     .ThenInclude(a => a.Upload)
                                                 .Include(t => t.SubmitterUser)
                                                 .Include(t => t.DeveloperUser)
-                                                .Include(t => t.Project)    
+                                                .Include(t => t.Project)
                                                 .ToListAsync();
             return tickets;
+        }
+
+
+        public async Task<IEnumerable<TicketComment>> GetTicketCommentsAsync(int ticketId, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            IEnumerable<TicketComment> ticketComments = await context.TicketComments
+                                                    .Where(t => t.Id == ticketId && t.Ticket!.Project!.CompanyId == companyId)
+                                                    .OrderBy(t => t.Created)
+                                                    .Include(c => c.User)
+                                                    .Include(c => c.Ticket)
+                                                    .ToListAsync();
+            return ticketComments;
         }
         #endregion
 
@@ -55,6 +69,16 @@ namespace Tasket.Services
             return ticket;
         }
 
+
+        public async Task<TicketComment?> GetCommentByIdAsync(int ticketCommentId, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            TicketComment? ticketComment = await context.TicketComments
+                                            .Include(t => t.User)
+                                            .FirstOrDefaultAsync(t => t.Id == ticketCommentId && t.Ticket!.Project!.CompanyId == companyId);
+            return ticketComment;
+        }
         #endregion
 
 
@@ -71,8 +95,6 @@ namespace Tasket.Services
 
             return ticket;
         }
-
-        //Are we supposed to have a return value? is that a requirements typo?
         public async Task UpdateTicketAsync(Ticket ticket, int companyId, string userId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
@@ -86,8 +108,6 @@ namespace Tasket.Services
                 await context.SaveChangesAsync();
             }
         }
-
-
         public async Task ArchiveTicketAsync(int ticketId, int companyId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
@@ -103,7 +123,6 @@ namespace Tasket.Services
                 await context.SaveChangesAsync();
             }
         }
-
         public async Task RestoreTicketAsync(int ticketId, int companyId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
@@ -116,6 +135,43 @@ namespace Tasket.Services
                 ticket.Archived = false;
 
                 context.Tickets.Update(ticket);
+                await context.SaveChangesAsync();
+            }
+        }
+
+
+        public async Task AddCommentAsync(TicketComment comment, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            comment.Created = DateTime.Now;
+
+            context.TicketComments.Add(comment);
+            await context.SaveChangesAsync();
+        }
+        public async Task DeleteCommentAsync(int commentId, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            TicketComment? comment = await context.TicketComments
+                                    .FirstOrDefaultAsync(t => t.Id == commentId && t.Ticket!.Project!.CompanyId == companyId);
+
+            if (comment is not null)
+            {
+                context.TicketComments.Remove(comment);
+                await context.SaveChangesAsync();
+            }
+        }
+        public async Task UpdateCommentAsync(TicketComment comment, string userId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            bool shouldUpdate = await context.TicketComments
+                                    .AnyAsync(t => t.Id == comment.Id && t.UserId == userId);
+
+            if (shouldUpdate)
+            {
+                context.TicketComments.Update(comment);
                 await context.SaveChangesAsync();
             }
         }

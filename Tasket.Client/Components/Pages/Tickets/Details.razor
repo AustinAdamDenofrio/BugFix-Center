@@ -1,72 +1,254 @@
-﻿@page "/tickets/index/{ticketId:int}"
+﻿@page "/tickets/{ticketId:int}"
 
 @rendermode InteractiveAuto
 
 @inject ITicketDTOService TicketService
+@inject IProjectDTOService ProjectService
 
 
 @if (ticket is not null)
 {
-    <div class="hstack">
-        <div class="col-6">
+    <div class="row">
+        <div class="col-lg-9 pt-4 pb-2 pb-sm-4 mt-5">
+            <h1 class="h2 mb-4">Overview</h1>
 
-            <div class="card" style="width: 18rem;">
-                <div class="card-header">
-                    @ticket.Title
-                </div>
-                <div class="card-body">
-                    <p class="card-text">@ticket.Description</p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        @ticket.Project?.Name
-                        <p>Ticket Maker: @ticket.SubmitterUser!.FullName</p>
-                        <p>Assigned to: @ticket.DeveloperUser?.FullName</p>
-                    </li>
-                    <li class="list-group-item">
-                        <p>
-                            Created Date: @ticket.Created.ToString("d")
-                        </p>
-                    </li>
-                    @if (ticket.Updated is not null)
-                    {
-                        <li class="list-group-item">
-                            <p>
-                                Updated Date: @ticket.Updated.Value.ToString("d")
-                            </p>
-                        </li>
-                    }
-
-                    @if (ticket.Archived == true || ticket.ArchivedByProject == true)
-                    {
-                        <li class="list-group-item">
-                            <h5><span class="badge text-bg-secondary">Archived</span></h5>
-                        </li>
-                    }
-
-
-                    <li class="list-group-item">
-                        <h5><span class="badge text-bg-secondary">@ticket.Priority</span></h5>
-                        <h5><span class="badge text-bg-secondary">@ticket.Type</span></h5>
-                        <h5><span class="badge text-bg-secondary">@ticket.Status</span></h5>
-                    </li>
-                    <li class="list-group-item">
-                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
-                            Edit
-                        </button>
-                    </li>
-                    <li class="list-group-item">
-
-                    </li>
-                </ul>
+            <!-- Ticket info -->
+            <div class="collapse " id="collapse">
+                <TicketForm Ticket="ticket"
+                            OnSubmit="HandleSubmit"
+                            OnRestore="HandleRestore"
+                            OnArchive="HandleArchive" />
             </div>
+            <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+                        <i class="ai-user text-primary lead pe-1 me-2"></i>
+                        <h2 class="h4 mb-0">
+                            @ticket.Title
+                        </h2>
+                        <button class="btn btn-sm btn-secondary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
+                            Edit info
+                        </button>
+                    </div>
+                    <div class="d-md-flex align-items-center">
+                        <div class="d-sm-flex align-items-center">
 
+                            <div class="pt-3 pt-sm-0 ps-sm-3">
+                                <h3 class="h5 mb-2">
+                                    @ticket.Project?.Name
+                                </h3>
+                                <div class="text-body-secondary fw-medium d-flex flex-wrap flex-sm-nowrap align-iteems-center">
+                                    <div class="vstack align-items-start me-3">
+                                        <p>Ticket Maker: @ticket.SubmitterUser!.FullName</p>
+                                        <p>Assigned to: @ticket.DeveloperUser?.FullName</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-100 pt-3 pt-md-0 ms-md-auto" style="max-width: 212px;">
+                            <div class="d-flex justify-content-between fs-sm pb-1 mb-2">
+                                Profile completion
+                                <strong class="ms-2">62%</strong>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar" role="progressbar" style="width: 62%" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row py-4 mb-2 mb-sm-3">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <table class="table mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td class="border-0 text-body-secondary py-1 px-0">Priority</td>
+                                        <td class="border-0 text-dark fw-medium py-1 ps-3 badge text-bg-secondary">@ticket.Priority</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-0 text-body-secondary py-1 px-0">Type</td>
+                                        <td class="border-0 text-dark fw-medium py-1 ps-3 badge text-bg-secondary">@ticket.Type</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border-0 text-body-secondary py-1 px-0">Status</td>
+                                        <td class="border-0 text-dark fw-medium py-1 ps-3 badge text-bg-secondary">@ticket.Status</td>
+                                    </tr>
+                                    @if (ticket.Archived == true)
+                                    {
+                                        <tr>
+                                            <td class="border-0 text-body-secondary py-1 px-0">Archive Status:</td>
+                                            <td class="border-0 text-dark fw-medium py-1 ps-3 badge text-bg-secondary ms-auto">
+                                                Archived
+                                                @if (ticket.ArchivedByProject == true)
+                                                {
+                                                    <span class="badge text-bg-secondary">Project Archived</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td class="border-0 text-body-secondary py-1 px-0">Created:</td>
+                                        <td class="border-0 text-dark fw-medium py-1 ps-3">@ticket.Created.ToString("d")</td>
+                                    </tr>
+
+                                    @if (ticket.Updated is not null)
+                                    {
+                                        <tr>
+                                            <td class="border-0 text-body-secondary py-1 px-0">Updated Date:</td>
+                                            <td class="border-0 text-dark fw-medium py-1 ps-3 badge text-bg-secondary">@ticket.Updated.Value.ToString("d")</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6 d-md-flex justify-content-end">
+                            <div class="w-100 border rounded-3 p-4" style="max-width: 212px;">
+                                <h4 class="h5 lh-base mb-0">123 bonuses</h4>
+                                <p class="fs-sm text-body-secondary mb-0">1 bonus = $1</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info d-flex mb-0 vstack" role="alert">
+                        <h3>Description</h3>
+                        <p class="ps-2 text-dark">
+                            @ticket.Description
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            @foreach (TicketCommentDTO comment in ticket.Comments)
+            {
+
+                <a href="#">@comment.Content</a>
+            }
+            <!-- Comment Section -->
+            <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+                        <i class="ai-cart text-primary lead pe-1 me-2"></i>
+                        <h2 class="h4 mb-0">
+                            Comments
+                        </h2>
+                        <a class="btn btn-sm btn-secondary ms-auto" href="account-orders.html">View all</a>
+                    </div>
+
+                    <!-- Comment Section Header -->
+                    <div class="accordion accordion-alt accordion-orders" id="orders">
+
+                        <!-- Comment -->
+                        <div class="accordion-item border-top mb-0">
+                            <div class="accordion-header">
+                                <a class="accordion-button d-flex fs-4 fw-normal text-decoration-none py-3 collapsed" href="#orderOne" data-bs-toggle="collapse" aria-expanded="false" aria-controls="orderOne">
+                                    <div class="d-flex justify-content-between w-100" style="max-width: 440px;">
+                                        <div class="me-3 me-sm-4">
+                                            <div class="fs-sm text-body-secondary">#78A6431D409</div>
+                                            <span class="badge bg-info bg-opacity-10 text-info fs-xs">In progress</span>
+                                        </div>
+                                        <div class="me-3 me-sm-4">
+                                            <div class="d-none d-sm-block fs-sm text-body-secondary mb-2">Order date</div>
+                                            <div class="d-sm-none fs-sm text-body-secondary mb-2">Date</div>
+                                            <div class="fs-sm fw-medium text-dark">Jan 27, 2023</div>
+                                        </div>
+                                        <div class="me-3 me-sm-4">
+                                            <div class="fs-sm text-body-secondary mb-2">Total</div>
+                                            <div class="fs-sm fw-medium text-dark">$16.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-button-img d-none d-sm-flex ms-auto">
+                                        <div class="mx-1">
+                                            <img src="assets/img/account/orders/01.png" width="48" alt="Product">
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+
+
+
+                                <div class="accordion-collapse collapse" id="orderOne" data-bs-parent="#orders">
+                                <div class="accordion-body">
+                                    <div class="table-responsive pt-1">
+                                        <table class="table align-middle w-100" style="min-width: 450px;">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border-0 py-1 px-0">
+                                                        <div class="d-flex align-items-center">
+                                                            <a class="d-inline-block flex-shrink-0 bg-secondary rounded-1 p-md-2 p-lg-3" href="shop-single.html">
+                                                                <img src="assets/img/shop/cart/01.png" width="110" alt="Product">
+                                                            </a>
+                                                            <div class="ps-3 ps-sm-4">
+                                                                <h4 class="h6 mb-2">
+                                                                    <a href="shop-single.html"></a>
+                                                                </h4>
+                                                                <div class="text-body-secondary fs-sm me-3">Color: <span class="text-dark fw-medium">Gray night</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="border-0 py-1 pe-0 ps-3 ps-sm-4">
+                                                        <div class="fs-sm text-body-secondary mb-2">Quantity</div>
+                                                        <div class="fs-sm fw-medium text-dark">1</div>
+                                                    </td>
+                                                    <td class="border-0 py-1 pe-0 ps-3 ps-sm-4">
+                                                        <div class="fs-sm text-body-secondary mb-2">Price</div>
+                                                        <div class="fs-sm fw-medium text-dark">$16</div>
+                                                    </td>
+                                                    <td class="border-0 text-end py-1 pe-0 ps-3 ps-sm-4">
+                                                        <div class="fs-sm text-body-secondary mb-2">Total</div>
+                                                        <div class="fs-sm fw-medium text-dark">$16</div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="bg-secondary rounded-1 p-4 my-2">
+                                        <div class="row">
+                                            <div class="col-sm-5 col-md-3 col-lg-4 mb-3 mb-md-0">
+                                                <div class="fs-sm fw-medium text-dark mb-1">Payment:</div>
+                                                <div class="fs-sm">Upon the delivery</div>
+                                                <a class="btn btn-link py-1 px-0 mt-2" href="#">
+                                                    <i class="ai-time me-2 ms-n1"></i>
+                                                    Order history
+                                                </a>
+                                            </div>
+                                            <div class="col-sm-7 col-md-5 mb-4 mb-md-0">
+                                                <div class="fs-sm fw-medium text-dark mb-1">Delivery address:</div>
+                                                <div class="fs-sm">401 Magnetic Drive Unit 2,<br>Toronto, Ontario, M3J 3H9, Canada</div>
+                                            </div>
+                                            <div class="col-md-4 col-lg-3 text-md-end">
+                                                <button class="btn btn-sm btn-outline-primary w-100 w-md-auto" type="button">
+                                                    <i class="ai-star me-2 ms-n1"></i>
+                                                    Leave a review
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                                
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-        <div class="col-6 collapse" id="collapse">
-            <TicketForm Ticket="ticket" 
-                        OnSubmit="HandleSubmit"
-                        OnRestore="HandleRestore"
-                        OnArchive="HandleArchive"/>
+        <div class="col-lg-3 mt-5">
+            <h4 class="mt-5">Projects</h4>
+            @foreach (ProjectDTO project in projects)
+            {
+                <div>
+                    <a href="/projects/@project.Id" class="text-dark text-decoration-none">@project.Name</a>
+                    @foreach (TicketDTO ticket in project.Tickets)
+                    {
+                        <div class="mb-1">
+                            <a href="/tickets/index/@ticket.Id" class="small text-primary ps-3 text-decoration-none">@ticket.Type</a>
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 }
@@ -83,9 +265,11 @@
     #endregion
 
     #region States
-    private UserInfo? userInfo;
+    UserInfo? userInfo;
 
 
+    IEnumerable<TicketDTO> tickets = [];
+    IEnumerable<ProjectDTO> projects = [];  
     private TicketDTO? ticket;
     #endregion
 
@@ -93,6 +277,13 @@
 
 
     #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -100,6 +291,7 @@
             userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
             ticket = await TicketService.GetTicketByIdAsync(TicketId, userInfo!.CompanyId);
+            projects = await ProjectService.GetAllProjectsAsync(userInfo!.CompanyId);
         }
         catch (Exception ex)
         {

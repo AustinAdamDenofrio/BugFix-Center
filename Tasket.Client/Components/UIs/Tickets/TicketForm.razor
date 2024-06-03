@@ -1,4 +1,6 @@
-﻿@inject ITicketDTOService TicketService
+﻿@rendermode InteractiveAuto
+
+@inject ITicketDTOService TicketService
 @inject IProjectDTOService ProjectService
 @inject NavigationManager Nav
 
@@ -6,98 +8,94 @@
 {
     <EditForm Model="Ticket" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator />
-        <div class="border bg-light shadow-lg border-2 py-2 col-6">
-            <div class="row p-2 g-3 justify-content-center">
-                <div class="col-12 col-md-10 my-5">
-                    <div class="row g-2" action="#">
-                        <div class="col-12 col-md-6">
-                            <label for="Title" class="form-label">
-                                Title
-                            </label>
-                            <InputText @bind-Value="Ticket.Title"
-                                       id="Title"
-                                       class="form-control"
-                                       placeholder="Name"
-                                       aria-label="Name" />
-                            <ValidationMessage For="() => Ticket.Title" />
-                        </div>
-                        <div class="col-12">
-                            <label for="Description" class="form-label">
-                                Description
-                            </label>
-                            <InputTextArea @bind-Value="Ticket.Description"
-                                           id="Description"
-                                           row="4"
-                                           class="form-control"
-                                           placeholder="Description"
-                                           aria-label="Description" />
-                            <ValidationMessage For="() => Ticket.Description" />
-                        </div>
-                        <div class="mb-2 col-3">
-                            <label class="form-label">Priority</label>
-                            <InputSelect class="form-control" @bind-Value="Ticket.Priority">
-                                @foreach (TicketPriority priority in Enum.GetValues(typeof(TicketPriority)))
-                                {
-                                    <option value="@priority">@priority.GetDisplayName()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="() => Ticket.Priority" />
-                        </div>
-                        <div class="mb-2 col-5">
-                            <label class="form-label">Type</label>
-                            <InputSelect class="form-control" @bind-Value="Ticket.Type">
-                                @foreach (TicketType type in Enum.GetValues(typeof(TicketType)))
-                                {
-                                    <option value="@type">@type.GetDisplayName()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="() => Ticket.Type" />
-                        </div>
-                        @if (Ticket.Project is null)
+        <div class="col-12 p-4 my-5 bg-warning-subtle">
+            <div class="row g-2" action="#">
+                <div class="col-12">
+                    <label for="Title" class="form-label">
+                        Title
+                    </label>
+                    <InputText @bind-Value="Ticket.Title"
+                               id="Title"
+                               class="form-control"
+                               placeholder="Name"
+                               aria-label="Name" />
+                    <ValidationMessage For="() => Ticket.Title" />
+                </div>
+                <div class="col-12">
+                    <label for="Description" class="form-label">
+                        Description
+                    </label>
+                    <InputTextArea @bind-Value="Ticket.Description"
+                                   id="Description"
+                                   row="4"
+                                   class="form-control"
+                                   placeholder="Description"
+                                   aria-label="Description" />
+                    <ValidationMessage For="() => Ticket.Description" />
+                </div>
+                <div class="mb-2 col-3">
+                    <label class="form-label">Priority</label>
+                    <InputSelect class="form-control" @bind-Value="Ticket.Priority">
+                        @foreach (TicketPriority priority in Enum.GetValues(typeof(TicketPriority)))
                         {
-                            <div class="mb-2 col-5">
-                                <label class="form-label">Project</label>
-                                <InputSelect class="form-control" @bind-Value="Ticket.ProjectId">
-                                    @foreach (ProjectDTO project in projects)
-                                    {
-                                        <option value="@project.Id">@project.Name</option>
-                                    }
-                                </InputSelect>
-                                <ValidationMessage For="() => Ticket.ProjectId" />
+                            <option value="@priority">@priority.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Ticket.Priority" />
+                </div>
+                <div class="mb-2 col-5">
+                    <label class="form-label">Type</label>
+                    <InputSelect class="form-control" @bind-Value="Ticket.Type">
+                        @foreach (TicketType type in Enum.GetValues(typeof(TicketType)))
+                        {
+                            <option value="@type">@type.GetDisplayName()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Ticket.Type" />
+                </div>
+                @if (Ticket.Project is null)
+                {
+                    <div class="mb-2 col-5">
+                        <label class="form-label">Project</label>
+                        <InputSelect class="form-control" @bind-Value="Ticket.ProjectId">
+                            @foreach (ProjectDTO project in projects)
+                            {
+                                <option value="@project.Id">@project.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => Ticket.ProjectId" />
+                    </div>
+                }
+                <div class="col-12 hstack justify-content-end gap-3">
+                    @if (Ticket.Id != 0)
+                    {
+                        @if (Ticket.Archived == true || Ticket.ArchivedByProject == true)
+                        {
+                            <div class="text-start me-auto">
+                                <a class="btn btn-lg btn-outline-primary" type="button" @onclick="RestoreProjectAsync">
+                                    Restore
+                                </a>
                             </div>
                         }
-                        <div class="col-12 hstack justify-content-end gap-3">
-                            @if (Ticket.Id != 0)
-                            {
-                                @if (Ticket.Archived == true || Ticket.ArchivedByProject == true)
-                                {
-                                    <div class="text-start me-auto">
-                                        <a class="btn btn-lg btn-outline-primary" type="button" @onclick="RestoreProjectAsync">
-                                            Restore
-                                        </a>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="text-start me-auto">
-                                        <a class="btn btn-lg btn-outline-primary" type="button" @onclick="ArchiveProjectAsync">
-                                            Archive
-                                        </a>
-                                    </div>
-                                }
-                            }
+                        else
+                        {
+                            <div class="text-start me-auto">
+                                <a class="btn btn-lg btn-outline-primary" type="button" @onclick="ArchiveProjectAsync">
+                                    Archive
+                                </a>
+                            </div>
+                        }
+                    }
 
-                            <div class="text-end">
-                                <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
-                                    Cancel
-                                </button>
-                            </div>
-                            <div class="text-end">
-                                <button class="btn btn-lg btn-primary" type="submit">
-                                    Save
-                                </button>
-                            </div>
-                        </div>
+                    <div class="text-end">
+                        <button class="btn btn-lg btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
+                            Cancel
+                        </button>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-lg btn-primary" type="submit">
+                            Save
+                        </button>
                     </div>
                 </div>
             </div>

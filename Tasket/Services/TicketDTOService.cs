@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
 using NuGet.Protocol.Core.Types;
+using System.Net.Sockets;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
 using Tasket.Helper;
@@ -27,6 +28,16 @@ namespace Tasket.Services
 
             return dtos;
         }
+
+
+        public async Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId)
+        {
+            IEnumerable<TicketComment> ticketcomments = await _repository.GetTicketCommentsAsync(ticketId, companyId);
+
+            IEnumerable<TicketCommentDTO> dtos = ticketcomments.Select(t => t.ToDTO());
+
+            return dtos;
+        }
         #endregion
 
 
@@ -37,6 +48,14 @@ namespace Tasket.Services
             Ticket? ticket = await _repository.GetTicketByIdAsync(ticketId, companyId);
 
             return ticket?.ToDTO();
+        }
+        
+        
+        public async Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketCommentId, int companyId)
+        {
+            TicketComment? ticketComment = await _repository.GetCommentByIdAsync(ticketCommentId, companyId);
+
+            return ticketComment?.ToDTO();
         }
         #endregion
 
@@ -91,6 +110,42 @@ namespace Tasket.Services
         public async Task RestoreTicketAsync(int ticketId, int companyId)
         {
             await _repository.RestoreTicketAsync(ticketId, companyId);
+        }
+
+
+
+        public async Task AddCommentAsync(TicketCommentDTO comment, int companyId)
+        {
+            TicketComment newComment = new TicketComment()
+            {
+                Content = comment.Content,
+                Created = DateTimeOffset.Now,
+                TicketId = comment.TicketId,
+                UserId = comment.UserId,
+            };
+
+            await _repository.AddCommentAsync(newComment, companyId);
+        }
+
+        public async Task DeleteCommentAsync(int commentId, int companyId)
+        {
+            await _repository.DeleteCommentAsync(commentId, companyId);
+        }
+
+        public async Task UpdateCommentAsync(TicketCommentDTO comment, string userId)
+        {
+
+            TicketComment? commentToUpdate = await _repository.GetCommentByIdAsync(comment.Id, userId);
+
+            if (commentToUpdate == null) 
+            { 
+                commentToUpdate!.Content = comment.Content;
+                commentToUpdate.Created = comment.Created;
+                commentToUpdate.TicketId = comment.TicketId;
+                commentToUpdate.UserId = comment.UserId;
+
+                await _repository.UpdateCommentAsync(commentToUpdate, userId);
+            }
         }
         #endregion
 

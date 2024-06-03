@@ -30,4 +30,8 @@
     <Folder Include="Components\UIs\Projects\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\js\.DS_Store" />
+  </ItemGroup>
+
 </Project>

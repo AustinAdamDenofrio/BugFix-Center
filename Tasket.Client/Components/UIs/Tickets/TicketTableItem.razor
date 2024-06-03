@@ -7,13 +7,13 @@
 
     <td>@Ticket.Title</td>
     <td>@Ticket.Description</td>
-    <td>@Ticket.Created.ToString("g")</td>
+    <td>@Ticket.Created.ToString("d")</td>
     <td>@Ticket.Project</td>
     <td>@Ticket.Priority</td>
     <td>@Ticket.Type</td>
     <td>@Ticket.Status</td>
     <td>
-        <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/tickets/index/@Ticket.Id">
+        <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/tickets/@Ticket.Id">
             details
         </a>
     </td>
