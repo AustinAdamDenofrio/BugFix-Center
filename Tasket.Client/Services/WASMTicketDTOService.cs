@@ -74,12 +74,12 @@ namespace Tasket.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task DeleteCommentAsync(TicketCommentDTO comment, int companyId)
+        public Task DeleteCommentAsync(int commentId, int companyId)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateCommentAsync(TicketCommentDTO comment, int userId)
+        public Task UpdateCommentAsync(TicketCommentDTO comment, int companyId, string userId)
         {
             throw new NotImplementedException();
         }

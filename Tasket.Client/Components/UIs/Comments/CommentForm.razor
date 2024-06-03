@@ -1,5 +1,88 @@
-﻿<h3>CommentForm</h3>
+﻿@if (Comment is not null)
+{
+    <div class="d-flex justify-content-between w-100" style="max-width: 440px;">
+        <EditForm Model="Comment" OnValidSubmit="HandleSubmitComment">
+            <DataAnnotationsValidator />
+            <div class="col-12 p-4 my-5 bg-warning-subtle">
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label for="Content" class="form-label">
+                            Comment
+                        </label>
+                        <InputTextArea @bind-Value="Comment.Content"
+                                       id="Content"
+                                       row="3"
+                                       class="form-control"
+                                       placeholder="Content"
+                                       aria-label="Content" />
+                        <ValidationMessage For="() => Comment.Content" />
+                    </div>
+                    <div class="col-12 hstack justify-content-end gap-3">
+                        <div class="text-end">
+                            <button class="btn btn-lg btn-primary" type="submit">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ValidationSummary />
+        </EditForm>
+    </div>
+}
 
 @code {
+    #region Parameters
+    [Parameter]
+    public TicketCommentDTO? Comment { get; set; }
 
+
+    [Parameter]
+    public int TicketId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+
+
+
+    [Parameter, EditorRequired]
+    public EventCallback<TicketCommentDTO> OnSubmit { get; set; }
+    #endregion
+
+
+
+    #region State
+    private UserInfo? userInfo;
+    #endregion
+
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+
+        Comment!.UserId = userInfo!.UserId;
+        Comment!.TicketId = TicketId;
+    }
+
+
+    private async Task HandleSubmitComment()
+    {
+        try
+        {
+
+            Comment!.UserId = userInfo!.UserId;
+            Comment!.TicketId = TicketId;
+            await OnSubmit.InvokeAsync(Comment);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+    #endregion
 }

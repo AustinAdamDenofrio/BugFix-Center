@@ -126,16 +126,14 @@ namespace Tasket.Services
 
             await _repository.AddCommentAsync(newComment, companyId);
         }
-
         public async Task DeleteCommentAsync(int commentId, int companyId)
         {
             await _repository.DeleteCommentAsync(commentId, companyId);
         }
-
-        public async Task UpdateCommentAsync(TicketCommentDTO comment, string userId)
+        public async Task UpdateCommentAsync(TicketCommentDTO comment, int companyId, string userId)
         {
 
-            TicketComment? commentToUpdate = await _repository.GetCommentByIdAsync(comment.Id, userId);
+            TicketComment? commentToUpdate = await _repository.GetCommentByIdAsync(comment.Id, companyId);
 
             if (commentToUpdate == null) 
             { 

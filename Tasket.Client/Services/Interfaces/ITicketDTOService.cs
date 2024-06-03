@@ -42,7 +42,7 @@ namespace Tasket.Client.Services.Interfaces
         #region Update DB Item (Returns Nothing)
         Task AddCommentAsync(TicketCommentDTO comment, int companyId);
         Task DeleteCommentAsync(int commentId, int companyId);
-        Task UpdateCommentAsync(TicketCommentDTO comment, string userId);
+        Task UpdateCommentAsync(TicketCommentDTO comment, int companyId, string userId);
         #endregion
         #endregion
     }
