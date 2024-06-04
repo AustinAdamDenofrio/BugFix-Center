@@ -53,3 +53,12 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+.portfolio-image {
+    object-position: center;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+    height: 5rem;
+    border-radius: 50%;
+}

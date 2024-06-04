@@ -1,29 +1,53 @@
-﻿@inject ITicketDTOService TicketService
+﻿
+@inject ITicketDTOService TicketService
+@inject ICompanyDTOService CompanyService
 
 
-@if (Ticket is not null)
+
+
+
+@if (Employee is not null)
 {
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Collapse-@(Employee.Id)" aria-expanded="false" aria-controls="Collapse-@(Employee.Id)">
+            <img src="@Employee.ImageUrl" class="portfolio-image me-3" />
+            <span class="lead">@Employee.LastName, @Employee.FirstName</span>
+            <span class="lead ms-auto flex-grow-1 text-end me-3">@Employee.Role</span>
+        </button>
+    </h2>
+    <div id="Collapse-@(Employee.Id)" class="accordion-collapse collapse" data-bs-parent="#employeeAccordion">
+        <div class="accordion-body">
+            <div class="row">
+                <div class="col-12 col-md-6 col-xl-12 gap-2">
+                    <div class="hstack">
+                        <p class="lead">Role:</p> <span class="flex-grow-1 text-end me-3">@Employee.Role</span>
+                    </div>
+                    <div class="hstack">
+                        <p class="lead">Name:</p> <span class="flex-grow-1 text-end me-3">@Employee.FullName</span>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <p class="lead">Email:</p> <span class="flex-grow-1 text-end me-3">@Employee.Email</span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-12">
+                    <img src="@Employee.ImageUrl" class="img-fluid"/>
+                </div>
+            </div>
+            <AuthorizeView>
+                <div>
 
-
-    <td>@Ticket.Title</td>
-    <td>@Ticket.Description</td>
-    <td>@Ticket.Created.ToString("d")</td>
-    <td>@Ticket.Project</td>
-    <td>@Ticket.Priority</td>
-    <td>@Ticket.Type</td>
-    <td>@Ticket.Status</td>
-    <td>
-        <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/tickets/@Ticket.Id">
-            details
-        </a>
-    </td>
+                </div>
+            </AuthorizeView>
+        </div>
+    </div>
+  
 }
 
 @code {
 
     #region Parameters
     [Parameter, EditorRequired]
-    public TicketDTO? Ticket { get; set; }
+    public UserDTO? Employee { get; set; }
 
     [CascadingParameter]
     public Task<AuthenticationState>? AuthStateTask { get; set; }
@@ -33,6 +57,14 @@
 
     #region State
     UserInfo? userInfo;
+
+
     #endregion
 
+    #region Methods
+    protected override async Task OnParametersSetAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+    }
+    #endregion
 }
