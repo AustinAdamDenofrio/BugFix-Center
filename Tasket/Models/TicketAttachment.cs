@@ -46,7 +46,7 @@ namespace Tasket.Models
                 FileName = ticketAttachment.FileName,
                 Description = ticketAttachment.Description,
                 Created = ticketAttachment.Created,
-                AttachmentUrl =  $"/api/uploads/{ticketAttachment?.Id}",
+                AttachmentUrl =  $"/api/uploads/{ticketAttachment?.Upload}",
                 User = ticketAttachment!.User?.ToDTO(),
                 UserId = ticketAttachment!.User?.Id,
                 TicketId = ticketAttachment.Id

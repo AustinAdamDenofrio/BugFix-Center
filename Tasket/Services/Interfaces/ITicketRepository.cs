@@ -47,9 +47,17 @@ namespace Tasket.Services.Interfaces
                 Task AddCommentAsync(TicketComment comment, int companyId);
                 Task DeleteCommentAsync(int commentId, int companyId);
                 Task UpdateCommentAsync(TicketComment comment, string userId);
-            #endregion
+        #endregion
         #endregion
 
+
+
+
+
+        #region Attachments
+        Task<TicketAttachment> AddTicketAttachment(TicketAttachment attachment, int companyId);
+        Task DeleteTicketAttachment(int attachmentId, int companyId);
+        #endregion
 
     }
 }

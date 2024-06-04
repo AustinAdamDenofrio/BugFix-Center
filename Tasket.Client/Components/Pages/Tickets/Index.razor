@@ -20,6 +20,26 @@
 @if (tickets is not null)
 {
 
+    @if (tickets.Any(t => t.Priority == TicketPriority.Urgent) == true)
+    {
+        <h3 class="lead">Urgent Tickets:</h3>
+        <div class="row row-cols-1 row-cols-sm-3 g-3 justify-content-center">
+            @foreach (TicketDTO ticket in tickets)
+            {
+                if (ticket.Priority == TicketPriority.Urgent)
+                {
+
+                    <div class="col">
+                        <div class="card border-0 bg-light rounded-5 mb-4">
+                            <TicketCard Ticket="ticket" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    <h3 class="lead">All Tickets:</h3>
     //If any are due today make them appear with the card and have a details button
     <table class="table table-bordered table-striped">
         <thead class="table-light">

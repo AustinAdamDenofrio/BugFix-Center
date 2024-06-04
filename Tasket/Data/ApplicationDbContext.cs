@@ -6,7 +6,7 @@ namespace Tasket.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
-        public virtual DbSet<FileUpload> Files { get; set; }
+        public virtual DbSet<FileUpload> Uploads { get; set; }
         public virtual DbSet<Company> Companies { get; set; }
         public virtual DbSet<Invite> Invites { get; set; }
         public virtual DbSet<Project> Projects { get; set; }

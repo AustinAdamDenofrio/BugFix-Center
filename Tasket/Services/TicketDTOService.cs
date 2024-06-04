@@ -19,6 +19,7 @@ namespace Tasket.Services
         }
 
 
+        #region Tickets
         #region Get many Items
         public async Task<IEnumerable<TicketDTO>> GetAllTicketsAsync(int companyId)
         {
@@ -144,8 +145,37 @@ namespace Tasket.Services
             }
         }
         #endregion
+        #endregion
 
 
+        #region Attachments
+        public async Task<TicketAttachmentDTO> AddTicketAttachment(TicketAttachmentDTO attachment, byte[] uploadData, string contentType, int companyId)
+        {
+            FileUpload file = new()
+            {
+                Type = contentType,
+                Data = uploadData,
+            };
 
+            TicketAttachment dbAttachment = new()
+            {
+                TicketId = attachment.TicketId,
+                Description = attachment.Description,
+                FileName = attachment.FileName,
+                Upload = file,
+                Created = DateTimeOffset.Now,
+                UserId = attachment.UserId
+            };
+
+            dbAttachment = await _repository.AddTicketAttachment(dbAttachment, companyId);
+
+            return dbAttachment.ToDTO();
+        }
+
+        public async Task DeleteTicketAttachment(int attachmentId, int companyId)
+        {
+            await _repository.DeleteTicketAttachment(attachmentId, companyId);
+        }
+        #endregion
     }
 }

@@ -11,7 +11,7 @@ namespace Tasket.Helper
         public static readonly int MaxFileSize = ImageHelper.MaxFileSize;
 
 
-        public static async Task<FileUpload> GetImageUploadAsync(IFormFile file)
+        public static async Task<FileUpload> GetFileUploadAsync(IFormFile file)
         {
             using var ms = new MemoryStream();
 
@@ -33,7 +33,7 @@ namespace Tasket.Helper
             return upload;
         }
 
-        public static FileUpload GetImageUpload(string dataUrl)
+        public static FileUpload GetFileUpload(string dataUrl)
         {
             GroupCollection matchGroups = Regex.Match(dataUrl, @"data:(?<type>.+?);base64,(?<data>.+)").Groups;
 

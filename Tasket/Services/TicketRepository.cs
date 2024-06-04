@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Net.Sockets;
 using Tasket.Data;
 using Tasket.Models;
@@ -18,6 +19,7 @@ namespace Tasket.Services
         }
 
 
+        #region Tickets
         #region Get List of Items
         public async Task<IEnumerable<Ticket>> GetAllTicketsAsync(int companyId)
         {
@@ -172,6 +174,51 @@ namespace Tasket.Services
             if (shouldUpdate)
             {
                 context.TicketComments.Update(comment);
+                await context.SaveChangesAsync();
+            }
+        }
+        #endregion
+        #endregion
+
+
+
+
+        #region Attachments
+        public async Task<TicketAttachment> AddTicketAttachment(TicketAttachment attachment, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            // make sure the ticket exists and belongs to this company
+            var ticket = await context.Tickets
+                .FirstOrDefaultAsync(t => t.Id == attachment.TicketId && t.Project!.CompanyId == companyId);
+
+            // save it if it does
+            if (ticket is not null)
+            {
+                attachment.Created = DateTimeOffset.Now;
+                context.TicketAttachments.Add(attachment);
+                await context.SaveChangesAsync();
+
+                return attachment;
+            }
+            else
+            {
+                throw new ArgumentException("Ticket not found");
+            }
+        }
+
+        public async Task DeleteTicketAttachment(int attachmentId, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            var attachment = await context.TicketAttachments
+                .Include(a => a.Upload)
+                .FirstOrDefaultAsync(a => a.Id == attachmentId && a.Ticket!.Project!.CompanyId == companyId);
+
+            if (attachment is not null)
+            {
+                context.Remove(attachment);
+                context.Remove(attachment.Upload!);
                 await context.SaveChangesAsync();
             }
         }

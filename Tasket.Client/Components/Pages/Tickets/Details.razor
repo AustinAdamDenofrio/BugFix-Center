@@ -107,12 +107,28 @@
                             </div>
                         </div>
                     </div>
+                    @{
+                        @foreach (TicketAttachmentDTO attachment in ticket.Attachments)
+                        {
+                            string? extension = Path.GetExtension(attachment.FileName)?.Trim('.') ?? "default";
+
+                            <a type="button" href="">
+                                <img src="@($"png/{extension}.png")" />
+                            </a>
+                        }
+                    }
+
+
                     <div class="alert alert-info d-flex mb-0 vstack" role="alert">
                         <h3>Description</h3>
                         <p class="ps-2 text-dark">
                             @ticket.Description
                         </p>
                     </div>
+                    <div class="my-5">
+                        <UploadForm TicketId="TicketId" />
+                    </div>
+
                 </div>
             </section>
 
@@ -148,16 +164,18 @@
                 </div>
             </section>
         </div>
-        <div class="col-lg-3 mt-5">
-            <h4 class="mt-5">Projects</h4>
+        <div class="col-lg-3 mt-5 bg-light card border-0 py-1 p-md-2 p-xl-3 p-xxl-4">
+            <div class="card mb-3 border-0 py-1 p-md-2 p-xl-3 p-xxl-4 bg-secondary text-center">
+                <h4 class="mb-0 pb-0">Projects</h4>
+            </div>
             @foreach (ProjectDTO project in projects)
             {
-                <div>
-                    <a href="/projects/@project.Id" class="text-dark text-decoration-none">@project.Name</a>
+                <div class="mb-4">
+                    <a href="/projects/@project.Id" class="text-primary text-decoration-none ">@project.Name</a>
                     @foreach (TicketDTO ticket in project.Tickets)
                     {
                         <div class="mb-1">
-                            <a href="/tickets/index/@ticket.Id" class="small text-primary ps-3 text-decoration-none">@ticket.Type</a>
+                            <a href="/tickets/index/@ticket.Id" class="small text-dark ps-3 text-decoration-none">@ticket.Type</a>
                         </div>
                     }
                 </div>
@@ -197,6 +215,7 @@
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
         tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+
     }
 
     protected override async Task OnParametersSetAsync()
@@ -287,7 +306,7 @@
                 await TicketService.AddCommentAsync(commentForm, userInfo!.CompanyId);
 
                 ticket!.Comments = [.. await TicketService.GetTicketCommentsAsync(ticket.Id, userInfo!.CompanyId)];
-        }
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);

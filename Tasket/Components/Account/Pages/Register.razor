@@ -130,10 +130,10 @@
         {
             try
             {
-                FileUpload image = await UploadHelper.GetImageUploadAsync(Input.ProfilePicture);
+                FileUpload image = await UploadHelper.GetFileUploadAsync(Input.ProfilePicture);
 
                 // Save the image
-                await DBContext.Files.AddAsync(image);
+                await DBContext.Uploads.AddAsync(image);
 
                 user.ProfilePictureId = image.Id;
                 DBContext.Users.Update(user);

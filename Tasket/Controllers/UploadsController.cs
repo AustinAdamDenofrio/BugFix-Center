@@ -12,15 +12,43 @@ namespace Tasket.Controllers
     //DI
     public class UploadsController(ApplicationDbContext context) : ControllerBase
     {
+        private int? _companyId => User.FindFirst("CompanyId") != null ? int.Parse(User.FindFirst("CompanyId")!.Value) : null;
+
         [HttpGet("{id:guid}")]
-        [OutputCache(VaryByRouteValueNames = ["id"], Duration = 60 * 60)]
+        [OutputCache(VaryByRouteValueNames = ["id"], Duration = 60 * 60 * 1)]
         public async Task<IActionResult> GetImage(Guid id)
         {
+            FileUpload? file = await context.Uploads.FirstOrDefaultAsync(i => i.Id == id);
 
-            FileUpload? image = await context.Files.FirstOrDefaultAsync(i => i.Id == id);
-            //Turnery Statement
-            return image == null ? NotFound() : File(image.Data!, image.Type!);
+            if (file is null) return NotFound();
+
+            var ticketAttachment = await context.TicketAttachments
+                .Include(ta => ta.Ticket)
+                    .ThenInclude(t => t!.Project)
+                .FirstOrDefaultAsync(ta => ta.UploadId == id);
+
+            if (ticketAttachment is null)
+            {
+                // this must be a regular image, no need to check company ID
+                return File(file.Data!, file.Type!);
+            }
+            else
+            {
+                // this must be an attachment to a ticket, so make sure the user
+                // is part of the company this ticket belongs to
+                if (_companyId is null || ticketAttachment.Ticket?.Project?.CompanyId != _companyId)
+                {
+                    return Unauthorized();
+                }
+                else
+                {
+                    return File(file.Data!, file.Type!, ticketAttachment.FileName);
+                }
+            }
 
         }
+
+
     }
+
 }

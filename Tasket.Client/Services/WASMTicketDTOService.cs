@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Net.Sockets;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
+using static System.Net.WebRequestMethods;
 
 namespace Tasket.Client.Services
 {
@@ -94,7 +95,44 @@ namespace Tasket.Client.Services
 
 
 
+        #region Attachments
+        public async Task<TicketAttachmentDTO> AddTicketAttachment(TicketAttachmentDTO attachment, byte[] uploadData, string contentType, int companyId)
+        {
+            using var formData = new MultipartFormDataContent();
+            formData.Headers.ContentDisposition = new("form-data");
 
+            var fileContent = new ByteArrayContent(uploadData);
+            fileContent.Headers.ContentType = new(contentType);
+
+            if (string.IsNullOrWhiteSpace(attachment.FileName))
+            {
+                formData.Add(fileContent, "file");
+            }
+            else
+            {
+                formData.Add(fileContent, "file", attachment.FileName);
+            }
+
+            formData.Add(new StringContent(attachment.Id.ToString()), nameof(attachment.Id));
+            formData.Add(new StringContent(attachment.FileName ?? string.Empty), nameof(attachment.FileName));
+            formData.Add(new StringContent(attachment.Description ?? string.Empty), nameof(attachment.Description));
+            formData.Add(new StringContent(DateTimeOffset.Now.ToString()), nameof(attachment.Created));
+            formData.Add(new StringContent(attachment.UserId ?? string.Empty), nameof(attachment.UserId));
+            formData.Add(new StringContent(attachment.TicketId.ToString()), nameof(attachment.TicketId));
+
+            var res = await _httpClient.PostAsync($"api/tickets/{attachment.TicketId}/attachments", formData);
+            res.EnsureSuccessStatusCode();
+
+            var addedAttachment = await res.Content.ReadFromJsonAsync<TicketAttachmentDTO>();
+            return addedAttachment!;
+        }
+
+        public async Task DeleteTicketAttachment(int attachmentId, int companyId)
+        {
+            var res = await _httpClient.DeleteAsync($"api/tickets/attachments/{attachmentId}");
+            res.EnsureSuccessStatusCode();
+        }
+        #endregion
 
     }
 }

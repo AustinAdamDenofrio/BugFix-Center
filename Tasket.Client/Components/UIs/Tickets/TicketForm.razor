@@ -66,6 +66,19 @@
                         <ValidationMessage For="() => Ticket.ProjectId" />
                     </div>
                 }
+                @* <AuthorizeView Roles="Administrator, ProjectManager"> *@
+                    <div class="mb-2 col-5">
+                        <label class="form-label">Assigned Developer</label>
+                        <InputSelect class="form-control" @bind-Value="Ticket.DeveloperUserId">
+                            @*@foreach (UserDTO developer in company.user.IsInRole("Developer"))
+                            {
+                                <option value="@developer.Id">@developer.Name</option>
+                            }*@
+                        </InputSelect>
+                        <ValidationMessage For="() => Ticket.DeveloperUserId" />
+                    </div>
+                @* </AuthorizeView> *@
+
                 <div class="col-12 hstack justify-content-end gap-3">
                     @if (Ticket.Id != 0)
                     {

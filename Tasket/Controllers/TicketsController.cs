@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
 using Tasket.Data;
+using Tasket.Helper;
 using Tasket.Models;
 
 namespace Tasket.Controllers
@@ -227,7 +228,7 @@ namespace Tasket.Controllers
         }
 
 
-        [HttpGet("comments/comment/{commentId:int}")]
+        [HttpGet("comments/{commentId:int}")]
         public async Task<ActionResult<TicketCommentDTO?>> GetCommentByIdAsync([FromRoute] int ticketCommentId)
         {
             try
@@ -251,7 +252,7 @@ namespace Tasket.Controllers
         }
 
 
-        [HttpGet("comments/{ticketId:int}")]
+        [HttpGet("{ticketId:int}/comments")]
         public async Task<ActionResult<IEnumerable<TicketCommentDTO>>> GetTicketCommentsAsync([FromRoute] int ticketId)
         {
             try
@@ -272,6 +273,66 @@ namespace Tasket.Controllers
                 Console.WriteLine(ex);
                 return Problem();
             }
+        }
+
+
+
+
+
+
+
+        // POST: api/Tickets/5/attachments
+        // NOTE: the parameters are decorated with [FromForm] because they will be sent
+        // encoded as multipart/form-data and NOT the typical JSON
+        [HttpPost("{id}/attachments")]
+        public async Task<ActionResult<TicketAttachmentDTO>> PostTicketAttachment(int id,
+                                                                                    [FromForm] TicketAttachmentDTO attachment,
+                                                                                    [FromForm] IFormFile? file)
+        {
+            if (attachment.TicketId != id || file is null)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            var ticket = await _ticketService.GetTicketByIdAsync(id, user!.CompanyId);
+
+            if (ticket is null)
+            {
+                return NotFound();
+            }
+
+            attachment.UserId = user!.Id;
+            attachment.Created = DateTimeOffset.Now;
+
+            if (string.IsNullOrWhiteSpace(attachment.FileName))
+            {
+                attachment.FileName = file.FileName;
+            }
+
+            // ImageHelper was renamed to UploadHelper!
+            FileUpload upload = await UploadHelper.GetFileUploadAsync(file);
+
+            try
+            {
+                var newAttachment = await _ticketService.AddTicketAttachment(attachment, upload.Data!, upload.Type!, user!.CompanyId);
+                return Ok(newAttachment);
+            }
+            catch
+            {
+                return Problem();
+            }
+        }
+
+        // DELETE: api/Tickets/attachments/1
+        [HttpDelete("attachments/{attachmentId}")]
+        public async Task<IActionResult> DeleteTicketAttachment(int attachmentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            await _ticketService.DeleteTicketAttachment(attachmentId, user!.CompanyId);
+
+            return NoContent();
         }
     }
 }
