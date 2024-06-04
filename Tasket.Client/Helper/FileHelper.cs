@@ -2,7 +2,7 @@
 
 namespace Tasket.Client.Components.Helper
 {
-    public static class ImageHelper
+    public static class FileHelper
     {
         public static readonly string DefaultCompanyImage = "/img/DefaultCompanyImgWithBG.png";
         public static readonly string DefaultProfileImage = "/img/DefaultProfile.png";

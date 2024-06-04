@@ -1,0 +1,45 @@
+﻿@if (Attachment is not null)
+{
+    <div class="vstack">
+        <a type="button" href="@Attachment.AttachmentUrl" class="vstack">
+            <img src="@($"png/{extension}.png")" height="25px" /> 
+        </a>
+        <p class="small">@Attachment.Description</p>
+        <div class="text-center mt-1">
+            <button type="button" @onclick="HandleDelete" class="btn btn-outline-danger btn-sm">
+                Delete
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public TicketAttachmentDTO? Attachment { get; set; }
+
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
+
+    string? extension;
+
+    protected override void OnParametersSet()
+    {
+        extension = Path.GetExtension(Attachment?.FileName)?.Trim('.') ?? "default";
+    }
+
+
+    private async Task HandleDelete()
+    {
+        try
+        {
+            await OnDelete.InvokeAsync(Attachment!.Id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+}

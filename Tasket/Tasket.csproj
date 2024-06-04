@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\png\jpeg.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Tasket.Client\Tasket.Client.csproj" />
     <PackageReference Include="Bogus" Version="35.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />

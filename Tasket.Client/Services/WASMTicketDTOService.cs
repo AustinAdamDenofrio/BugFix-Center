@@ -63,13 +63,13 @@ namespace Tasket.Client.Services
 
         public async Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId)
         {
-            IEnumerable<TicketCommentDTO> comments = await _httpClient.GetFromJsonAsync<IEnumerable<TicketCommentDTO>>($"api/tickets/comments/{ticketId}") ?? [];
+            IEnumerable<TicketCommentDTO> comments = await _httpClient.GetFromJsonAsync<IEnumerable<TicketCommentDTO>>($"api/tickets/{ticketId}/comments") ?? [];
             return comments;
         }
 
         public async Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketId, int companyId)
         {
-            TicketCommentDTO? ticket = await _httpClient.GetFromJsonAsync<TicketCommentDTO>($"api/tickets/comments/comment/{ticketId}");
+            TicketCommentDTO? ticket = await _httpClient.GetFromJsonAsync<TicketCommentDTO>($"api/tickets/comments/{ticketId}");
             return ticket;
         }
 

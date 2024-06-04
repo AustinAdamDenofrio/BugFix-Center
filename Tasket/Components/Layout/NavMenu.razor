@@ -10,10 +10,7 @@
 
         <!-- Navbar brand (Logo) -->
 
-        <a class="navbar-brand pe-sm-3" href="/">
-@*             <span class="text-primary flex-shrink-0 me-2">
-                <img width="40" height="32" src="Images/Logo_Dark_NoText.svg" />
-            </span> *@
+        <a class="navbar-brand pe-sm-3 text-light" href="/">
             Tasket
         </a>
 
@@ -31,18 +28,19 @@
                         Home
                     </NavLink>
                 </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/company" Match="NavLinkMatch.Prefix">
+                        Company Info
+                    </NavLink>
+                </li>
 
                 <li class="nav-item dropdown">
                     <NavLink class="nav-link dropdown-toggle" href="categories" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        Categories
+                        Projects
                     </NavLink>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="projects">All Projects</a></li>
                         <li><a class="dropdown-item" href="projects/archived">Archived</a></li>
-                        @foreach (ProjectDTO project in projects)
-                        {
-                            <li><a class="dropdown-item" href="/projects/@project.Id">@project.Name</a></li>
-                        }
                     </ul>
                 </li>
                 <li class="nav-item dropdown ">
@@ -51,29 +49,17 @@
                     </NavLink>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="tickets">All tickets</a></li>
-                        <li><a class="dropdown-item" href="/tickets">Due this sprint</a></li>
                         <li><a class="dropdown-item" href="/tickets/archived">Archived</a></li>
                     </ul>
                 </li>
 
                 @*Author Menu Only*@
-                <AuthorizeView>
-                    <li class="nav-item dropdown ms-lg-auto">
-                        <NavLink class="nav-link dropdown-toggle" href="Author" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                            Admin Menu
-                        </NavLink>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/author/categories">Manage Projects</a></li>
-                            <li><a class="dropdown-item" href="/author/blogposts">Manage Tickets</a></li>
-                        </ul>
-                    </li>
-                </AuthorizeView>
 
 
                 <AuthorizeView>
                     @*Logged In*@
                     <Authorized>
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown ms-lg-auto">
                             <NavLink class="nav-link dropdown-toggle" href="account" Match="NavLinkMatch.Prefix" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                 @(context.User?.Identity?.Name ?? "Account")
                             </NavLink>

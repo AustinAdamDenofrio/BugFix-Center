@@ -6,9 +6,9 @@ namespace Tasket.Helper
 {
     public class UploadHelper
     {
-        public static readonly string DefaultCompanyPicture = ImageHelper.DefaultCompanyImage;
-        public static readonly string DefaultProfilePicture = ImageHelper.DefaultProfileImage;
-        public static readonly int MaxFileSize = ImageHelper.MaxFileSize;
+        public static readonly string DefaultCompanyPicture = FileHelper.DefaultCompanyImage;
+        public static readonly string DefaultProfilePicture = FileHelper.DefaultProfileImage;
+        public static readonly int MaxFileSize = FileHelper.MaxFileSize;
 
 
         public static async Task<FileUpload> GetFileUploadAsync(IFormFile file)
