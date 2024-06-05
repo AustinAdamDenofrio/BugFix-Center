@@ -14,35 +14,38 @@ namespace Tasket.Client.Services
             CompanyDTO? company = await _httpClient.GetFromJsonAsync<CompanyDTO>($"api/company");
             return company;
         }
-        
-        public Task<string> GetUserRoleAsync(string userId, int companyId)
+
+        public async Task<string> GetUserRoleAsync(string userId, int companyId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.GetAsync($"api/company/{userId}/role");
+            response.EnsureSuccessStatusCode();
+
+            string role = await response.Content.ReadAsStringAsync();
+            return role;
         }
 
-        public Task<IEnumerable<UserDTO>> GetUsersInRoleAsync(string roleName, int companyId)
+        public async Task UpdateCompanyAsync(CompanyDTO company, string adminId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"api/company/update", company);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task AddUserToRoleAsync(string userId, string roleName, string adminId)
+        public async Task<IEnumerable<UserDTO>> GetCompanyMembersAsync(int companyId)
         {
-            throw new NotImplementedException();
+            IEnumerable<UserDTO> members = await _httpClient.GetFromJsonAsync<IEnumerable<UserDTO>>($"api/company/members") ?? [];
+            return members;
         }
 
-        public Task UpdateCompanyAsync(CompanyDTO company, string adminId)
+        public async Task UpdateUserRoleAsync(UserDTO user, string adminId)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"api/company/update/role", user);
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task<IEnumerable<UserDTO>> GetCompanyMembersAsync(int companyId)
+        public async Task<IEnumerable<UserDTO>> GetUsersInRoleAsync(string roleName, int companyId)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateUserRoleAsync(UserDTO user, string adminId)
-        {
-            throw new NotImplementedException();
+            IEnumerable<UserDTO> UsersRoles = await _httpClient.GetFromJsonAsync<IEnumerable<UserDTO>>($"api/company/{roleName}/members") ?? [];
+            return UsersRoles;
         }
     }
 }

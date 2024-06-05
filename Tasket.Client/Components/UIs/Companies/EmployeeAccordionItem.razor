@@ -126,7 +126,12 @@
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
-        userRole = await CompanyService.GetUserRoleAsync(userInfo!.UserId, userInfo!.CompanyId);
+        if (Member is not null)
+        {
+            userRole = await CompanyService.GetUserRoleAsync(Member.Id!, userInfo!.CompanyId);
+
+            Member.Role = userRole;
+        }
     }
 
     private async Task HandleSubmit()

@@ -10,10 +10,6 @@ namespace Tasket.Services
 {
     public class CompanyDTOService(ICompanyRepository _repository) : ICompanyDTOService
     {
-        public async Task AddUserToRoleAsync(string userId, string roleName, string adminId)
-        {
-            await _repository.AddUserToRoleAsync(userId, roleName, adminId);
-        }
         public async Task<CompanyDTO?> GetCompanyByIdAsync(int companyId)
         {
             Company? company = await _repository.GetCompanyByIdAsync(companyId);
@@ -52,8 +48,6 @@ namespace Tasket.Services
         }
         public async Task<string> GetUserRoleAsync(string userId, int companyId)
         {
-            Company? company = await _repository.GetCompanyByIdAsync(companyId);
-
             string? role = await _repository.GetUserRoleAsync(userId, companyId);
 
             return role;
@@ -79,7 +73,6 @@ namespace Tasket.Services
                 await _repository.UpdateCompanyAsync(companyToUpdate, adminId);
             }
         }
-
         public async Task UpdateUserRoleAsync(UserDTO user, string adminId)
         {
             if (string.IsNullOrEmpty(user.Role)) return;
