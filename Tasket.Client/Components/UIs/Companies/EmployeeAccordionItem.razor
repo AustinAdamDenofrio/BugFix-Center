@@ -1,0 +1,144 @@
+﻿@inject ITicketDTOService TicketService
+@inject ICompanyDTOService CompanyService
+
+
+
+
+
+@if (Member is not null)
+{
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Collapse-@(Member.Id)" aria-expanded="false" aria-controls="Collapse-@(Member.Id)">
+            <img src="@Member.ImageUrl" class="portfolio-image me-3" />
+            <span class="lead">
+                @Member.LastName,
+                @Member.FirstName
+            </span>
+            <span class="lead ms-auto flex-grow-1 text-end mx-3 ps-3">@Member.Role</span>
+        </button>
+    </h2>
+    <div id="Collapse-@(Member.Id)" class="accordion-collapse collapse" data-bs-parent="#employeeAccordion">
+        <div class="accordion-body">
+
+            <div class="row">
+                <div class="col-12 col-md-6 col-xl-12 gap-2">
+                    <div class="hstack">
+                        @if (Member.Id != userInfo!.UserId)
+                        {
+                            <AuthorizeView Roles="Admin">
+                                <Authorized>
+                                    <EditForm Context="rolesContext" Model="Enum.GetValues(typeof(Roles))" OnValidSubmit="HandleSubmit" class="flex-grow-1">
+                                        <DataAnnotationsValidator />
+
+
+                                        <div class="flex-grow-1 hstack align-items-start">
+                                            <p class="lead col-6">Role:</p>
+                                            <div class="flex-grow-1">
+                                                <div class="text-end me-3">
+                                                    <InputSelect class="form-control" @bind-Value="Member.Role">
+                                                        @foreach (Roles role in Enum.GetValues(typeof(Roles)))
+                                                        {
+                                                            @if (role != Roles.DemoUser)
+                                                            {
+                                                                <option value="@role">@role.GetDisplayName()</option>
+                                                            }
+                                                        }
+                                                    </InputSelect>
+                                                    <ValidationMessage For="() => Member.Role" />
+                                                </div>
+                                                <div class="d-flex justify-content-end flex-grow-1 m-3">
+                                                    <button class="btn btn-primary" type="submit" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+                                                        Save
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                    </EditForm>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <p class="lead">Role:</p>
+                                    <span class="flex-grow-1 text-end me-3">
+                                        @Member.Role
+                                    </span>
+                                </NotAuthorized>
+                            </AuthorizeView>
+                        }
+                        else
+                        {
+                            <p class="lead">Role:</p>
+                            <span class="flex-grow-1 text-end me-3">
+                                @Member.Role
+                            </span>
+                        }
+                    </div>
+                    <div class="hstack">
+                        <p class="lead">Name:</p> <span class="flex-grow-1 text-end me-3">@Member.FullName</span>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <p class="lead">Email:</p> <span class="flex-grow-1 text-end me-3">@Member.Email</span>
+                    </div>
+
+
+
+                </div>
+                <div class="col-12 col-md-6 col-xl-12">
+                    <img src="@Member.ImageUrl" class="img-fluid" />
+                </div>
+            </div>
+            <AuthorizeView>
+                <div>
+                </div>
+            </AuthorizeView>
+        </div>
+    </div>
+
+
+
+}
+
+@code {
+
+    #region Parameters
+    [Parameter, EditorRequired]
+    public UserDTO? Member { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<UserDTO> OnSubmit { get; set; }
+
+    #endregion
+
+
+
+    #region State
+    UserInfo? userInfo;
+
+    string? userRole;
+    #endregion
+
+    #region Methods
+    protected override async Task OnParametersSetAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        userRole = await CompanyService.GetUserRoleAsync(userInfo!.UserId, userInfo!.CompanyId);
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await OnSubmit.InvokeAsync(Member);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+    #endregion
+}

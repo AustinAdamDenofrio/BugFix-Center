@@ -1,28 +1,37 @@
 ﻿@page "/company"
 
 @inject ICompanyDTOService CompanyService
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 
 <PageTitle>Company | Overview</PageTitle>
 
 
 @if (company is not null)
 {
+
     <h1>Company Overview</h1>
     <div class="row">
-        <div class="col-xl-6">
-
-        </div>
-        <div class="col-xl-6">
-            <h2>Employees</h2>
-            <div class="accordion accordion-flush" id="employeeAccordion">
-                @foreach (UserDTO employee in members)
-                {
-                <div class="accordion-item" @key="@employee.Id">
-                        <EmployeeTableItem Employee="employee" />
-                </div>
-                }
+        <div class="col-xl-8">
+            <img src="@company.ImageUrl" />
+            <p>@company.Name</p>
+            <p>@company.Description</p>
+            <div class="hstack">
+                <ul>
+                    @foreach (ProjectDTO project in company.Projects)
+                    {
+                        <li>@project.Name</li>
+                    }
+                </ul>
+                <ul>
+                    @foreach (InviteDTO invite in company.Invites)
+                    {
+                        <li>@invite.InviteeFirstName @invite.InviteeLastName</li>
+                    }
+                </ul>
             </div>
+        </div>
+        <div class="col-12 col-md-8 col-xxl-4">
+            <EmployeeAccordion Members="members" OnRoleSubmit="HandleSubmit"/>
         </div>
     </div>
 
@@ -56,6 +65,26 @@
 
         members = await CompanyService.GetCompanyMembersAsync(userInfo!.CompanyId);
         members = members.OrderBy(m => m.LastName);
+    }
+
+    private async Task HandleSubmit(UserDTO formMember)
+    {
+        if (formMember is not null)
+        {
+            if (string.IsNullOrEmpty(formMember.Role)) return;
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+                string userRole = await CompanyService.GetUserRoleAsync(userInfo!.UserId, userInfo!.CompanyId);
+
+                await CompanyService.UpdateUserRoleAsync(formMember, userInfo!.UserId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
     }
     #endregion
 }

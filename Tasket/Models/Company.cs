@@ -31,7 +31,7 @@ namespace Tasket.Models
                 Id = company.Id,
                 Name = company.Name,
                 Description = company.Description,
-                ImageUrl = company?.ImageId == null ? $"/api/uploads/{company?.ImageId}" : UploadHelper.DefaultCompanyPicture,
+                ImageUrl = company.ImageId.HasValue ? $"/api/uploads/{company?.ImageId}" : UploadHelper.DefaultCompanyPicture,
             };
 
             if (company!.Projects is not null)

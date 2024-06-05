@@ -1,0 +1,54 @@
+﻿@if (Members is not null)
+{
+    <div>
+        <h2>Employees</h2>
+    </div>
+    <div class="accordion accordion-flush" id="employeeAccordion">
+        @foreach (UserDTO member in Members)
+        {
+
+            <div class="accordion-item" @key="@member.Id">
+                <EmployeeAccordionItem Member="member" OnSubmit="HandleRoleSubmit" />
+            </div>
+
+        }
+    </div>
+}
+else
+{
+    <h1>No Employees found</h1>
+}
+@code {
+    #region Parameter
+    [Parameter]
+    public IEnumerable<UserDTO>? Members { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<UserDTO> OnRoleSubmit { get; set; }
+
+    #endregion
+
+
+    #region States
+
+    #endregion
+
+
+
+    #region Methods
+    private async Task HandleRoleSubmit(UserDTO formMember)
+    {
+        if (formMember is not null)
+        {
+            try
+            {
+                await OnRoleSubmit.InvokeAsync(formMember);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+    #endregion
+}
