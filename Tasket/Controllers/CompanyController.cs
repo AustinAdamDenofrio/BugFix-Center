@@ -53,7 +53,7 @@ namespace Tasket.Controllers
 
 
 
-        [HttpGet("{roleName:string}/members")]
+        [HttpGet("{roleName}/members")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsersInRoleAsync([FromRoute] string roleName)
         {
             IEnumerable<UserDTO> usersRoles = await _companyService.GetUsersInRoleAsync(roleName, CompanyId);
@@ -62,6 +62,7 @@ namespace Tasket.Controllers
 
             return Ok(usersRoles);
         }
+
 
         [HttpPost("update")]
         public async Task<IActionResult> UpdateCompanyAsync([FromBody] CompanyDTO companyDTO)

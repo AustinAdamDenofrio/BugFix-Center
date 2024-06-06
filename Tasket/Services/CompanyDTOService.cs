@@ -20,6 +20,7 @@ namespace Tasket.Services
         {
             // get the users in this role
             IEnumerable<ApplicationUser> users = await _repository.GetUsersInRoleAsync(roleName, companyId);
+
             // make them DTOs
             IEnumerable<UserDTO> userDTOs = users.Select(u => u.ToDTO());
 
@@ -29,6 +30,7 @@ namespace Tasket.Services
                 // so just assign the role
                 user.Role = roleName;
             }
+
             return userDTOs;
         }
         public async Task<IEnumerable<UserDTO>> GetCompanyMembersAsync(int companyId)

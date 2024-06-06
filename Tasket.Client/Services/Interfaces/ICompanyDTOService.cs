@@ -9,7 +9,6 @@ namespace Tasket.Client.Services.Interfaces
         Task<IEnumerable<UserDTO>> GetUsersInRoleAsync(string roleName, int companyId);
         Task UpdateCompanyAsync(CompanyDTO company, string adminId);
         Task<IEnumerable<UserDTO>> GetCompanyMembersAsync(int companyId);
-
         Task UpdateUserRoleAsync(UserDTO user, string adminId);
     }
 }
