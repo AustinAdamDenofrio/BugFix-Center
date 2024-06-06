@@ -151,7 +151,7 @@ namespace Tasket.Services
                     // finally, add this user as a PM if the project exists
                     if (project is not null)
                     {
-                        project.Members.Remove(projectManager);
+                        context.Users.Update(projectManager);
                         project.Members.Add(projectManager);
                         await context.SaveChangesAsync();
                     }

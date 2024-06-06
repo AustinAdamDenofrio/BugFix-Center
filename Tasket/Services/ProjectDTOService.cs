@@ -10,12 +10,14 @@ namespace Tasket.Client.Services
     public class ProjectDTOService : IProjectDTOService
     {
         private readonly IProjectRepository _repository;
-        public ProjectDTOService(IProjectRepository repository)
+        private readonly ICompanyRepository _companyRepository;
+        public ProjectDTOService(IProjectRepository repository, ICompanyRepository companyRepository)
         {
             _repository = repository;
+            _companyRepository = companyRepository;
         }
-    
 
+        #region Project CRUDs
         #region Get List of Items
         public async Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
         {
@@ -34,9 +36,6 @@ namespace Tasket.Client.Services
             return dtos;
         }
         #endregion
-
-
-
         #region Get Item
         public async Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
         {
@@ -45,9 +44,6 @@ namespace Tasket.Client.Services
             return project?.ToDTO();
         }
         #endregion
-
-
-
         #region Update DB Item/Items
         public async Task UpdateProjectAsync(ProjectDTO project, int companyId)
         {
@@ -56,7 +52,7 @@ namespace Tasket.Client.Services
             if (projectToUpdate is not null)
             {
                 projectToUpdate.Name = project.Name;
-                projectToUpdate.Description = project.Description;  
+                projectToUpdate.Description = project.Description;
                 projectToUpdate.Priority = project.Priority;
                 projectToUpdate.StartDate = project.StartDate;
                 projectToUpdate.EndDate = project.EndDate;
@@ -65,13 +61,13 @@ namespace Tasket.Client.Services
 
                 //if (project.Members is not null)
                 //{
-                    //projectToUpdate.Members.Clear();
+                //projectToUpdate.Members.Clear();
 
-                    //foreach (UserDTO memberDTO in project.Members)
-                    //{
-                    //    //Get member from claims principle by matching some ids to other ids
-                    //    projectToUpdate.Members.Add();
-                    //}
+                //foreach (UserDTO memberDTO in project.Members)
+                //{
+                //    //Get member from claims principle by matching some ids to other ids
+                //    projectToUpdate.Members.Add();
+                //}
                 //}
 
 
@@ -103,12 +99,58 @@ namespace Tasket.Client.Services
             await _repository.RestoreProjectAsync(projectId, companyId);
         }
         #endregion
+        #endregion
 
 
 
+        #region Project Members
+        public async Task<IEnumerable<UserDTO>> GetProjectMembersAsync(int projectId, int companyId)
+        {
+            IEnumerable<ApplicationUser> members = await _repository.GetProjectMembersAsync(projectId, companyId);
 
+            List<UserDTO> result = [];
 
+            foreach (ApplicationUser member in members)
+            {
+                UserDTO userDTO = member.ToDTO();
+                userDTO.Role = await _companyRepository.GetUserRoleAsync(member.Id, companyId);
+                result.Add(userDTO);
+            }
 
+            return result;
+        }
 
+        public async Task<UserDTO?> GetProjectManagerAsync(int projectId, int companyId)
+        {
+            ApplicationUser? projectManager = await _repository.GetProjectManagerAsync(projectId, companyId); 
+
+            if (projectManager == null) return null;
+
+            UserDTO userDTO = projectManager.ToDTO(); 
+            userDTO.Role = nameof(Roles.ProjectManager);
+
+            return userDTO;
+        }
+
+        public async Task AddMemberToProjectAsync(int projectId, string memberId, string managerId)
+        {
+            await AddMemberToProjectAsync(projectId, memberId, managerId);
+        }
+
+        public async Task RemoveMemberFromProjectAsync(int projectId, string memberId, string managerId)
+        {
+            await RemoveMemberFromProjectAsync(projectId, memberId, managerId);
+        }
+
+        public async Task AssignProjectManagerAsync(int projectId, string memberId, string adminId)
+        {
+            await AssignProjectManagerAsync(projectId, memberId, adminId);
+        }
+
+        public async Task RemoveProjectManagerAsync(int projectId, string adminId)
+        {
+            await RemoveProjectManagerAsync(projectId, adminId);
+        }
+        #endregion
     }
 }

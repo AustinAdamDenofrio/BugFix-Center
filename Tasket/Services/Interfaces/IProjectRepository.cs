@@ -26,10 +26,10 @@ namespace Tasket.Services.Interfaces
         #region Project Members
         Task<IEnumerable<ApplicationUser>> GetProjectMembersAsync(int projectId, int companyId);
         Task<ApplicationUser?> GetProjectManagerAsync(int projectId, int companyId);
-        Task AddMemberToProjectAsync(int projectId, string userId, int managerId);
-        Task RemoveMemberFromProjectAsync(int projectId, string userId, int managerId);
-        Task AssignProjectManagerAsync(int projectId, string userId, int adminId);
-        Task RemoveProjectManagerAsync(int projectId, int adminId);
+        Task AddMemberToProjectAsync(int projectId, string userId, string managerId);
+        Task RemoveMemberFromProjectAsync(int projectId, string userId, string managerId);
+        Task AssignProjectManagerAsync(int projectId, string userId, string adminId);
+        Task RemoveProjectManagerAsync(int projectId, string adminId);
         #endregion
     }
 }

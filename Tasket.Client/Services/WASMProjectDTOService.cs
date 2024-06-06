@@ -64,8 +64,52 @@ namespace Tasket.Client.Services
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/update/{updatedProject.Id}", updatedProject);
             response.EnsureSuccessStatusCode();
         }
+
         #endregion
 
+
+
+
+        #region Project Members
+
+        public async Task<IEnumerable<UserDTO>> GetProjectMembersAsync(int projectId, int companyId)
+        {
+            IEnumerable<UserDTO> projectMembers = await _httpClient.GetFromJsonAsync<IEnumerable<UserDTO>>($"api/projects/{projectId}/members") ?? [];
+            return projectMembers;
+        }
+
+        public async Task<UserDTO?> GetProjectManagerAsync(int projectId, int companyId)
+        {
+            UserDTO? projectManager = await _httpClient.GetFromJsonAsync<UserDTO>($"api/projects/{projectId}/members/project-manager");
+            return projectManager;
+        }
+
+
+        public async Task AddMemberToProjectAsync(int projectId, string memberId, string managerId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/{projectId}/members/add", memberId);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task RemoveMemberFromProjectAsync(int projectId, string memberId, string managerId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/{projectId}/members/remove", memberId);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task AssignProjectManagerAsync(int projectId, string memberId, string adminId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/{projectId}/members/assign-manager", memberId);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task RemoveProjectManagerAsync(int projectId, string adminId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/{projectId}/members/remove-manager", projectId);
+            response.EnsureSuccessStatusCode();
+        }
+
+        #endregion
 
 
 
