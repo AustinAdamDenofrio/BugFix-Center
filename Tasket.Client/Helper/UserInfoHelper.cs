@@ -12,7 +12,7 @@ namespace Tasket.Client.Components.Helper
             string? firstName = authState.User.FindFirst(nameof(UserInfo.FirstName))?.Value;
             string? lastName = authState.User.FindFirst(nameof(UserInfo.LastName))?.Value;
             string? profilePictureUrl = authState.User.FindFirst(nameof(UserInfo.ProfilePictureUrl))?.Value;
-            int companyId = int.Parse(authState.User.FindFirst("CompanyId")!.Value);
+            int companyId = int.Parse(authState.User.FindFirst("CompanyId")?.Value ?? "0");
 
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(firstName)
                 || string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(profilePictureUrl))
