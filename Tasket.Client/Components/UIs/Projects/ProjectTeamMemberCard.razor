@@ -1,0 +1,50 @@
+﻿
+
+@if (Member is not null)
+{
+    <div class="hstack">
+        <img src="@Member.ImageUrl" class="img-fluid portfolio-image" />
+        <span>@Member.FullName</span>
+        <button class="btn btn-outline-warning ms-auto" @onclick="RemoveMember">Remove</button>
+    </div>    
+}
+
+@code {
+    #region Parameters
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+
+    [Parameter]
+    public UserDTO? Member { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnRemove { get; set; }
+    #endregion
+
+
+
+    #region State
+    private UserInfo? userInfo;
+
+    private ProjectDTO? project;
+    #endregion
+
+
+
+    #region Methods
+
+    protected override async Task OnParametersSetAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        if (userInfo is null) return;
+    }
+
+    private async Task RemoveMember()
+    {
+        if (Member is null) return;
+        await OnRemove.InvokeAsync(Member.Id);
+    }
+    #endregion
+
+}

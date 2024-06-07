@@ -191,7 +191,7 @@ namespace Tasket.Controllers
         }
 
         [HttpGet("{projectId:int}/members/project-manager")]
-        public async Task<ActionResult<UserDTO>> GetProjectManagerAsync([FromRoute] int projectId)
+        public async Task<ActionResult<UserDTO?>> GetProjectManagerAsync([FromRoute] int projectId)
         {
 
             try

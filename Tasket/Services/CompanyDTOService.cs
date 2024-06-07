@@ -29,6 +29,7 @@ namespace Tasket.Services
             {
                 // so just assign the role
                 user.Role = roleName;
+
             }
 
             return userDTOs;

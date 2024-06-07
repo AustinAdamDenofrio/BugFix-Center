@@ -1,0 +1,268 @@
+﻿@inject IProjectDTOService ProjectService
+@inject ICompanyDTOService CompanyService
+
+
+@if (CompanyMembers is not null)
+{
+
+
+    <div>
+        <h3>Project Team:</h3>
+        @if (ProjectManager is not null)
+        {
+            <div class="hstack">
+                <img src="@ProjectManager.ImageUrl" class="img-fluid portfolio-image" />
+                <span>@ProjectManager.FullName</span>
+                <button class="btn btn-outline-warning ms-auto" @onclick="HandleRemoveProjectManager" type="button">Remove</button>
+            </div>
+        }
+
+        <form @onsubmit="HandleUpdateProjectManager">
+            <label class="form-label">Project Managers:</label>
+            <InputSelect class="form-control" @bind-Value="selectedProjectManagerId">
+                <option value="">Select a project manager..</option>
+                @foreach (UserDTO employee in CompanyMembers.Where(cm => cm.Role == nameof(Roles.ProjectManager)))
+                {
+                    <option value="@employee.Id">@employee.FullName</option>
+
+                }
+            </InputSelect>
+            <button class="btn btn-outline-warning ms-auto" type="submit">Update</button>
+        </form>
+    </div>
+    <div>
+        @if (CompanyMembers.Any(cm => cm.Role == nameof(Roles.Developer)) == true)
+        {
+            <h3>Project Developers:</h3>
+            @if (ProjectMembers?.Any(pm => pm.Role == nameof(Roles.Developer)) == true)
+            {
+                <h2>Development Team:</h2>
+                @foreach (UserDTO developer in ProjectMembers.Where(pm => pm.Role == nameof(Roles.Developer)))
+                {
+                    <ProjectTeamMemberCard Member="developer"
+                                           OnRemove="HandleRemoveMember" />
+                }
+            }
+
+            <form @onsubmit="HandleAddDeveloper">
+                <label class="form-label">Add Developers:</label>
+                <InputSelect class="form-control" @bind-Value="selectedDeveloperId">
+                    <option value="">Select a project developer..</option>
+                    @foreach (UserDTO employeeDeveloper in CompanyMembers.Where(cm => cm.Role == nameof(Roles.Developer)))
+                    {
+                        <option value="@employeeDeveloper.Id">@employeeDeveloper.FullName</option>
+
+                    }
+                </InputSelect>
+                <button class="btn btn-outline-warning ms-auto" type="submit">Update</button>
+            </form>
+        }
+        else
+        {
+            <h3>Project Developers: None exist in company</h3>
+        }
+    </div>
+    <div>
+        <h3>Project Submitters:</h3>
+        @if (CompanyMembers.Any(cm => cm.Role == nameof(Roles.Submitter)) == true)
+        {
+            @if (ProjectMembers?.Any(pm => pm.Role == nameof(Roles.Submitter)) == true)
+            {
+                <h2>Submitting Team:</h2>
+                @foreach (UserDTO submitter in ProjectMembers.Where(pm => pm.Role == nameof(Roles.Submitter)))
+                {
+                    <ProjectTeamMemberCard Member="submitter"
+                                           OnRemove="HandleRemoveMember" />
+                }
+            }
+
+            <form @onsubmit="HandleAddSubmitter">
+                <label class="form-label">Add Submitter:</label>
+                <InputSelect class="form-control" @bind-Value="selectedSubmitterId">
+                    <option value="">Select a project submitter..</option>
+                    @foreach (UserDTO submitter in CompanyMembers.Where(cm => cm.Role == nameof(Roles.Submitter)))
+                    {
+                        <option value="@submitter.Id">@submitter.FullName</option>
+                    }
+                </InputSelect>
+                <button class="btn btn-outline-warning ms-auto" type="submit">Update</button>
+            </form>
+        }
+    </div>
+}
+
+@code {
+    #region Parameters
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+
+    [Parameter]
+    public int ProjectId { get; set; }
+
+    [Parameter]
+    public IEnumerable<UserDTO>? CompanyMembers { get; set; }
+
+    [Parameter]
+    public IEnumerable<UserDTO>? ProjectMembers { get; set; }
+
+    [Parameter]
+    public UserDTO? ProjectManager { get; set; }
+
+
+
+    [Parameter]
+    public EventCallback<string?> OnUpdate { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnRemove { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnMemberRemove { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnAddMember { get; set; }
+    #endregion
+
+
+
+    #region State
+    private UserInfo? userInfo;
+
+    private ProjectDTO? project;
+    // private IEnumerable<UserDTO>? projectMembers = [];
+
+    // private UserDTO? projectManager;
+
+
+    // Selected values from forms
+    private string? selectedProjectManagerId;
+    private string? selectedDeveloperId;
+    private string? selectedSubmitterId;
+
+
+    // Company members by role
+    // companyProjectManagers = [];
+    // companyDevelopers = [];
+    // companySubmitters = [];
+    // private IEnumerable<UserDTO?> companyProjectManagers = await CompanyService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), userInfo.CompanyId);
+    // private IEnumerable<UserDTO?> companyDevelopers = await CompanyService.GetUsersInRoleAsync(nameof(Roles.Developer), userInfo.CompanyId);
+    // private IEnumerable<UserDTO?> companySubmitters = await CompanyService.GetUsersInRoleAsync((nameof(Roles.Submitter)), userInfo.CompanyId);
+    #endregion
+
+
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        if (userInfo is null) return;
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (ProjectId is 0) return;
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        if (userInfo is null) return;
+        try
+        {
+            project = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo.CompanyId);
+            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
+            // projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task HandleUpdateProjectManager()
+    {
+        if (selectedProjectManagerId is not null)
+        {
+            if (userInfo is null) return;
+
+            try
+            {
+                await OnUpdate.InvokeAsync(selectedProjectManagerId);
+                // projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo.CompanyId);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
+    private async Task HandleRemoveProjectManager()
+    {
+
+        if (userInfo is null) return;
+
+        try
+        {
+            await OnRemove.InvokeAsync();
+            // projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo.CompanyId);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task HandleRemoveMember(string memberId)
+    {
+        if (userInfo is null) return;
+
+
+        try
+        {
+            await OnMemberRemove.InvokeAsync(memberId);
+            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task HandleAddDeveloper()
+    {
+        if (userInfo is null) return;
+
+        try
+        {
+            await OnAddMember.InvokeAsync(selectedDeveloperId);
+            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+
+    private async Task HandleAddSubmitter()
+    {
+        if (userInfo is null) return;
+
+        try
+        {
+            await OnAddMember.InvokeAsync(selectedSubmitterId);
+            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+    #endregion
+}

@@ -134,22 +134,22 @@ namespace Tasket.Client.Services
 
         public async Task AddMemberToProjectAsync(int projectId, string memberId, string managerId)
         {
-            await AddMemberToProjectAsync(projectId, memberId, managerId);
+            await _repository.AddMemberToProjectAsync(projectId, memberId, managerId);
         }
 
         public async Task RemoveMemberFromProjectAsync(int projectId, string memberId, string managerId)
         {
-            await RemoveMemberFromProjectAsync(projectId, memberId, managerId);
+            await _repository.RemoveMemberFromProjectAsync(projectId, memberId, managerId);
         }
 
         public async Task AssignProjectManagerAsync(int projectId, string memberId, string adminId)
         {
-            await AssignProjectManagerAsync(projectId, memberId, adminId);
+            await _repository.AssignProjectManagerAsync(projectId, memberId, adminId);
         }
 
         public async Task RemoveProjectManagerAsync(int projectId, string adminId)
         {
-            await RemoveProjectManagerAsync(projectId, adminId);
+            await _repository.RemoveProjectManagerAsync(projectId, adminId);
         }
         #endregion
     }

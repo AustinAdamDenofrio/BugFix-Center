@@ -1,4 +1,7 @@
-﻿@rendermode InteractiveAuto
+﻿@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveAuto
+
+@attribute [Authorize]
 
 @inject ITicketDTOService TicketService
 @inject IProjectDTOService ProjectService
@@ -67,16 +70,16 @@
                     </div>
                 }
                 @* <AuthorizeView Roles="Administrator, ProjectManager"> *@
-                    <div class="mb-2 col-5">
-                        <label class="form-label">Assigned Developer</label>
-                        <InputSelect class="form-control" @bind-Value="Ticket.DeveloperUserId">
-                            @*@foreach (UserDTO developer in company.user.IsInRole("Developer"))
-                            {
-                                <option value="@developer.Id">@developer.Name</option>
-                            }*@
-                        </InputSelect>
-                        <ValidationMessage For="() => Ticket.DeveloperUserId" />
-                    </div>
+                <div class="mb-2 col-5">
+                    <label class="form-label">Assigned Developer</label>
+                    <InputSelect class="form-control" @bind-Value="Ticket.DeveloperUserId">
+                        @*@foreach (UserDTO developer in company.user.IsInRole("Developer"))
+                    {
+                    <option value="@developer.Id">@developer.Name</option>
+                    }*@
+                    </InputSelect>
+                    <ValidationMessage For="() => Ticket.DeveloperUserId" />
+                </div>
                 @* </AuthorizeView> *@
 
                 <div class="col-12 hstack justify-content-end gap-3">
@@ -146,19 +149,25 @@
 
 
     #region Methods
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (userInfo is null) return;
 
         if (Ticket!.Project is null)
         {
-            projects = await ProjectService.GetAllProjectsAsync(userInfo!.CompanyId);
+            projects = await ProjectService.GetAllProjectsAsync(userInfo.CompanyId);
         }
 
         if (Ticket!.SubmitterUserId is null)
         {
-            Ticket!.SubmitterUserId = userInfo!.UserId;
+            Ticket!.SubmitterUserId = userInfo.UserId;
         }
+
     }
 
 
@@ -167,9 +176,11 @@
     {
         try
         {
+            if (userInfo is null) return;
+
             if (Ticket!.SubmitterUserId is null)
             {
-                Ticket!.SubmitterUserId = userInfo!.UserId;
+                Ticket.SubmitterUserId = userInfo.UserId;
             }
             await OnSubmit.InvokeAsync(Ticket);
         }
