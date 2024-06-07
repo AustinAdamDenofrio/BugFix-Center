@@ -198,7 +198,7 @@ namespace Tasket.Controllers
             {
                 UserDTO? projectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
 
-                if (projectManager == null) return BadRequest();
+                if (projectManager == null) return NotFound();
 
                 return Ok(projectManager);
 

@@ -76,8 +76,15 @@ namespace Tasket.Client.Services
 
         public async Task<UserDTO?> GetProjectManagerAsync(int projectId, int companyId)
         {
-            UserDTO? projectManager = await _httpClient.GetFromJsonAsync<UserDTO>($"api/projects/{projectId}/members/project-manager");
-            return projectManager;
+            HttpResponseMessage response = await _httpClient.GetAsync($"api/projects/{projectId}/members/project-manager");
+
+            if (response.IsSuccessStatusCode)
+            {
+                UserDTO? projectManager = await response.Content.ReadFromJsonAsync<UserDTO?>();
+                return projectManager;
+            }
+
+            return null;
         }
 
 
