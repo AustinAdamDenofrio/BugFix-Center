@@ -4,8 +4,6 @@
 
 @if (CompanyMembers is not null)
 {
-
-
     <div>
         <h3>Project Team:</h3>
         @if (ProjectManager is not null)
@@ -96,7 +94,6 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
-
     [Parameter]
     public int ProjectId { get; set; }
 
@@ -130,24 +127,12 @@
     private UserInfo? userInfo;
 
     private ProjectDTO? project;
-    // private IEnumerable<UserDTO>? projectMembers = [];
-
-    // private UserDTO? projectManager;
 
 
     // Selected values from forms
     private string? selectedProjectManagerId;
     private string? selectedDeveloperId;
     private string? selectedSubmitterId;
-
-
-    // Company members by role
-    // companyProjectManagers = [];
-    // companyDevelopers = [];
-    // companySubmitters = [];
-    // private IEnumerable<UserDTO?> companyProjectManagers = await CompanyService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), userInfo.CompanyId);
-    // private IEnumerable<UserDTO?> companyDevelopers = await CompanyService.GetUsersInRoleAsync(nameof(Roles.Developer), userInfo.CompanyId);
-    // private IEnumerable<UserDTO?> companySubmitters = await CompanyService.GetUsersInRoleAsync((nameof(Roles.Submitter)), userInfo.CompanyId);
     #endregion
 
 
@@ -160,7 +145,6 @@
         if (userInfo is null) return;
     }
 
-
     protected override async Task OnParametersSetAsync()
     {
 
@@ -171,8 +155,6 @@
         try
         {
             project = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo.CompanyId);
-            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
-            // projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo.CompanyId);
         }
         catch (Exception ex)
         {
@@ -189,7 +171,6 @@
             try
             {
                 await OnUpdate.InvokeAsync(selectedProjectManagerId);
-                // projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo.CompanyId);
 
             }
             catch (Exception ex)
@@ -207,7 +188,6 @@
         try
         {
             await OnRemove.InvokeAsync();
-            // projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo.CompanyId);
 
         }
         catch (Exception ex)
@@ -224,7 +204,6 @@
         try
         {
             await OnMemberRemove.InvokeAsync(memberId);
-            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
         }
         catch (Exception ex)
         {
@@ -239,7 +218,6 @@
         try
         {
             await OnAddMember.InvokeAsync(selectedDeveloperId);
-            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
 
         }
         catch (Exception ex)
@@ -256,7 +234,6 @@
         try
         {
             await OnAddMember.InvokeAsync(selectedSubmitterId);
-            // projectMembers = await ProjectService.GetProjectMembersAsync(ProjectId, userInfo.CompanyId);
         }
         catch (Exception ex)
         {
