@@ -15,67 +15,56 @@
         <div class="col-lg-9 pt-4 pb-2 pb-sm-4 mt-5">
             <h1 class="h2 mb-4">Overview</h1>
 
-            <!-- Ticket info -->
-@*             @if (userInfo.UserId == ticket.SubmitterUserId
-           || userInfo.UserId == ticket.DeveloperUserId
-           || userInfo.UserId == projectManager?.Id
-           || userInfo.Roles.Contains(nameof(Roles.Admin)))
-            {
-                <div>
-                    <TicketForm Ticket="ticket"
-                                OnSubmit="HandleSubmit"
-                                OnRestore="HandleRestore"
-                                OnArchive="HandleArchive"
-                                ProjectDevelopers="projectDevelopers"
-                                ProjectManager="projectManager" />
-                </div>
-            } *@
-
             <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                 <div class=" card-header flex-grow-1">
-                    <div class="ms-auto">
-                        <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
-                            Edit
-                        </button>
-                    </div>
+                    <h1 class="mb-0">
+                        @ticket.Title
+                    </h1>
+                    @if (userInfo.UserId == ticket.SubmitterUserId
+                   || userInfo.UserId == ticket.DeveloperUserId
+                   || userInfo.UserId == projectManager?.Id
+                   || userInfo.Roles.Contains(nameof(Roles.Admin)))
+                    {
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+                                Edit
+                            </button>
+                        </div>
+                    }
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-6 d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
-                            <i class="ai-user text-primary lead pe-1 me-2"></i>
-                            <h2 class="h4 mb-0">
-                                @ticket.Title
-                            </h2>
+                        <div class="col-lg-8 d-flex mb-0 " role="alert">
+                            <div class="d-flex flex-grow-1 flex-column">
+                                <h3 class="ps-2 mb-3">Description</h3>
+                                <p class="ps-2 text-dark">
+                                    @ticket.Description
+                                </p>
+                                <div class="my-3 mt-auto">
+                                    <UploadForm TicketId="TicketId" OnChange="HandleUpdatePage" />
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-lg-6 d-md-flex align-items-center">
+                        <div class="col-lg-4 d-md-flex">
                             <div class="ms-auto">
-                                <p class="">Project: </p>
+                                <p class="fs-6">Project: </p>
                                 <h3 class="h5 mb-2">
                                     @ticket.Project?.Name
                                 </h3>
+                                <p class="fs-6 mt-3">Attachments: </p>
+                                <div class="row mb-5 g-5">
+                                    @foreach (TicketAttachmentDTO attachment in ticket.Attachments)
+                                    {
+                                        <div class="col-6">
+                                            <AttachmentCard Attachment="attachment" OnDelete="HandleDeleteAttachment" />
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-lg-8 d-flex mb-0 " role="alert">
-                        <div class="">
-                            <h3 class="ps-2">Description</h3>
-                            <p class="ps-2 text-dark">
-                                @ticket.Description ljhdafljghljh d asfjlkdfh ;jh kjadfsa j aksd;fjh jah k;jaasdh;kjh a;kjf
-                                ljhdafljghljh d asfjlkdfh ;jh kjadfsa j aksd;fjh jah k;jaasdh;kjh a;kjf   ads;kjh akdj ad
-                                ljhdafljghljh d asfjlkdfh ;jh kjadfsa j aksd;fjh jah k;jaasdh;kjh a;kjf   ads;kjh akdj ad
-                                ljhdafljghljh d asfjlkdfh ;jh kjadfsa j aksd;fjh jah k;jaasdh;kjh a;kjf   ads;kjh akdj ad
-                                ljhdafljghljh d asfjlkdfh ;jh kjadfsa j aksd;fjh jah k;jaasdh;kjh a;kjf   ads;kjh akdj ad
-                                ljhdafljghljh d asfjlkdfh ;jh kjadfsa j aksd;fjh jah k;jaasdh;kjh a;kjf   ads;kjh akdj ad
-                            </p>
-                        </div>
                     </div>
                 </div>
-
-@*                 <div class="my-5">
-                    <UploadForm TicketId="TicketId" OnChange="HandleUpdatePage" />
-                </div> *@
-
             </section>
 
             <!-- Comment Section -->
@@ -133,9 +122,6 @@
 
 
         <div class="col-lg-3 mt-5 bg-light card border-0 py-1 p-md-2 p-xl-3 p-xxl-4">
-
-
-
             <div class="card">
                 <div class="card-header mt-5">
                     <div class="hstack flex-grow-1">
@@ -203,9 +189,9 @@
                     <AuthorizeView Roles="Admin, ProjectManager">
 
                         @if (projectDevelopers is not null && context.User.IsInRole(nameof(Roles.Admin))
-                                        || projectDevelopers is not null && userInfo.UserId == projectManager?.Id)
+                       || projectDevelopers is not null && userInfo.UserId == projectManager?.Id)
                         {
-                            <form @onsubmit="AssignDeveloper" class="col-9">
+                            <form @onsubmit="UpdateTicket" class="col-9">
                                 <div class="col-12">
                                     <label class="form-label">Assigned Developer</label>
                                     <InputSelect class="form-control" @bind-Value="ticket.DeveloperUserId">
@@ -215,7 +201,7 @@
                                         }
                                     </InputSelect>
                                 </div>
-                                <button class="btn btn-sm btn-primary" type="submit">
+                                <button class="btn btn-sm btn-primary my-3" type="submit">
                                     Save
                                 </button>
                             </form>
@@ -223,46 +209,147 @@
                     </AuthorizeView>
                 </div>
             </div>
-
-
-
-
-            <div class="my-5">
-                <UploadForm TicketId="TicketId" OnChange="HandleUpdatePage" />
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="text-center">Attachments</h4>
+            <div class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 bg-secondary mt-4">
+                <div class="card-header d-flex justify-content-start">
+                    <h4 class="pt-3">
+                        Projects
+                    </h4>
                 </div>
-            </div>
-            <div class="row mb-5 g-3">
-                @foreach (TicketAttachmentDTO attachment in ticket.Attachments)
-                {
-                    <div class="col-6 px-2">
-                        <AttachmentCard Attachment="attachment" OnDelete="HandleDeleteAttachment" />
-                    </div>
-                }
-            </div>
-
-            <div class="card mb-3 border-0 py-1 p-md-2 p-xl-3 p-xxl-4 bg-secondary text-center">
-                <h4 class="mb-0 pb-0">Projects</h4>
-            </div>
-            @foreach (ProjectDTO project in projects)
-            {
-                <div class="mb-4">
-                    <a href="/projects/@project.Id" class="text-primary text-decoration-none ">@project.Name</a>
-                    @foreach (TicketDTO ticket in project.Tickets)
+                <hr/>
+                <div class="card-body">
+                    @foreach (ProjectDTO project in projects)
                     {
-                        <div class="mb-1">
-                            <a href="/tickets/index/@ticket.Id" class="small text-dark ps-3 text-decoration-none">@ticket.Type</a>
+                        <div class="mb-4">
+                            <a href="/projects/@project.Id" class="text-decoration-none text-dark">@project.Name</a>
+                            @foreach (TicketDTO ticket in project.Tickets)
+                            {
+                                <div class="mb-1">
+                                    <a href="/tickets/index/@ticket.Id" class="small text-primary  ps-3 text-decoration-none">@ticket.Type</a>
+                                </div>
+                            }
                         </div>
                     }
+
                 </div>
-            }
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    @if (userInfo.UserId == ticket.SubmitterUserId
+                || userInfo.UserId == ticket.DeveloperUserId
+                || userInfo.UserId == projectManager?.Id
+               || userInfo.Roles.Contains(nameof(Roles.Admin)))
+    {
+        <div class="modal fade" tabindex="-1" id="kt_modal_1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <EditForm Context="formContext" Model="ticket" OnValidSubmit="UpdateTicket">
+                        <DataAnnotationsValidator />
+                        <div class="modal-header">
+                            <h3 class="modal-title">Edit Ticket</h3>
+
+                            <!--begin::Close-->
+                            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                            <!--end::Close-->
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="col-12">
+                                <label for="Title" class="form-label">
+                                    Title
+                                </label>
+                                <InputText @bind-Value="ticket.Title"
+                                           id="Title"
+                                           class="form-control"
+                                           placeholder="Name"
+                                           aria-label="Name" />
+                                <ValidationMessage For="() => ticket.Title" />
+                            </div>
+                            <div class="col-12">
+                                <label for="Description" class="form-label">
+                                    Description
+                                </label>
+                                <InputTextArea @bind-Value="ticket.Description"
+                                               id="Description"
+                                               row="4"
+                                               class="form-control"
+                                               placeholder="Description"
+                                               aria-label="Description" />
+                                <ValidationMessage For="() => ticket.Description" />
+                            </div>
+                            <div class="mb-2 col-3">
+                                <label class="form-label">Priority</label>
+                                <InputSelect class="form-control" @bind-Value="ticket.Priority">
+                                    @foreach (TicketPriority priority in Enum.GetValues(typeof(TicketPriority)))
+                                    {
+                                        <option value="@priority">@priority.GetDisplayName()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => ticket.Priority" />
+                            </div>
+                            <div class="mb-2 col-5">
+                                <label class="form-label">Type</label>
+                                <InputSelect class="form-control" @bind-Value="ticket.Type">
+                                    @foreach (TicketType type in Enum.GetValues(typeof(TicketType)))
+                                    {
+                                        <option value="@type">@type.GetDisplayName()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => ticket.Type" />
+                            </div>
+                            @if (ticket.Project is null)
+                            {
+                                <div class="mb-2 col-5">
+                                    <label class="form-label">Project</label>
+                                    <InputSelect class="form-control" @bind-Value="ticket.ProjectId">
+                                        @foreach (ProjectDTO project in projects)
+                                        {
+                                            <option value="@project.Id">@project.Name</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => ticket.ProjectId" />
+                                </div>
+                            }
+
+
+                            <div class="col-12 hstack justify-content-end gap-3">
+                                @if (ticket.Id != 0)
+                                {
+                                    @if (ticket.Archived == true || ticket.ArchivedByProject == true)
+                                    {
+                                        <div class="text-start me-auto">
+                                            <a class="btn btn-primary" @onclick="RestoreTicket">Restore</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-start me-auto">
+                                            <a class="btn btn-icon btn-primary text-center" @onclick="ArchiveTicket"><i class="fas fa-envelope-open-text fs-4 me-2"></i></a>
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                        </div>
+                        <ValidationSummary />
+                    </EditForm>
+                </div>
+            </div>
         </div>
 
-    </div>
+    }
 }
 
 @code {
@@ -326,15 +413,15 @@
         }
     }
 
-    private async Task HandleArchive(int formTicketId)
+    private async Task ArchiveTicket()
     {
-        if (formTicketId != 0)
+        if (ticket is not null)
         {
             try
             {
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
-                await TicketService.ArchiveTicketAsync(formTicketId, userInfo!.CompanyId);
+                await TicketService.ArchiveTicketAsync(ticket.Id, userInfo!.CompanyId);
 
 
                 ticket = await TicketService.GetTicketByIdAsync(TicketId, userInfo!.CompanyId);
@@ -346,15 +433,15 @@
         }
     }
 
-    private async Task HandleRestore(int formTicketId)
+    private async Task RestoreTicket()
     {
-        if (formTicketId != 0)
+        if (ticket is not null)
         {
             try
             {
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
-                await TicketService.RestoreTicketAsync(formTicketId, userInfo!.CompanyId);
+                await TicketService.RestoreTicketAsync(ticket.Id, userInfo!.CompanyId);
 
 
                 ticket = await TicketService.GetTicketByIdAsync(TicketId, userInfo!.CompanyId);
@@ -366,7 +453,7 @@
         }
     }
 
-    private async Task AssignDeveloper()
+    private async Task UpdateTicket()
     {
         if (ticket is not null)
         {
