@@ -2,47 +2,60 @@
 
 @if (Comment is not null)
 {
-    <div class="">
-        <table class="table align-middle w-100" style="min-width: 450px;">
-            <tbody>
-                <tr>
-                    <td class="border-0 py-1 px-0">
-                        <p>
-                            @Comment.Content
-                        </p>
-                    </td>
-                    <td class="border-0 py-1 pe-0 ps-3 ps-sm-4">
-                        <div class="fs-sm text-body-secondary mb-2">Created</div>
-                        <div class="fs-sm fw-medium text-dark">@Comment.Created.ToString("d")</div>
-                    </td>
-                    <td class="border-0 py-1 pe-0 ps-3 ps-sm-4">
-                        <div class="fs-sm text-body-secondary mb-2">By</div>
-                        <div class="fs-sm fw-medium text-dark">@Comment.User!.FullName</div>
-                    </td>
-@*                     <td class="border-0 text-end py-1 pe-0 ps-3 ps-sm-4">
-                        <div class="fs-sm text-body-secondary mb-2">Comment #</div>
-                        <div class="fs-sm fw-medium text-dark">@Comment.Id</div>
-                    </td> *@
-                    <td class="border-0 text-end py-1 pe-0 ps-3 ps-sm-4">
-                        <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div id="collapse@(Comment.Id)">
-                <CommentForm Comment="Comment"
-                             OnSubmit="HandleSubmitComment" />            
+    <li class="d-flex align-items-start">
+        <div class=" align-items-start">
+            <img class="comment-img ms-auto" src="@Comment.User?.ImageUrl" />
         </div>
-    </div>
+        <div class="mx-3 flex-grow-1">
+            <p class="fs-6">@Comment.User?.FullName</p>
+            <p>@Comment.Created.ToString("hh:mm tt")</p>
+            <div class="d-flex flex-column">
+                @* @if () { } not submitter *@
+
+                <p class="col-9">
+                    @Comment.Content
+                </p>
+                <div>
+                    @if (userInfo.UserId == Comment.User?.Id)
+                    {
+                        <form @onsubmit="HandleUpdateCommentSubmit" class="col-9">
+                            <InputTextArea @bind-Value="Comment.Content"
+                                           id="Content"
+                                           row="2"
+                                           class="form-control"
+                                           placeholder="Comment"
+                                           aria-label="Comment" />
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                Save
+                            </button>
+                        </form>
+                    }
+
+                    @if (userInfo.UserId == Comment.User?.Id
+                           || userInfo.Roles.Contains(nameof(Roles.Admin))
+                           || userInfo.UserId == ProjectManagerId)
+                    {
+                        <a @onclick="HandleDelete" class="btn btn-sm btn-secondary">
+                            Delete
+                        </a>
+                    }
+                </div>
 
 
 
-
+            </div>
+            <div>
+            </div>
+        </div>
+    </li>
 }
 @code {
     #region Parameters
     [Parameter]
     public TicketCommentDTO? Comment { get; set; }
+
+    [Parameter]
+    public string? ProjectManagerId { get; set; }
 
     [Parameter]
     public int TicketId { get; set; }
@@ -81,13 +94,13 @@
     }
 
 
-    private async Task HandleSubmitComment(TicketCommentDTO formComment)
+    private async Task HandleUpdateCommentSubmit()
     {
         try
         {
             userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
-            await HandleOnSubmit.InvokeAsync(formComment);
+            await HandleOnSubmit.InvokeAsync(Comment);
             Comment = await TicketService.GetCommentByIdAsync(TicketId, userInfo!.CompanyId);
 
 
