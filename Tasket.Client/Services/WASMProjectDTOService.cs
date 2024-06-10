@@ -16,51 +16,58 @@ namespace Tasket.Client.Services
         }
 
         #region Project CRUDs
-            #region Get List of Items
-            public async Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
-            {
-                IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects") ?? [];
-                return projects;
-            }
-            public async Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
-            {
-                IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects/archive") ?? [];
-                return projects;
-            }
-            #endregion
-            #region Get Item
-                public async Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
-                {
-                    ProjectDTO? project = await _httpClient.GetFromJsonAsync<ProjectDTO>($"api/projects/{projectId}");
-                    return project;
-                }
-            #endregion
-            #region Update DB item or items
-            public async Task<ProjectDTO> AddProjectAsync(ProjectDTO newProject, int companyId)
-            {
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/projects", newProject);
-                response.EnsureSuccessStatusCode();
+        #region Get List of Items
+        public async Task<IEnumerable<ProjectDTO>> GetAllProjectsAsync(int companyId)
+        {
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects") ?? [];
+            return projects;
+        }
+        public async Task<IEnumerable<ProjectDTO>> GetAllAssignedProjectsAsync(int companyId, string userId)
+        {
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects/assignments") ?? [];
+            return projects;
+        }
+        public async Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
+        {
+            IEnumerable<ProjectDTO> projects = await _httpClient.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/projects/archive") ?? [];
+            return projects;
+        }
+        #endregion
 
-                ProjectDTO? projectDTO = await response.Content.ReadFromJsonAsync<ProjectDTO>();
-                return projectDTO!;
-            }
-            public async Task ArchiveProjectAsync(int projectId, int companyId)
-            {
-                HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/archive/{projectId}", projectId);
-                response.EnsureSuccessStatusCode();
-            }
-            public async Task RestoreProjectAsync(int projectId, int companyId)
-            {
-                HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/restore/{projectId}", projectId);
-                response.EnsureSuccessStatusCode();
-            }
-            public async Task UpdateProjectAsync(ProjectDTO updatedProject, int companyId)
-            {
-                HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/update/{updatedProject.Id}", updatedProject);
-                response.EnsureSuccessStatusCode();
-            }
+        #region Get Item
+        public async Task<ProjectDTO?> GetProjectByIdAsync(int projectId, int companyId)
+        {
+            ProjectDTO? project = await _httpClient.GetFromJsonAsync<ProjectDTO>($"api/projects/{projectId}");
+            return project;
+        }
+        #endregion
 
-            #endregion
+        #region Update DB item or items
+        public async Task<ProjectDTO> AddProjectAsync(ProjectDTO newProject, int companyId)
+        {
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/projects", newProject);
+            response.EnsureSuccessStatusCode();
+
+            ProjectDTO? projectDTO = await response.Content.ReadFromJsonAsync<ProjectDTO>();
+            return projectDTO!;
+        }
+        public async Task ArchiveProjectAsync(int projectId, int companyId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/archive/{projectId}", projectId);
+            response.EnsureSuccessStatusCode();
+        }
+        public async Task RestoreProjectAsync(int projectId, int companyId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/restore/{projectId}", projectId);
+            response.EnsureSuccessStatusCode();
+        }
+        public async Task UpdateProjectAsync(ProjectDTO updatedProject, int companyId)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/update/{updatedProject.Id}", updatedProject);
+            response.EnsureSuccessStatusCode();
+        }
+
+        #endregion
         #endregion
 
 
@@ -111,6 +118,7 @@ namespace Tasket.Client.Services
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/projects/{projectId}/members/remove-manager", projectId);
             response.EnsureSuccessStatusCode();
         }
+
 
         #endregion
 

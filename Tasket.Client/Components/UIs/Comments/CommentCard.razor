@@ -7,12 +7,12 @@
             <img class="comment-img ms-auto" src="@Comment.User?.ImageUrl" />
         </div>
         <div class="mx-3 flex-grow-1">
-            <p class="fs-6">@Comment.User?.FullName</p>
+            <p class="fs-6 mb-0">@Comment.User?.FullName</p>
             <p>@Comment.Created.ToString("hh:mm tt")</p>
             <div class="d-flex flex-column">
                 @* @if () { } not submitter *@
 
-                <p class="col-9">
+                <p class="col-9 mb-0">
                     @Comment.Content
                 </p>
                 <div>

@@ -100,7 +100,7 @@ namespace Tasket.Services
                 ticketToUpdate.Priority = ticket.Priority;
                 ticketToUpdate.Type = ticket.Type;
                 ticketToUpdate.Status = ticket.Status;
-                ticketToUpdate.DeveloperUserId = ticket.DeveloperUserId;
+                ticketToUpdate.DeveloperUserId = ticket.DeveloperUserId;  
 
                 await _repository.UpdateTicketAsync(ticketToUpdate, companyId, userId);
             }

@@ -27,6 +27,16 @@ namespace Tasket.Client.Services
 
             return dtos;
         }
+        public async Task<IEnumerable<ProjectDTO>> GetAllAssignedProjectsAsync(int companyId, string userId)
+        {
+            IEnumerable<Project> projects = await _repository.GetAllAssignedProjectsAsync(companyId, userId);
+
+            IEnumerable<ProjectDTO> dtos = projects.Select(bp => bp.ToDTO());
+
+            return dtos;
+        }
+
+
         public async Task<IEnumerable<ProjectDTO>> GetArchivedProjectsAsync(int companyId)
         {
             IEnumerable<Project> archivedProjects = await _repository.GetArchivedProjectsAsync(companyId);
@@ -151,6 +161,7 @@ namespace Tasket.Client.Services
         {
             await _repository.RemoveProjectManagerAsync(projectId, adminId);
         }
+
         #endregion
     }
 }

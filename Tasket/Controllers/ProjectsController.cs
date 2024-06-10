@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Tasket.Client.Models;
 using Tasket.Client.Services.Interfaces;
 using Tasket.Helper.Extensions;
@@ -44,6 +45,29 @@ namespace Tasket.Controllers
             }
         }
 
+
+        [HttpGet("assignments")]
+        public async Task<ActionResult<IEnumerable<ProjectDTO>>> GetAllAssignedProjectsAsync()
+        {
+            try
+            {
+                IEnumerable<ProjectDTO?> project = await _projectService.GetAllAssignedProjectsAsync(_companyId!.Value, UserId);
+
+                if (project == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return Ok(project);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem();
+            }
+        }
 
         [HttpGet("archive")]
         public async Task<ActionResult<IEnumerable<ProjectDTO>>> GetArchivedProjectsAsync()

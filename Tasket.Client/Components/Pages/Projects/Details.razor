@@ -8,7 +8,7 @@
 
 @if (project is not null)
 {
-    <div class="row">
+    <div class="row my-5">
         <div class="col-7">
             <section class="card bg-light-subtle rounded-5 border-1 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                 <div class="card-body">
@@ -56,35 +56,22 @@
                     <div class="card bg-secondary-subtle d-flex mb-0" role="alert">
                         <i class="ai-circle-info fs-xl"></i>
                         <div class="ps-2">
-                            <a class="alert-link ms-1" href="account-settings.html">
-                                Tickets
-                            </a>
+                            <ul>
+                                @foreach (TicketDTO ticket in project.Tickets)
+                                {
+                                    <li>
+                                        <a href="tickets/@ticket.Id">
+                                            @ticket.Title
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
                         </div>
                     </div>
                 </div>
             </section>
-@*             <div class="col-12">
-                <table class="table table-bordered table-striped">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Ticket</th>
-                            <th scope="col">Priority</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">End Date</th>
-                            <th scope="col">Priority</th>
-                            <th scope="col">Edit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (ProjectDTO project in projects)
-                        {
-                            <tr @key="project.Id">
-                                <ProjectTableItem Project="project" />
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div> *@
+
+
         </div>
         <div class="col-5">
             <ProjectTeamCard ProjectId="project.Id"

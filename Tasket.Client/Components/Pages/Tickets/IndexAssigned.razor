@@ -1,23 +1,11 @@
-﻿@page "/tickets"
-@using Microsoft.AspNetCore.Authorization
-@rendermode InteractiveAuto
-@attribute [Authorize(Roles = $"{nameof(Roles.Admin)}")]
+﻿@using Microsoft.AspNetCore.Authorization
+
+@page "/tickets/assignments"
+@* @rendermode InteractiveAuto *@
+
+@* @attribute [Authorize(Roles = $"{nameof(Roles.ProjectManager)}, {nameof(Roles.Developer)}, {nameof(Roles.Submitter)}")] *@
 
 @inject ITicketDTOService TicketService
-
-<PageTitle>Tickets | All Tickets</PageTitle>
-
-<div class="mb-3">
-    <button class="btn btn-primary my-3 " type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
-        Add Ticket
-    </button>
-    <div class="collapse" id="collapse">
-        <TicketForm Ticket="new TicketDTO(){SubmitterUserId = userInfo!.UserId}" 
-                    OnArchive="HandleArchive"
-                    OnRestore="HandleRestore"
-                    OnSubmit="HandleSubmit"/>
-    </div>
-</div>
 
 @if (tickets is not null)
 {
@@ -43,7 +31,7 @@
 
     <h3 class="lead">All Tickets:</h3>
     //If any are due today make them appear with the card and have a details button
-    <table class="table table-bordered table-striped">
+@*     <table class="table table-bordered table-striped">
         <thead class="table-light">
             <tr>
                 <th scope="col">Title</th>
@@ -65,7 +53,34 @@
             }
         </tbody>
     </table>
+ *@
+
+    <div class="table-responsive">
+        <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+            <thead>
+                <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                    <th>Title</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach (TicketDTO ticket in tickets)
+                    {
+                    <tr @key="ticket.Id">
+                        <TicketTableItem Ticket="ticket" />
+                    </tr>
+                    }
+                </tr>
+            </tbody>
+        </table>
+    </div>
 }
+
 @code {
     #region Parameters
     [CascadingParameter]
@@ -89,6 +104,7 @@
 
         tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
     }
+
     private async Task HandleSubmit(TicketDTO ticketForm)
     {
         if (ticketForm is not null)

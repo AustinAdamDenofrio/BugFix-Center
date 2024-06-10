@@ -2,10 +2,27 @@
 
 @if (Member is not null)
 {
-    <div class="hstack">
-        <img src="@Member.ImageUrl" class="img-fluid portfolio-image" />
-        <span>@Member.FullName</span>
-        <button class="btn btn-outline-warning ms-auto" @onclick="RemoveMember">Remove</button>
+    <div class="hstack my-3">
+        <img src="@Member.ImageUrl" class="member-img" />
+        <div class="px-3">
+            <span class=""><h4>@Member.FullName</h4></span>
+                @foreach(Roles roles in Enum.GetValues(typeof(Roles)))
+                {
+                    if (Member.Role == roles.ToString())
+                    {
+                        <p class="">@roles.GetDisplayName()</p>
+                    }
+                }
+        </div>
+        <button class="btn ms-auto hover-elevate-down" @onclick="RemoveMember">
+            <i class="ki-duotone ki-trash text-danger fs-2x">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+            </i>
+        </button>
     </div>    
 }
 

@@ -40,16 +40,18 @@
                                 <p class="ps-2 text-dark">
                                     @ticket.Description
                                 </p>
-                                <div class="my-3 mt-auto">
+                                <div class="mt-auto pt-5 mb-3">
                                     <UploadForm TicketId="TicketId" OnChange="HandleUpdatePage" />
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 d-md-flex">
                             <div class="ms-auto">
-                                <p class="fs-6">Project: </p>
-                                <h3 class="h5 mb-2">
-                                    @ticket.Project?.Name
+                                <p class="fs-6 mb-0">Project: </p>
+                                <h3 class="h5 mb-3">
+                                    <a class="link-info" href="projects/@ticket.Project?.Id">
+                                        @ticket.Project?.Name
+                                    </a>
                                 </h3>
                                 <p class="fs-6 mt-3">Attachments: </p>
                                 <div class="row mb-5 g-5">
@@ -100,9 +102,12 @@
                                            class="form-control"
                                            placeholder="Comment"
                                            aria-label="Comment" />
-                            <button class="btn btn-sm btn-primary" type="submit">
-                                Save
-                            </button>
+                            <div class="flex-grow-1 text-end">
+                                <button class="btn btn-sm btn-success hover-scale my-3 ms-auto" type="submit">
+                                    Comment
+                                </button>
+
+                            </div>
                         </form>
                     }
                     @foreach (TicketCommentDTO comment in ticket.Comments)
@@ -187,7 +192,6 @@
                         Developer: @ticket.DeveloperUser?.FullName
                     </p>
                     <AuthorizeView Roles="Admin, ProjectManager">
-
                         @if (projectDevelopers is not null && context.User.IsInRole(nameof(Roles.Admin))
                        || projectDevelopers is not null && userInfo.UserId == projectManager?.Id)
                         {
@@ -201,7 +205,7 @@
                                         }
                                     </InputSelect>
                                 </div>
-                                <button class="btn btn-sm btn-primary my-3" type="submit">
+                                <button class="btn btn-sm btn-success hover-scale my-3" type="submit">
                                     Save
                                 </button>
                             </form>
@@ -215,7 +219,7 @@
                         Projects
                     </h4>
                 </div>
-                <hr/>
+                <hr />
                 <div class="card-body">
                     @foreach (ProjectDTO project in projects)
                     {
@@ -241,9 +245,9 @@
 
 
     @if (userInfo.UserId == ticket.SubmitterUserId
-                || userInfo.UserId == ticket.DeveloperUserId
-                || userInfo.UserId == projectManager?.Id
-               || userInfo.Roles.Contains(nameof(Roles.Admin)))
+              || userInfo.UserId == ticket.DeveloperUserId
+              || userInfo.UserId == projectManager?.Id
+             || userInfo.Roles.Contains(nameof(Roles.Admin)))
     {
         <div class="modal fade" tabindex="-1" id="kt_modal_1">
             <div class="modal-dialog modal-dialog-centered">
@@ -462,6 +466,8 @@
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
                 await TicketService.UpdateTicketAsync(ticket, userInfo!.CompanyId, userInfo!.UserId);
+
+                ticket = await TicketService.GetTicketByIdAsync(TicketId, userInfo!.CompanyId);
             }
             catch (Exception ex)
             {

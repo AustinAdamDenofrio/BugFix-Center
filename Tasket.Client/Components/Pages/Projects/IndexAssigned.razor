@@ -1,20 +1,10 @@
-﻿@page "/projects"
-@using Microsoft.AspNetCore.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
 
-@rendermode InteractiveAuto
+@page "/projects/assignments"
+
 @inject IProjectDTOService ProjectService
 
-@attribute [Authorize (Roles = $"{nameof(Roles.Admin)}")]
-
-
-<PageTitle>Projects</PageTitle>
-<div class="d-flex justify-content-end align-items-start mb-5">
-    <div class="mt-3">
-        <a class="btn btn-light-primary fw-bold" href="/projects/create">Add Project</a>
-    </div>
-</div>
-
-
+@attribute [Authorize(Roles = $"{nameof(Roles.ProjectManager)}, {nameof(Roles.Developer)}, {nameof(Roles.Submitter)}")]
 
 @if (projects is not null)
 {
@@ -50,17 +40,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (ProjectDTO project in projects)
-                {
-                    <tr @key="project.Id">
-                        <ProjectTableItem Project="project" />
-                    </tr>
-                }
+            @foreach (ProjectDTO project in projects)
+            {
+                <tr @key="project.Id">
+                    <ProjectTableItem Project="project" />
+                </tr>
+            }
             </tbody>
         </table>
     </div>
 }
-
 @code {
     #region Parameters
     [CascadingParameter]
@@ -81,8 +70,10 @@
     protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        if (userInfo is null) return;
 
-        projects = await ProjectService.GetAllProjectsAsync(userInfo.CompanyId);
+        projects = await ProjectService.GetAllAssignedProjectsAsync(userInfo.CompanyId, userInfo.UserId);
+
     }
     #endregion
 }

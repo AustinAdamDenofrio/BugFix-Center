@@ -10,6 +10,7 @@ namespace Tasket.Services.Interfaces
         #region Project CRUD
         #region Get list
         Task<IEnumerable<Project>> GetAllProjectsAsync(int companyId);
+        Task<IEnumerable<Project>> GetAllAssignedProjectsAsync(int companyId, string userId);
         Task<IEnumerable<Project>> GetArchivedProjectsAsync(int companyId);
         #endregion
         #region Get One Item

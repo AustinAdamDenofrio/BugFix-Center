@@ -62,3 +62,10 @@ h1:focus {
     height: 5rem;
     border-radius: 50%;
 }
+
+.member-img {
+    position: relative;
+    max-width: 60px !important;
+    overflow: hidden;
+    border-radius: 50% !important;
+}

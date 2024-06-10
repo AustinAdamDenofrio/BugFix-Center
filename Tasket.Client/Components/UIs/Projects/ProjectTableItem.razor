@@ -3,16 +3,22 @@
 
 @if (Project is not null)
 {
-    <td>@Project.Name</td>
-    <td>@((MarkupString)Project.Description!)</td>
+    <td><a type="button" href="projects/@Project.Id">@Project.Name</a></td>
+    <td>@projectManager?.FullName</td>
+    <td>
+        <ul class="list-unstyled">
+
+            @foreach (UserDTO member in Project.Members)
+            {
+                <li>
+                    @member.FullName
+                </li>
+            }
+        </ul>
+    </td>
     <td>@Project.StartDate.ToString("d")</td>
     <td>@Project.EndDate.ToString("d")</td>
     <td>@Project.Priority</td>
-    <td>
-        <a class="fs-sm fw-semibold btn btn-warning mx-3 mb-3" type="button" href="/projects/@Project.Id">
-            details
-        </a>
-    </td>
 }
 @code {
     #region Parameters
@@ -28,10 +34,21 @@
 
     #region State
     UserInfo? userInfo;
+    private UserDTO? projectManager;
     #endregion
 
 
     #region Methods
+    protected override async Task OnParametersSetAsync()
+    {
+
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        if (Project is null || userInfo is null) return;
+
+        projectManager = await ProjectService.GetProjectManagerAsync(Project.Id, userInfo.CompanyId);
+    }
+
     private async Task ArchiveProjectAsync()
     {
         if (Project is not null)
