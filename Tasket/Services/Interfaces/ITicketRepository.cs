@@ -1,4 +1,5 @@
-﻿using Tasket.Models;
+﻿using Tasket.Client.Models;
+using Tasket.Models;
 
 namespace Tasket.Services.Interfaces
 {
@@ -13,11 +14,13 @@ namespace Tasket.Services.Interfaces
             #region Get One Item
 
             Task<Ticket?> GetTicketByIdAsync(int ticketId, int companyId);
+
+        Task<IEnumerable<Ticket>> GetUserTicketsAsync(int companyId, string userId);
             #endregion
 
 
 
-            #region Update DB Item (Returns a value)
+        #region Update DB Item (Returns a value)
             Task<Ticket> AddTicketAsync(Ticket ticket, int companyId);
             #endregion
 

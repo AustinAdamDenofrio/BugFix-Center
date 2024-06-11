@@ -16,6 +16,11 @@ namespace Tasket.Client.Services
             IEnumerable<TicketDTO> tickets = await _httpClient.GetFromJsonAsync<IEnumerable<TicketDTO>>("api/tickets") ?? [];
             return tickets;
         }
+        public async Task<IEnumerable<TicketDTO>> GetUserTicketsAsync(int companyId, string userId)
+        {
+            IEnumerable<TicketDTO> tickets = await _httpClient.GetFromJsonAsync<IEnumerable<TicketDTO>>("api/tickets/assignments") ?? [];
+            return tickets;
+        }
         #endregion
 
 
@@ -132,6 +137,7 @@ namespace Tasket.Client.Services
             var res = await _httpClient.DeleteAsync($"api/tickets/attachments/{attachmentId}");
             res.EnsureSuccessStatusCode();
         }
+
         #endregion
 
     }

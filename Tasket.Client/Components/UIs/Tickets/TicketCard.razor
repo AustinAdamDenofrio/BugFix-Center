@@ -1,17 +1,19 @@
 ﻿@if (Ticket is not null)
 {
-    <a class="card-body pb-3 text-decoration-none" href="/projects/@Ticket.Id">
+    <a class="card-body pb-3 text-decoration-none hover-elevate-up" href="/projects/@Ticket.Id">
         <h3 class="h4 my-3">@Ticket.Title</h3>
-        <p class="my-3">@((MarkupString)Ticket.Description!)</p>
-        <p class="my-3">@Ticket.</p>
+        <a class="my-3" href="projects/@Ticket.Project?.Id">@Ticket.Project?.Name</a>
         <p class="my-3 fw-bold">Due: @Ticket.Created.ToString("d")</p>
         <div class="d-flex align-items-center">
             @if (Ticket.Archived == true)
             {
                 <h6 class=""><span class="badge text-bg-secondary">Archived</span></h6>
             }
-            <a class="fs-sm fw-semibold btn btn-primary mx-3 mb-3 ms-auto" type="button" href="/tickets/@Ticket.Id">
-                Edit
+            <h4>
+                <span class="badge badge-info">Urgent</span>
+            </h4>
+            <a class="fs-sm fw-semibold btn btn-sm btn-light-primary mx-3 mb-3 ms-auto" type="button" href="/tickets/@Ticket.Id">
+                Details
             </a>
         </div>
     </a>

@@ -8,7 +8,7 @@ namespace Tasket.Client.Services.Interfaces
         #region Tickets     
         #region Get List Items
         Task<IEnumerable<TicketDTO>> GetAllTicketsAsync(int companyId);
-
+        Task<IEnumerable<TicketDTO>> GetUserTicketsAsync(int companyId, string userId);
         #endregion
 
 

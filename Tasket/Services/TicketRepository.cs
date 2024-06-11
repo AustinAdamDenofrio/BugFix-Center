@@ -3,20 +3,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Net.Sockets;
+using Tasket.Client.Models;
 using Tasket.Data;
 using Tasket.Models;
 using Tasket.Services.Interfaces;
 
 namespace Tasket.Services
 {
-    public class TicketRepository : ITicketRepository
+    public class TicketRepository(ICompanyRepository companyRepository, IDbContextFactory<ApplicationDbContext> _dbContextFactory) : ITicketRepository
     {
-        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
 
-        public TicketRepository(IDbContextFactory<ApplicationDbContext> dbContextFactory)
-        {
-            _dbContextFactory = dbContextFactory;
-        }
 
 
         #region Tickets
@@ -37,10 +33,42 @@ namespace Tasket.Services
             return tickets;
         }
 
+        public async Task<IEnumerable<Ticket>> GetUserTicketsAsync(int companyId, string userId)
+        {
+
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            string currentRole = await companyRepository.GetUserRoleAsync(userId, companyId);
+
+            if (currentRole == nameof(Roles.ProjectManager))
+            {
+                IEnumerable<Ticket> tickets = await context.Tickets
+                                        .Include(t => t.Project)
+                                            .ThenInclude(p => p.Members)
+                                        .Where(t => t.Project!.CompanyId == companyId
+                                                            && (t.Project.Members.Any(m => m.Id == userId)
+                                                            || t.SubmitterUserId == userId))
+                                        .OrderBy(t => t.Created)
+                                        .ToListAsync();
+                return tickets;
+            }
+            else
+            {
+                IEnumerable<Ticket> tickets = await context.Tickets
+                                            .Include(t => t.Project)
+                                                .ThenInclude(p => p.Members)
+                                            .Where(t => t.Project!.CompanyId == companyId)
+                                            .Where(t => t.SubmitterUserId == userId || t.DeveloperUserId == userId)
+                                            .OrderBy(t => t.Created)
+                                            .ToListAsync();
+                return tickets;
+            }
+        }
 
         public async Task<IEnumerable<TicketComment>> GetTicketCommentsAsync(int ticketId, int companyId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
 
             IEnumerable<TicketComment> ticketComments = await context.TicketComments
                                                     .Where(t => t.TicketId == ticketId && t.User!.CompanyId == companyId)

@@ -1,19 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 
 @page "/tickets/assignments"
-@* @rendermode InteractiveAuto *@
+@rendermode InteractiveAuto
 
 @* @attribute [Authorize(Roles = $"{nameof(Roles.ProjectManager)}, {nameof(Roles.Developer)}, {nameof(Roles.Submitter)}")] *@
 
 @inject ITicketDTOService TicketService
+@inject IProjectDTOService ProjectService
 
 @if (tickets is not null)
 {
-
     @if (tickets.Any(t => t.Priority == TicketPriority.Urgent) == true)
     {
         <h3 class="lead">Urgent Tickets:</h3>
-        <div class="row row-cols-1 row-cols-sm-3 g-3 justify-content-center">
+        <div class="row row-cols-1 row-cols-sm-4 g-3 justify-content-center">
             @foreach (TicketDTO ticket in tickets)
             {
                 if (ticket.Priority == TicketPriority.Urgent)
@@ -29,56 +29,31 @@
         </div>
     }
 
-    <h3 class="lead">All Tickets:</h3>
-    //If any are due today make them appear with the card and have a details button
-@*     <table class="table table-bordered table-striped">
-        <thead class="table-light">
-            <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Description</th>
-                <th scope="col">Created Date</th>
-                <th scope="col">Project</th>
-                <th scope="col">Priority</th>
-                <th scope="col">Type</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (TicketDTO ticket in tickets)
-            {
-                <tr @key="ticket.Id">
-                    <TicketTableItem Ticket="ticket" />
-                </tr>
-            }
-        </tbody>
-    </table>
- *@
 
+    <h3 class="lead">All Tickets:</h3>
     <div class="table-responsive">
-        <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+        <table class="table gs-7 gy-7 gx-7">
             <thead>
-                <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                    <th>Title</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
+                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                    <th>Ticket</th>
+                    <th>Created</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Priority</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
                     @foreach (TicketDTO ticket in tickets)
                     {
                     <tr @key="ticket.Id">
                         <TicketTableItem Ticket="ticket" />
                     </tr>
                     }
-                </tr>
             </tbody>
         </table>
     </div>
+
+
 }
 
 @code {
@@ -91,6 +66,7 @@
 
 
     #region States
+    IEnumerable<ProjectDTO> projects = [];
     IEnumerable<TicketDTO> tickets = [];
 
     UserInfo? userInfo;
@@ -101,8 +77,10 @@
     protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        if (userInfo is null) return;
+        // projects = await ProjectService.GetAllAssignedProjectsAsync(userInfo!.CompanyId, userInfo.UserId);
 
-        tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+        tickets = await TicketService.GetUserTicketsAsync(userInfo.CompanyId, userInfo.UserId);
     }
 
     private async Task HandleSubmit(TicketDTO ticketForm)
@@ -115,7 +93,7 @@
 
                 await TicketService.AddTicketAsync(ticketForm, userInfo!.CompanyId);
 
-                tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+                projects = await ProjectService.GetAllAssignedProjectsAsync(userInfo!.CompanyId, userInfo.UserId);
             }
             catch (Exception ex)
             {
@@ -134,7 +112,7 @@
 
                 await TicketService.ArchiveTicketAsync(formTicketId, userInfo!.CompanyId);
 
-                tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+                projects = await ProjectService.GetAllAssignedProjectsAsync(userInfo!.CompanyId, userInfo.UserId);
             }
             catch (Exception ex)
             {
@@ -153,7 +131,7 @@
 
                 await TicketService.RestoreTicketAsync(formTicketId, userInfo!.CompanyId);
 
-                tickets = await TicketService.GetAllTicketsAsync(userInfo!.CompanyId);
+                projects = await ProjectService.GetAllAssignedProjectsAsync(userInfo!.CompanyId, userInfo.UserId);
             }
             catch (Exception ex)
             {

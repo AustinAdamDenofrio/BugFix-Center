@@ -44,6 +44,29 @@ namespace Tasket.Controllers
             }
         }
 
+        [HttpGet("assignments")]
+        public async Task<ActionResult<IEnumerable<TicketDTO>>> GetUserTicketsAsync()
+        {
+            try
+            {
+                IEnumerable<TicketDTO> tickets = await _ticketService.GetUserTicketsAsync(_companyId!.Value, _userId);
+
+                if (tickets == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return Ok(tickets);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("{ticketId:int}")]
         public async Task<ActionResult<TicketDTO?>> GetTicketByIdAsync([FromRoute] int ticketId)
         {
