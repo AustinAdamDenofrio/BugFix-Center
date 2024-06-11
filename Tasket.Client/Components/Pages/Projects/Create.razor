@@ -1,86 +1,98 @@
 ﻿@page "/projects/create"
+@using Microsoft.AspNetCore.Authorization
 
 @rendermode InteractiveAuto
 @inject IProjectDTOService ProjectService
 @inject NavigationManager Nav
+@attribute [Authorize(Roles = $"{nameof(Roles.Admin)}, {nameof(Roles.ProjectManager)}")]
 
-@if (project is not null)
-{
-    <EditForm Model="project" OnValidSubmit="HandleSubmit">
-        <DataAnnotationsValidator />
 
-        <div class="border bg-light shadow-lg border-2 py-2 col-6">
-            <div class="row p-2 g-3 justify-content-center">
-                <div class="col-12 col-md-10 my-5">
-                    <div class="row g-2" action="#">
-                        <div class="col-12 col-md-6">
-                            <label for="Name" class="form-label">
-                                Name
-                            </label>
-                            <InputText @bind-Value="project.Name"
-                                       id="Name"
-                                       class="form-control"
-                                       placeholder="Name"
-                                       aria-label="Name" />
-                            <ValidationMessage For="() => project.Name" />
-                        </div>
-                        <div class="col-12">
-                            <label for="Description" class="form-label">
-                                Description
-                            </label>
-                            <InputTextArea @bind-Value="project.Description"
-                                           id="Description"
-                                           row="4"
+<AuthorizeView Context="PageContext" Roles="Admin, ProjectManager">
+    @if (project is not null)
+    {
+        <EditForm Model="project" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="border bg-light shadow-lg border-2 py-2 col-6">
+                <div class="row p-2 g-3 justify-content-center">
+                    <div class="col-12 col-md-10 my-5">
+                        <div class="row g-2" action="#">
+                            <div class="col-12 col-md-6">
+                                <label for="Name" class="form-label">
+                                    Name
+                                </label>
+                                <InputText @bind-Value="project.Name"
+                                           id="Name"
                                            class="form-control"
-                                           placeholder="Description"
-                                           aria-label="Description" />
-                            <ValidationMessage For="() => project.Description" />
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label" for="startDate">
-                                Start Date
-                            </label>
-                            <InputDate id="startDate" @bind-Value="project.StartDate" class="form-control" />
-                            <ValidationMessage For="() => project.StartDate" />
-
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label" for="endDate">
-                                End Date
-                            </label>
-                            <InputDate id="endDate" @bind-Value="project.EndDate" class="form-control" />
-                            <ValidationMessage For="() => project.EndDate" />
-                        </div>
-                        <div class="mb-2 col-2">
-                            <label class="form-label">Category</label>
-                            <InputSelect class="form-control" @bind-Value="project.Priority">
-                                @foreach (ProjectPriority priority in Enum.GetValues(typeof(ProjectPriority)))
-                                {
-                                    <option value="@priority">@priority.GetDisplayName()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="() => project.Priority" />
-                        </div>
-
-
-                        <div class="col-12 hstack justify-content-end gap-3">
-                            <div class="text-end">
-                                <a class="btn btn-lg btn-outline-secondary" href="/projects">
-                                    Cancel
-                                </a>
+                                           placeholder="Name"
+                                           aria-label="Name" />
+                                <ValidationMessage For="() => project.Name" />
                             </div>
-                            <div class="text-end">
-                                <button class="btn btn-lg btn-primary" type="submit">
-                                    Save
-                                </button>
+                            <div class="col-12">
+                                <label for="Description" class="form-label">
+                                    Description
+                                </label>
+                                <InputTextArea @bind-Value="project.Description"
+                                               id="Description"
+                                               row="4"
+                                               class="form-control"
+                                               placeholder="Description"
+                                               aria-label="Description" />
+                                <ValidationMessage For="() => project.Description" />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="startDate">
+                                    Start Date
+                                </label>
+                                <InputDate id="startDate" @bind-Value="project.StartDate" class="form-control" />
+                                <ValidationMessage For="() => project.StartDate" />
+
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="endDate">
+                                    End Date
+                                </label>
+                                <InputDate id="endDate" @bind-Value="project.EndDate" class="form-control" />
+                                <ValidationMessage For="() => project.EndDate" />
+                            </div>
+                            <div class="mb-2 col-2">
+                                <label class="form-label">Category</label>
+                                <InputSelect class="form-control" @bind-Value="project.Priority">
+                                    @foreach (ProjectPriority priority in Enum.GetValues(typeof(ProjectPriority)))
+                                    {
+                                        <option value="@priority">@priority.GetDisplayName()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => project.Priority" />
+                            </div>
+
+
+                            <div class="col-12 hstack justify-content-end gap-3">
+                                <div class="text-end">
+                                    <a class="btn btn-lg btn-outline-secondary" href="/projects">
+                                        Cancel
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-lg btn-primary" type="submit">
+                                        Save
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </EditForm>
+    }
+
+
+
+    <div class="card d-flex justify-content-center">
+        <div class="col-6 d-flex justify-content-center">
         </div>
-    </EditForm>
-}
+    </div>
+</AuthorizeView>
 
 @code {
     #region Parameters
@@ -101,8 +113,8 @@
     #region Methods
     protected override void OnInitialized()
     {
-        project!.StartDate = DateTime.Now; 
-        project!.EndDate = DateTime.Now; 
+        project!.StartDate = DateTime.Now;
+        project!.EndDate = DateTime.Now;
     }
 
     private async Task HandleSubmit()

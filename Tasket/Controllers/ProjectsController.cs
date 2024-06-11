@@ -21,6 +21,7 @@ namespace Tasket.Controllers
 
 
         #region Project CRUDs
+
         #region Get list of items
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectDTO>>> GetAllProjectsAsync()
@@ -116,8 +117,11 @@ namespace Tasket.Controllers
             }
         }
         #endregion
+
+
         #region Change DB item or items
         [HttpPost]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<ActionResult<ProjectDTO>> AddProject([FromBody] ProjectDTO projectDTO)
         {
             try
@@ -130,34 +134,52 @@ namespace Tasket.Controllers
                 Console.WriteLine(ex);
                 return Problem();
             }
+
         }
 
         [HttpPut("update/{projectId:int}")]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> UpdateProjectAsync([FromRoute] int projectId, [FromBody] ProjectDTO projectDTO)
         {
-            if (projectId == projectDTO.Id)
-            {
-                try
-                {
-                    await _projectService.UpdateProjectAsync(projectDTO, _companyId!.Value);
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    return NotFound();
-                }
-            }
-            return BadRequest();
-        }
-
-        [HttpPut("archive/{projectId:int}")]
-        public async Task<IActionResult> ArchiveProjectAsync([FromRoute] int projectId, [FromBody] int projectIdFromBody)
-        //this will change to check user role is admin or project manager,not projectDTO
-        {
+            if (projectId == projectDTO.Id) return BadRequest();
+            if (_companyId is null || _companyId == 0) return BadRequest();
 
             try
             {
+                UserDTO? dbProjectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
+
+                if (dbProjectManager == null) return BadRequest();
+
+                if (dbProjectManager.Id == UserId) 
+                { 
+                    await _projectService.UpdateProjectAsync(projectDTO, _companyId!.Value);
+                    return Ok();
+                }
+
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return NotFound();
+            }
+        }
+
+        [HttpPut("archive/{projectId:int}")]
+        [Authorize(Roles = "Admin, ProjectManager")]
+        public async Task<IActionResult> ArchiveProjectAsync([FromRoute] int projectId, [FromBody] int projectIdFromBody)
+        //this will change to check user role is admin or project manager,not projectDTO
+        {
+            if (projectId != projectIdFromBody) return BadRequest();
+            if (_companyId is null || _companyId == 0) return BadRequest();
+
+            try
+            {
+                UserDTO? dbProjectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
+                if (dbProjectManager == null) return BadRequest();
+
+                if (dbProjectManager.Id == UserId) return BadRequest();
+
                 await _projectService.ArchiveProjectAsync(projectId, _companyId!.Value);
                 return Ok();
             }
@@ -169,12 +191,19 @@ namespace Tasket.Controllers
         }
 
         [HttpPut("restore/{projectId:int}")]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> RestoreProjectAsync([FromRoute] int projectId, [FromBody] int projectIdFromBody)
-        //this will change to check user role is admin or project manager,not projectDTO
         {
+            if (projectId != projectIdFromBody) return BadRequest();
+            if (_companyId is null || _companyId == 0) return BadRequest();
 
             try
             {
+                UserDTO? dbProjectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
+                if (dbProjectManager == null) return BadRequest();
+
+                if (dbProjectManager.Id == UserId) return BadRequest();
+
                 await _projectService.RestoreProjectAsync(projectId, _companyId!.Value);
                 return Ok();
             }
@@ -184,7 +213,9 @@ namespace Tasket.Controllers
                 return NotFound();
             }
         }
+
         #endregion
+
         #endregion
 
 

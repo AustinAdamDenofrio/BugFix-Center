@@ -1,4 +1,5 @@
-﻿@if (Project is not null)
+﻿@inject IProjectDTOService ProjectService
+@if (Project is not null)
 {
     <a class="card-body pb-3 text-decoration-none" href="/projects/@Project.Id">
         <svg class="d-block mt-1 mt-sm-0 mb-4" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -20,15 +21,25 @@
             {
                 <h6 class=""><span class="badge text-bg-secondary">Archived</span></h6>
             }
-            <a class="fs-sm fw-semibold btn btn-primary mx-3 mb-3 ms-auto" type="button" href="/projects/edit/@Project.Id">
-                Edit
-            </a>
+            <AuthorizeView Roles="ProjectManager, Admin">
+                @if (userInfo is not null)
+                {
+                    @if (projectManager.Id == userInfo?.UserId || userInfo.Roles.Any(r => r == nameof(Roles.Admin)))
+                    {
+                        <a class="fs-sm fw-semibold btn btn-primary mx-3 mb-3 ms-auto" type="button" href="/projects/edit/@Project.Id">
+                            Edit
+                        </a>
+                    }                    
+                }
+            </AuthorizeView>
         </div>
     </a>    
 }
 @code {
-
     #region Parameters
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
     [Parameter, EditorRequired]
     public ProjectDTO? Project { get; set; }
     #endregion
@@ -37,5 +48,23 @@
 
     #region State
     UserInfo? userInfo;
+    private UserDTO? projectManager;
     #endregion
+
+    #region  Methods
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+            projectManager = await ProjectService.GetProjectManagerAsync(Project.Id, userInfo!.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+    #endregion 
+
 }

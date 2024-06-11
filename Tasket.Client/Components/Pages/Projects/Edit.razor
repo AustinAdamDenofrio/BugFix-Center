@@ -1,10 +1,14 @@
 ﻿@page "/projects/edit/{projectId:int}"
+@using Microsoft.AspNetCore.Authorization
 
 @rendermode InteractiveAuto
 @inject IProjectDTOService ProjectService
 @inject NavigationManager Nav
 
-@if (project is not null)
+@attribute [Authorize(Roles = $"{nameof(Roles.Admin)}, {nameof(Roles.ProjectManager)}")]
+
+@if (project is not null 
+            && (projectManager.Id == userInfo.UserId || userInfo.Roles.Any(r => r == nameof(Roles.Admin))))
 {
     <EditForm Model="project" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator />
@@ -125,6 +129,7 @@
     private UserInfo? userInfo;
 
     private ProjectDTO? project;
+    private UserDTO? projectManager;
     #endregion
 
 
@@ -137,6 +142,7 @@
             userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
             project = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo!.CompanyId);
+            projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo!.CompanyId);
         }
         catch (Exception ex)
         {

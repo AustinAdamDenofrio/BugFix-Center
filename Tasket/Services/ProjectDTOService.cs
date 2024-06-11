@@ -66,20 +66,11 @@ namespace Tasket.Client.Services
                 projectToUpdate.Priority = project.Priority;
                 projectToUpdate.StartDate = project.StartDate;
                 projectToUpdate.EndDate = project.EndDate;
-                projectToUpdate.Archived = project.Archived;
-                projectToUpdate.Priority = project.Priority;
 
-                //if (project.Members is not null)
-                //{
-                //projectToUpdate.Members.Clear();
+                projectToUpdate.Company = null;
 
-                //foreach (UserDTO memberDTO in project.Members)
-                //{
-                //    //Get member from claims principle by matching some ids to other ids
-                //    projectToUpdate.Members.Add();
-                //}
-                //}
-
+                projectToUpdate.Tickets = [];
+                projectToUpdate.Members = [];
 
                 await _repository.UpdateProjectAsync(projectToUpdate, companyId);
             }
