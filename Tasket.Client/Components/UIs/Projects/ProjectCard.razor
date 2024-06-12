@@ -24,7 +24,7 @@
             <AuthorizeView Roles="ProjectManager, Admin">
                 @if (userInfo is not null)
                 {
-                    @if (projectManager.Id == userInfo?.UserId || userInfo.Roles.Any(r => r == nameof(Roles.Admin)))
+                    @if (projectManager?.Id == userInfo?.UserId || userInfo.Roles.Any(r => r == nameof(Roles.Admin)))
                     {
                         <a class="fs-sm fw-semibold btn btn-primary mx-3 mb-3 ms-auto" type="button" href="/projects/edit/@Project.Id">
                             Edit

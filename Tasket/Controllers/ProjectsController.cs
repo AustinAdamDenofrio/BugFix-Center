@@ -18,8 +18,6 @@ namespace Tasket.Controllers
 
         private string UserId => User.GetUserId()!;
 
-
-
         #region Project CRUDs
 
         #region Get list of items
@@ -150,8 +148,8 @@ namespace Tasket.Controllers
 
                 if (dbProjectManager == null) return BadRequest();
 
-                if (dbProjectManager.Id == UserId) 
-                { 
+                if (dbProjectManager.Id == UserId)
+                {
                     await _projectService.UpdateProjectAsync(projectDTO, _companyId!.Value);
                     return Ok();
                 }
@@ -168,11 +166,10 @@ namespace Tasket.Controllers
         [HttpPut("archive/{projectId:int}")]
         [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> ArchiveProjectAsync([FromRoute] int projectId, [FromBody] int projectIdFromBody)
-        //this will change to check user role is admin or project manager,not projectDTO
         {
             if (projectId != projectIdFromBody) return BadRequest();
             if (_companyId is null || _companyId == 0) return BadRequest();
-
+            
             try
             {
                 UserDTO? dbProjectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
@@ -286,10 +283,27 @@ namespace Tasket.Controllers
         }
 
         [HttpPut("{projectId}/members/add")]
+        [Authorize(Roles = $"{nameof(Roles.Admin)}, {nameof(Roles.ProjectManager)}")]
         public async Task<IActionResult> AddMemberToProjectAsync([FromRoute] int projectId, [FromBody] string memberId)
         {
+            if (_companyId is null || _companyId == 0) return BadRequest();
+
             try
             {
+                if (User.IsInRole(nameof(Roles.ProjectManager)))
+                {
+                    UserDTO? dbProjectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
+                    if (dbProjectManager == null) return BadRequest();
+
+                    if (dbProjectManager.Id != UserId) return BadRequest();
+
+                    await _projectService.AddMemberToProjectAsync(projectId, memberId, UserId);
+
+                    return Ok();
+                }
+
+                if (!User.IsInRole(nameof(Roles.Admin))) return BadRequest();
+
                 await _projectService.AddMemberToProjectAsync(projectId, memberId, UserId);
 
                 return Ok();
@@ -321,6 +335,7 @@ namespace Tasket.Controllers
         }
 
         [HttpPut("{projectId}/members/assign-manager")]
+        [Authorize(Roles = $"{nameof(Roles.Admin)}")]
         public async Task<IActionResult> AssignProjectManagerAsync([FromRoute] int projectId, [FromBody] string memberId)
         {
             try

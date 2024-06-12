@@ -4,6 +4,7 @@
 @rendermode InteractiveAuto
 @inject IProjectDTOService ProjectService
 @inject NavigationManager Nav
+
 @attribute [Authorize(Roles = $"{nameof(Roles.Admin)}, {nameof(Roles.ProjectManager)}")]
 
 
@@ -65,7 +66,7 @@
                                 </InputSelect>
                                 <ValidationMessage For="() => project.Priority" />
                             </div>
-
+                            @userInfo.Roles.Any(r => r == nameof(Roles.Developer))
 
                             <div class="col-12 hstack justify-content-end gap-3">
                                 <div class="text-end">
@@ -122,12 +123,26 @@
         if (project is not null)
         {
 
-            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            try
+            {
+                userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
-            await ProjectService.AddProjectAsync(project, userInfo!.CompanyId);
+                await ProjectService.AddProjectAsync(project, userInfo!.CompanyId);
+
+                if (userInfo.Roles.Any(r => r == nameof(Roles.ProjectManager)))
+                {
+                
+                    Nav.NavigateTo($"/projects/assignments");
+                }
+
+                if (userInfo.Roles.Any(r => r == nameof(Roles.Admin))) Nav.NavigateTo($"/projects");            
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
 
-            Nav.NavigateTo($"/projects");
         }
     }
 
