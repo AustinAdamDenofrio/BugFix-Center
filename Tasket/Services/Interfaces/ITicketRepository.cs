@@ -60,6 +60,8 @@ namespace Tasket.Services.Interfaces
         #region Attachments
         Task<TicketAttachment> AddTicketAttachment(TicketAttachment attachment, int companyId);
         Task DeleteTicketAttachment(int attachmentId, int companyId);
+
+        Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int ticketAttachmentId, int companyId);
         #endregion
 
     }

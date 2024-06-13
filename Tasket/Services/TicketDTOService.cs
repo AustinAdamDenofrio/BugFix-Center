@@ -191,6 +191,13 @@ namespace Tasket.Services
         {
             await _repository.DeleteTicketAttachment(attachmentId, companyId);
         }
+
+        public async Task<TicketAttachmentDTO?> GetTicketAttachmentByIdAsync(int ticketAttachmentId, int companyId)
+        {
+            TicketAttachment? ticket = await _repository.GetTicketAttachmentByIdAsync(ticketAttachmentId, companyId);
+
+            return ticket?.ToDTO();
+        }
         #endregion
     }
 }

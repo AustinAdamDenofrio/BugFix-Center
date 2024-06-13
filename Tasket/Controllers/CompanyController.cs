@@ -65,8 +65,11 @@ namespace Tasket.Controllers
 
 
         [HttpPost("update")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCompanyAsync([FromBody] CompanyDTO companyDTO)
         {
+            if (companyDTO.Id != CompanyId) return BadRequest();
+
             if (User.IsInRole((nameof(Roles.Admin))))
             {
                 await _companyService.UpdateCompanyAsync(companyDTO, UserId);
@@ -78,8 +81,11 @@ namespace Tasket.Controllers
         }
 
         [HttpPost("update/role")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserRoleAsync([FromBody] UserDTO userDTO)
         {
+            if (userDTO.Id == UserId) return BadRequest();
+
             if (User.IsInRole((nameof(Roles.Admin))))
             {
                 await _companyService.UpdateUserRoleAsync(userDTO, UserId);

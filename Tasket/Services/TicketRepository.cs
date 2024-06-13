@@ -250,6 +250,17 @@ namespace Tasket.Services
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int ticketAttachmentId, int companyId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            TicketAttachment? ticket = await context.TicketAttachments
+                                    .Include(a => a.Upload)
+                                    .Include(a => a.User)
+                                    .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId && t.Ticket.Project.CompanyId == companyId);
+            return ticket;
+        }
         #endregion
     }
 }

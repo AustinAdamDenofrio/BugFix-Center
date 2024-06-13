@@ -226,11 +226,11 @@ namespace Tasket.Controllers
                 if (User.IsInRole(nameof(Roles.ProjectManager)))
                 {
                     TicketDTO? ticket = await _ticketService.GetTicketByIdAsync(ticketIdFromBody, _companyId.Value);
-                    if (ticket == null) return BadRequest();
+                        if (ticket == null) return BadRequest();
 
                     UserDTO? projectManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId, _companyId.Value);
-                    if (projectManager is null) return BadRequest();
-                    if (projectManager.Id != _userId) return BadRequest();
+                        if (projectManager is null) return BadRequest();
+                        if (projectManager.Id != _userId) return BadRequest();
                 }
 
                 await _ticketService.RestoreTicketAsync(ticketId, _companyId.Value);
@@ -517,11 +517,27 @@ namespace Tasket.Controllers
 
         // DELETE: api/Tickets/attachments/1
         [HttpDelete("attachments/{attachmentId}")]
+        [Authorize]
         public async Task<IActionResult> DeleteTicketAttachment(int attachmentId)
         {
+            if (_companyId is null) return BadRequest();
+
             var user = await _userManager.GetUserAsync(User);
 
-            await _ticketService.DeleteTicketAttachment(attachmentId, user!.CompanyId);
+            try
+            {
+                TicketAttachmentDTO? attachment = await _ticketService.GetTicketAttachmentByIdAsync(attachmentId, _companyId.Value);
+                    if (attachment is null) return BadRequest();
+
+                    if (_userId != attachment.UserId) return BadRequest();
+                await _ticketService.DeleteTicketAttachment(attachmentId, user!.CompanyId);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
             return NoContent();
         }
