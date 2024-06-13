@@ -138,6 +138,11 @@ namespace Tasket.Client.Services
             res.EnsureSuccessStatusCode();
         }
 
+        public Task<TicketAttachmentDTO?> GetTicketAttachmentByIdAsync(int ticketAttachmentId, int companyId)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
     }

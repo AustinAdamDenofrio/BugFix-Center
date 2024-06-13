@@ -7,8 +7,7 @@
 
 @attribute [Authorize(Roles = $"{nameof(Roles.Admin)}, {nameof(Roles.ProjectManager)}")]
 
-@if (project is not null 
-            && (projectManager.Id == userInfo.UserId || userInfo.Roles.Any(r => r == nameof(Roles.Admin))))
+@if (project is not null && (projectManager?.Id == userInfo?.UserId == true || userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true))
 {
     <EditForm Model="project" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator />
@@ -68,7 +67,7 @@
 
 
                         <div class="col-12 hstack justify-content-end gap-3">
-                            @if(project.Archived == true)
+                            @if (project.Archived == true)
                             {
                                 <div class="text-end">
                                     <a class="btn btn-lg btn-outline-primary" type="submit" @onclick="RestoreProjectAsync">
@@ -135,6 +134,27 @@
 
 
     #region Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+        }
+
+        if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == false
+            && userInfo?.Roles.Any(r => r == nameof(Roles.ProjectManager)) == false)
+        {
+            Nav.NavigateTo($"/");
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -143,6 +163,7 @@
 
             project = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo!.CompanyId);
             projectManager = await ProjectService.GetProjectManagerAsync(ProjectId, userInfo!.CompanyId);
+
         }
         catch (Exception ex)
         {
@@ -159,8 +180,8 @@
 
             await ProjectService.UpdateProjectAsync(project, userInfo!.CompanyId);
 
-
-            Nav.NavigateTo($"/projects");
+            if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true) Nav.NavigateTo($"/projects");
+            if (userInfo?.Roles.Any(r => r == nameof(Roles.ProjectManager)) == true) Nav.NavigateTo($"/projects/assignments");
         }
     }
 
@@ -174,8 +195,10 @@
 
                 await ProjectService.ArchiveProjectAsync(project.Id, userInfo!.CompanyId);
 
+                project = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo!.CompanyId);
 
-                Nav.NavigateTo("/projects");
+                if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true) Nav.NavigateTo($"/projects");
+                if (userInfo?.Roles.Any(r => r == nameof(Roles.ProjectManager)) == true) Nav.NavigateTo($"/projects/assignments");
             }
             catch (Exception ex)
             {
@@ -195,7 +218,10 @@
                 await ProjectService.RestoreProjectAsync(project.Id, userInfo!.CompanyId);
 
 
-                Nav.NavigateTo("/projects");
+                project = await ProjectService.GetProjectByIdAsync(ProjectId, userInfo!.CompanyId); 
+
+                if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true) Nav.NavigateTo($"/projects");
+                if (userInfo?.Roles.Any(r => r == nameof(Roles.ProjectManager)) == true) Nav.NavigateTo($"/projects/assignments");
             }
             catch (Exception ex)
             {

@@ -201,7 +201,7 @@ namespace Tasket.Controllers
                 UserDTO? dbProjectManager = await _projectService.GetProjectManagerAsync(projectId, _companyId!.Value);
                 if (dbProjectManager == null) return BadRequest();
 
-                if (dbProjectManager.Id == UserId) return BadRequest();
+                if (dbProjectManager.Id != UserId) return BadRequest();
 
                 await _projectService.RestoreProjectAsync(projectId, _companyId!.Value);
                 return Ok();

@@ -28,9 +28,6 @@ namespace Tasket.Client.Services.Interfaces
         #endregion
 
 
-
-
-
         #region Comments
         #region Get List Items
         Task<IEnumerable<TicketCommentDTO>> GetTicketCommentsAsync(int ticketId, int companyId);
@@ -51,12 +48,9 @@ namespace Tasket.Client.Services.Interfaces
 
 
 
-
-
         #region Attachments
         Task<TicketAttachmentDTO> AddTicketAttachment(TicketAttachmentDTO attachment, byte[] uploadData, string contentType, int companyId);
         Task DeleteTicketAttachment(int attachmentId, int companyId);
-
         Task<TicketAttachmentDTO?> GetTicketAttachmentByIdAsync(int ticketAttachmentId, int companyId);
         #endregion
     }

@@ -8,59 +8,64 @@
 
 
 <PageTitle>My Projects</PageTitle>
-@if (userInfo.Roles.Any(r => r == nameof(Roles.ProjectManager) || r == nameof(Roles.Admin)))
-{
-    <div class="d-flex justify-content-end align-items-start mb-5">
-        <div class="mt-3">
+<div class="d-flex align-items-start mb-5">
+    <div class="mt-3">
+        <a class="btn btn-secondary ms-2 fw-bold" href="/projects">
+            All Projects
+        </a>
+    </div>
+    @if (userInfo?.Roles.Any(r => r == nameof(Roles.ProjectManager) || r == nameof(Roles.Admin)) == true)
+    {
+        <div class="mt-3 ms-auto">
             <a class="btn btn-light-primary fw-bold" href="/projects/create">Add Project</a>
         </div>
-    </div>
-}
+    }
+</div>
 
-    @if (projects is not null)
+@if (projects is not null)
+{
+    @if (projects.Any(p => p.Priority == ProjectPriority.Urgent) == true)
     {
-        @if (projects.Any(p => p.Priority == ProjectPriority.Urgent) == true)
-        {
-            <h3 class="lead">Urgent Projects:</h3>
-            <div class="row row-cols-1 row-cols-sm-3 g-2 justify-content-center">
-                @foreach (ProjectDTO project in projects)
+        <h3 class="lead">Urgent Projects:</h3>
+        <div class="row row-cols-1 row-cols-sm-3 g-2 justify-content-center">
+            @foreach (ProjectDTO project in projects)
+            {
+                if (project.Priority == ProjectPriority.Urgent)
                 {
-                    if (project.Priority == ProjectPriority.Urgent)
-                    {
 
-                        <div class="col">
-                            <div class="card border-0 bg-ad-primary-subtle rounded-5 mb-4">
-                                <ProjectCard Project="project" />
-                            </div>
+                    <div class="col">
+                        <div class="card border-0 bg-ad-primary-subtle rounded-5 mb-4">
+                            <ProjectCard Project="project" />
                         </div>
-                    }
+                    </div>
                 }
-            </div>
-        }
+            }
+        </div>
+    }
 
-        <div class="table-responsive">
-            <table class="table table-row-bordered gy-5">
-                <thead>
-                    <tr class="fw-bold fs-6 text-gray-800">
-                        <th>Project</th>
-                        <th>Project Manager</th>
-                        <th>Project Team</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Priority</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <div class="table-responsive">
+        <table class="table table-row-bordered gy-5">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800">
+                    <th>Project</th>
+                    <th>Project Manager</th>
+                    <th>Project Team</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Priority</th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (ProjectDTO project in projects)
                 {
                     <tr @key="project.Id">
                         <ProjectTableItem Project="project" />
                     </tr>
                 }
-                </tbody>
-            </table>
-        </div>
-    }    
+            </tbody>
+        </table>
+    </div>
+}
 @code {
     #region Parameters
     [CascadingParameter]

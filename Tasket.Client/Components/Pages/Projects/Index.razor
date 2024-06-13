@@ -4,15 +4,29 @@
 @rendermode InteractiveAuto
 @inject IProjectDTOService ProjectService
 
-@attribute [Authorize (Roles = $"{nameof(Roles.Admin)}")]
+@attribute [Authorize]
 
 
 <PageTitle>Projects</PageTitle>
-<div class="d-flex justify-content-end align-items-start mb-5">
-    <div class="mt-3">
-        <a class="btn btn-light-primary fw-bold" href="/projects/create">Add Project</a>
+<AuthorizeView Roles="Admin, ProjectManager">
+
+    <div class="d-flex align-items-start mb-5">
+        @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == false)
+        {
+        <div class="mt-3">
+            <a class="btn btn-secondary ms-2 fw-bold" href="/projects/assignments">
+                My Projects
+            </a>
+        </div>
+        }
+        @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true || userInfo?.Roles.Any(r => r == nameof(Roles.ProjectManager)) == true)
+        {
+            <div class="mt-3 ms-auto">
+                <a class="btn btn-light-primary fw-bold" href="/projects/create">Add Project</a>
+            </div>
+        }
     </div>
-</div>
+</AuthorizeView>
 
 
 
@@ -71,7 +85,6 @@
 
     #region State
     IEnumerable<ProjectDTO> projects = [];
-
     UserInfo? userInfo;
     #endregion
 
@@ -81,8 +94,10 @@
     protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        if (userInfo is null) return;
 
         projects = await ProjectService.GetAllProjectsAsync(userInfo.CompanyId);
     }
+
     #endregion
 }

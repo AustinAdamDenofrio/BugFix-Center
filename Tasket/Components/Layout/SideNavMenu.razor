@@ -12,8 +12,8 @@
     <!--begin::Logo-->
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <!--begin::Logo image-->
-        <a href="index.html">
-            <img alt="Logo" src="assets/media/logos/default-dark.svg"
+        <a href="/">
+            <img alt="Logo" src="img/DefaultCompanyImgWithoutBG.png"
                  class="h-30px app-sidebar-logo-default" />
         </a>
         <!--end::Logo image-->
@@ -88,6 +88,8 @@
                             </div>
                             <!--end:Menu item-->
                         </Authorized>
+
+
                         <NotAuthorized>
                             <!--begin:Menu item-->
                             <div class="menu-item">
@@ -104,24 +106,9 @@
                                 <!--end:Menu link-->
                             </div>
                             <!--end:Menu item-->
-
-
-                            <!--begin:Menu item-->
-                            <div class="menu-item">
-                                <!--begin:Menu link-->
-                                <a class="menu-link" href="Account/Login">
-                                    <span class="menu-icon">
-                                        <i class="ki-duotone ki-user">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </span>
-                                    <span class="menu-title">Login</span>
-                                </a>
-                                <!--end:Menu link-->
-                            </div>
-                            <!--end:Menu item-->
                         </NotAuthorized>
+
+
                     </AuthorizeView>
 
                     <AuthorizeView Roles="@nameof(Roles.Admin)">

@@ -1,21 +1,27 @@
-﻿
-
-@if (Member is not null)
+﻿@if (Member is not null)
 {
     <div class="hstack my-3">
         <img src="@Member.ImageUrl" class="member-img" />
         <div class="px-3">
             <span class=""><h4>@Member.FullName</h4></span>
-                @foreach(Roles roles in Enum.GetValues(typeof(Roles)))
+            @foreach (Roles roles in Enum.GetValues(typeof(Roles)))
+            {
+                if (Member.Role == roles.ToString())
                 {
-                    if (Member.Role == roles.ToString())
+                    if (Member.Role == (Roles.Developer).ToString())
                     {
-                        <p class="">@roles.GetDisplayName()</p>
+                        <p class="badge badge-light-info fw-bold fs-8 px-2 py-1 ms-2">@roles.GetDisplayName()</p>                        
+                    }
+
+                    if (Member.Role == (Roles.Submitter).ToString())
+                    {
+                        <p class="badge badge-light-primary fw-bold fs-8 px-2 py-1 ms-2">@roles.GetDisplayName()</p>
                     }
                 }
+            }
         </div>
         <button class="btn ms-auto hover-elevate-down" @onclick="RemoveMember">
-            <i class="ki-duotone ki-trash text-danger fs-2x">
+            <i class="ki-duotone ki-trash text-dark fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
@@ -23,7 +29,7 @@
                 <span class="path5"></span>
             </i>
         </button>
-    </div>    
+    </div>
 }
 
 @code {

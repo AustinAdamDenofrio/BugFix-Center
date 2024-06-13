@@ -4,71 +4,47 @@
 
 @if (CompanyMembers is not null)
 {
-    <div class="bg-white p-5">
-        <h3>Project Team:</h3>
-        @if (ProjectManager is not null)
-        {
-            <div class="hstack py-5">
-                <img src="@ProjectManager.ImageUrl" class="member-img" />
-                <div class="px-3">
-                    <span class=""><h4>@ProjectManager.FullName</h4></span>
-                    @foreach (Roles roles in Enum.GetValues(typeof(Roles)))
-                    {
-                        if (ProjectManager.Role == roles.ToString())
+    <div class="card rounded-5 border-1 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+        <div class=" bg-white p-5">
+            <h3>Project Team:</h3>
+            @if (ProjectManager is not null)
+            {
+                <div class="hstack py-5">
+                    <img src="@ProjectManager.ImageUrl" class="member-img" />
+                    <div class="px-3">
+                        <span class=""><h4>@ProjectManager.FullName</h4></span>
+                        @foreach (Roles roles in Enum.GetValues(typeof(Roles)))
                         {
-                            <p class="">@roles.GetDisplayName()</p>
+                            if (ProjectManager.Role == roles.ToString())
+                            {
+                                <p class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">@roles.GetDisplayName()</p>
+                            }
                         }
+                    </div>
+                    @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true)
+                    {
+                        <button class="btn ms-auto hover-elevate-down" @onclick="HandleRemoveProjectManager" type="button">
+                            <i class="ki-duotone ki-trash text-dark fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                        </button>                    
                     }
                 </div>
-                <button class="btn ms-auto hover-elevate-down" @onclick="HandleRemoveProjectManager" type="button">
-                    <i class="ki-duotone ki-trash text-danger fs-2x">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                        <span class="path5"></span>
-                    </i>
-                </button>
-            </div>
-        }
-
-        <form @onsubmit="HandleUpdateProjectManager" class="mt-5">
-            <label class="form-label">Add Project Manager</label>
-            <InputSelect class="form-control col-6" @bind-Value="selectedProjectManagerId">
-                <option value="">Select a project manager..</option>
-                @foreach (UserDTO employee in CompanyMembers.Where(cm => cm.Role == nameof(Roles.ProjectManager)))
-                {
-                    <option value="@employee.Id">@employee.FullName</option>
-
-                }
-            </InputSelect>
-            <div class="flex-grow-1 text-end">
-                <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
-                    Update
-                </button>
-            </div>
-        </form>
-    </div>
-    <div class="bg-white p-5">
-        @if (CompanyMembers.Any(cm => cm.Role == nameof(Roles.Developer)) == true)
-        {
-            @if (ProjectMembers?.Any(pm => pm.Role == nameof(Roles.Developer)) == true)
-            {
-                <h2>Development Team:</h2>
-                @foreach (UserDTO developer in ProjectMembers.Where(pm => pm.Role == nameof(Roles.Developer)))
-                {
-                    <ProjectTeamMemberCard Member="developer"
-                                           OnRemove="HandleRemoveMember" />
-                }
             }
 
-            <form @onsubmit="HandleAddDeveloper">
-                <label class="form-label">Add Developers:</label>
-                <InputSelect class="form-control" @bind-Value="selectedDeveloperId">
-                    <option value="">Select a project developer..</option>
-                    @foreach (UserDTO employeeDeveloper in CompanyMembers.Where(cm => cm.Role == nameof(Roles.Developer)))
+            @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true)
+            {
+                <form @onsubmit="HandleUpdateProjectManager" class="mt-5">
+                <label class="form-label">Add Project Manager</label>
+                <InputSelect class="form-control col-6" @bind-Value="selectedProjectManagerId">
+                    <option value="">Select a project manager..</option>
+                    @foreach (UserDTO employee in CompanyMembers.Where(cm => cm.Role == nameof(Roles.ProjectManager)))
                     {
-                        <option value="@employeeDeveloper.Id">@employeeDeveloper.FullName</option>
+                        <option value="@employee.Id">@employee.FullName</option>
 
                     }
                 </InputSelect>
@@ -77,42 +53,76 @@
                         Update
                     </button>
                 </div>
-            </form>
-        }
-        else
-        {
-            <h3>Project Developers: None exist in company</h3>
-        }
-    </div>
-    <div>
-        @if (CompanyMembers.Any(cm => cm.Role == nameof(Roles.Submitter)) == true)
-        {
-            @if (ProjectMembers?.Any(pm => pm.Role == nameof(Roles.Submitter)) == true)
-            {
-                <h2>Submitting Team:</h2>
-                @foreach (UserDTO submitter in ProjectMembers.Where(pm => pm.Role == nameof(Roles.Submitter)))
-                {
-                    <ProjectTeamMemberCard Member="submitter"
-                                           OnRemove="HandleRemoveMember" />
-                }
+            </form>            
             }
 
-            <form @onsubmit="HandleAddSubmitter">
-                <label class="form-label">Add Submitter:</label>
-                <InputSelect class="form-control" @bind-Value="selectedSubmitterId">
-                    <option value="">Select a project submitter..</option>
-                    @foreach (UserDTO submitter in CompanyMembers.Where(cm => cm.Role == nameof(Roles.Submitter)))
+
+        </div>
+        <div class="bg-white p-5">
+            @if (CompanyMembers.Any(cm => cm.Role == nameof(Roles.Developer)) == true)
+            {
+                @if (ProjectMembers?.Any(pm => pm.Role == nameof(Roles.Developer)) == true)
+                {
+                    <h4>Development Team:</h4>
+                    @foreach (UserDTO developer in ProjectMembers.Where(pm => pm.Role == nameof(Roles.Developer)))
                     {
-                        <option value="@submitter.Id">@submitter.FullName</option>
+                        <ProjectTeamMemberCard Member="developer"
+                                               OnRemove="HandleRemoveMember" />
                     }
-                </InputSelect>
-                <div class="flex-grow-1 text-end">
-                    <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
-                        Update
-                    </button>
-                </div>
-            </form>
-        }
+                }
+
+                <form @onsubmit="HandleAddDeveloper">
+                    <label class="form-label">Add Developers:</label>
+                    <InputSelect class="form-control" @bind-Value="selectedDeveloperId">
+                        <option value="">Select a project developer..</option>
+                        @foreach (UserDTO employeeDeveloper in CompanyMembers.Where(cm => cm.Role == nameof(Roles.Developer)))
+                        {
+                            <option value="@employeeDeveloper.Id">@employeeDeveloper.FullName</option>
+
+                        }
+                    </InputSelect>
+                    <div class="flex-grow-1 text-end">
+                        <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
+                            Update
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <h3>Project Developers: None exist in company</h3>
+            }
+        </div>
+        <div>
+            @if (CompanyMembers.Any(cm => cm.Role == nameof(Roles.Submitter)) == true)
+            {
+                @if (ProjectMembers?.Any(pm => pm.Role == nameof(Roles.Submitter)) == true)
+                {
+                    <h4>Submitting Team:</h4>
+                    @foreach (UserDTO submitter in ProjectMembers.Where(pm => pm.Role == nameof(Roles.Submitter)))
+                    {
+                        <ProjectTeamMemberCard Member="submitter"
+                                               OnRemove="HandleRemoveMember" />
+                    }
+                }
+
+                <form @onsubmit="HandleAddSubmitter">
+                    <label class="form-label">Add Submitter:</label>
+                    <InputSelect class="form-control" @bind-Value="selectedSubmitterId">
+                        <option value="">Select a project submitter..</option>
+                        @foreach (UserDTO submitter in CompanyMembers.Where(cm => cm.Role == nameof(Roles.Submitter)))
+                        {
+                            <option value="@submitter.Id">@submitter.FullName</option>
+                        }
+                    </InputSelect>
+                    <div class="flex-grow-1 text-end">
+                        <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
+                            Update
+                        </button>
+                    </div>
+                </form>
+            }
+        </div>
     </div>
 }
 

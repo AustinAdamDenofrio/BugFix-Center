@@ -53,6 +53,7 @@ namespace Tasket.Services
 
             Project? project = await context.Projects
                                     .Include(p => p.Members)
+                                    .Include(p => p.Tickets)
                                     .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
 
 
