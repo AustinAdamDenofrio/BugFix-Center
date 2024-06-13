@@ -3,10 +3,22 @@
 @page "/tickets/assignments"
 @rendermode InteractiveAuto
 
-@* @attribute [Authorize(Roles = $"{nameof(Roles.ProjectManager)}, {nameof(Roles.Developer)}, {nameof(Roles.Submitter)}")] *@
+@attribute [Authorize(Roles = $"{nameof(Roles.ProjectManager)}, {nameof(Roles.Developer)}, {nameof(Roles.Submitter)}")]
 
 @inject ITicketDTOService TicketService
 @inject IProjectDTOService ProjectService
+
+<div class="mb-3">
+    <button class="btn btn-primary my-3 " type="button" data-bs-toggle="collapse" data-bs-target="#collapse" aria-expanded="false" aria-controls="collapse">
+        Add Ticket
+    </button>
+    <div class="collapse" id="collapse">
+        <TicketForm Ticket="newTicket"
+                    OnArchive="HandleArchive"
+                    OnRestore="HandleRestore"
+                    OnSubmit="HandleSubmit" />
+    </div>
+</div>
 
 @if (tickets is not null)
 {
@@ -69,6 +81,7 @@
     IEnumerable<ProjectDTO> projects = [];
     IEnumerable<TicketDTO> tickets = [];
 
+    TicketDTO? newTicket;
     UserInfo? userInfo;
     #endregion
 
@@ -81,6 +94,11 @@
         // projects = await ProjectService.GetAllAssignedProjectsAsync(userInfo!.CompanyId, userInfo.UserId);
 
         tickets = await TicketService.GetUserTicketsAsync(userInfo.CompanyId, userInfo.UserId);
+
+        newTicket = new TicketDTO()
+        {
+            SubmitterUserId = userInfo.UserId,
+        };
     }
 
     private async Task HandleSubmit(TicketDTO ticketForm)

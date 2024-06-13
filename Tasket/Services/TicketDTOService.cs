@@ -59,8 +59,8 @@ namespace Tasket.Services
 
             return ticket?.ToDTO();
         }
-        
-        
+
+
         public async Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketCommentId, int companyId)
         {
             TicketComment? ticketComment = await _repository.GetCommentByIdAsync(ticketCommentId, companyId);
@@ -152,8 +152,8 @@ namespace Tasket.Services
 
             TicketComment? commentToUpdate = await _repository.GetCommentByIdAsync(comment.Id, companyId);
 
-            if (commentToUpdate is not null) 
-            { 
+            if (commentToUpdate is not null)
+            {
                 commentToUpdate.Content = comment.Content;
 
                 await _repository.UpdateCommentAsync(commentToUpdate, userId);

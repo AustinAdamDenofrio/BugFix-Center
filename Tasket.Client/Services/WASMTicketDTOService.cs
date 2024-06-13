@@ -38,7 +38,7 @@ namespace Tasket.Client.Services
         #region Update W/ Return
         public async Task<TicketDTO> AddTicketAsync(TicketDTO ticket, int companyId)
         {
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"api/tickets/{ticket.Id}", ticket);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"api/tickets", ticket);
             response.EnsureSuccessStatusCode();
 
             TicketDTO? ticketDTO = await response.Content.ReadFromJsonAsync<TicketDTO>();
@@ -72,9 +72,9 @@ namespace Tasket.Client.Services
             return comments;
         }
 
-        public async Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketId, int companyId)
+        public async Task<TicketCommentDTO?> GetCommentByIdAsync(int ticketCommentId, int companyId)
         {
-            TicketCommentDTO? ticket = await _httpClient.GetFromJsonAsync<TicketCommentDTO>($"api/tickets/comments/{ticketId}");
+            TicketCommentDTO? ticket = await _httpClient.GetFromJsonAsync<TicketCommentDTO>($"api/tickets/comments/{ticketCommentId}");
             return ticket;
         }
 

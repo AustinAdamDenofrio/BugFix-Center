@@ -157,14 +157,9 @@
     {
         if (userInfo is null) return;
 
-        if (Ticket!.Project is null)
+        if (Ticket?.Project is null)
         {
             projects = await ProjectService.GetAllProjectsAsync(userInfo.CompanyId);
-        }
-
-        if (Ticket!.SubmitterUserId is null)
-        {
-            Ticket!.SubmitterUserId = userInfo.UserId;
         }
 
     }
@@ -181,6 +176,7 @@
             {
                 Ticket.SubmitterUserId = userInfo.UserId;
             }
+
             await OnSubmit.InvokeAsync(Ticket);
         }
         catch (Exception ex)

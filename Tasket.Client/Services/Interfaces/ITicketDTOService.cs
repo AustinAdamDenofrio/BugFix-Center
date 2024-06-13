@@ -13,7 +13,7 @@ namespace Tasket.Client.Services.Interfaces
 
 
         #region Get One Item
-        Task<TicketDTO?> GetTicketByIdAsync(int ticketId, int companyId);
+        Task<TicketDTO?> GetTicketByIdAsync(int ticketCommentId, int companyId);
         #endregion
 
 

@@ -43,7 +43,7 @@ namespace Tasket.Client.Services
         #endregion
 
         #region Update DB item or items
-        public async Task<ProjectDTO> AddProjectAsync(ProjectDTO newProject, int companyId)
+        public async Task<ProjectDTO> AddProjectAsync(ProjectDTO newProject, int companyId, string userId)
         {
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/projects", newProject);
             response.EnsureSuccessStatusCode();

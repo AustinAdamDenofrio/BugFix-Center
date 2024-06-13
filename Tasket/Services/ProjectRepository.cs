@@ -61,15 +61,29 @@ namespace Tasket.Services
         }
         #endregion
         #region Update DB item/items
-        public async Task<Project> AddProjectAsync(Project project, int companyId)
+        public async Task<Project> AddProjectAsync(Project project, int companyId, string userId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+            using IServiceScope scope = svcProvider.CreateScope();
+            UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            // get the user attempting to assign a PM
+            ApplicationUser? user = await userManager.FindByIdAsync(userId);
 
             project.Created = DateTime.Now;
 
             context.Projects.Add(project);
             await context.SaveChangesAsync();
 
+            bool isProjectManager = await userManager.IsInRoleAsync(user, nameof(Roles.ProjectManager));
+
+            if (isProjectManager == true)
+            {
+                Project? newProject = await context.Projects.FirstOrDefaultAsync(p => p.Id == project.Id);
+
+                if (newProject != null) await AssignProjectManagerAsync(newProject.Id, user.Id, user.Id);
+            }
+            
             return project;
         }
         public async Task UpdateProjectAsync(Project project, int companyId)

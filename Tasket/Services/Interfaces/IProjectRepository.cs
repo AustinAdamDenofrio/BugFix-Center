@@ -17,7 +17,7 @@ namespace Tasket.Services.Interfaces
         Task<Project?> GetProjectByIdAsync(int projectId, int companyId);
         #endregion
         #region Update DB item/items
-        Task<Project> AddProjectAsync(Project project, int companyId);
+        Task<Project> AddProjectAsync(Project project, int companyId, string userId);
         Task UpdateProjectAsync(Project project, int companyId);
         Task ArchiveProjectAsync(int projectId, int companyId);
         Task RestoreProjectAsync(int projectId, int companyId);

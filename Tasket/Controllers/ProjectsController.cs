@@ -123,9 +123,11 @@ namespace Tasket.Controllers
         public async Task<ActionResult<ProjectDTO>> AddProject([FromBody] ProjectDTO projectDTO)
         {
             try
-            {
-                ProjectDTO project = await _projectService.AddProjectAsync(projectDTO, _companyId!.Value);
+            {      
+                ProjectDTO project = await _projectService.AddProjectAsync(projectDTO, _companyId!.Value, UserId);
+
                 return Ok(project);
+
             }
             catch (Exception ex)
             {

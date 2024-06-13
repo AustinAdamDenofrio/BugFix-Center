@@ -126,8 +126,9 @@
             try
             {
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+                if (userInfo is null) return;
 
-                await ProjectService.AddProjectAsync(project, userInfo!.CompanyId);
+                await ProjectService.AddProjectAsync(project, userInfo.CompanyId, userInfo.UserId);
 
                 if (userInfo.Roles.Any(r => r == nameof(Roles.ProjectManager)))
                 {

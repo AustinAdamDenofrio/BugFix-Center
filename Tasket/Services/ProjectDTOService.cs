@@ -75,7 +75,7 @@ namespace Tasket.Client.Services
                 await _repository.UpdateProjectAsync(projectToUpdate, companyId);
             }
         }
-        public async Task<ProjectDTO> AddProjectAsync(ProjectDTO project, int companyId)
+        public async Task<ProjectDTO> AddProjectAsync(ProjectDTO project, int companyId, string userId)
         {
             Project newProject = new Project()
             {
@@ -89,7 +89,7 @@ namespace Tasket.Client.Services
                 CompanyId = companyId,
             };
 
-            return (await _repository.AddProjectAsync(newProject, companyId)).ToDTO();
+            return (await _repository.AddProjectAsync(newProject, companyId, userId)).ToDTO();
         }
         public async Task ArchiveProjectAsync(int projectId, int companyId)
         {
