@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 
 @inject ICompanyDTOService CompanyService
+@inject IProjectDTOService ProjectService
 @rendermode InteractiveAuto
 
 @attribute [Authorize]
@@ -12,34 +13,200 @@
 @if (company is not null)
 {
 
-    <h1>Company Overview</h1>
-    <div class="row">
-        <div class="col-xl-8">
-            <img src="@company.ImageUrl" />
-            <p>@company.Name</p>
-            <p>@company.Description</p>
-            <div class="hstack">
-                <ul>
-                    @foreach (ProjectDTO project in company.Projects)
-                    {
-                        <li>@project.Name</li>
-                    }
-                </ul>
-                <ul>
-                    @foreach (InviteDTO invite in company.Invites)
-                    {
-                        <li>@invite.InviteeFirstName @invite.InviteeLastName</li>
-                    }
-                </ul>
+    <h1 class="ms-5 my-5 ps-5">Company Overview</h1>
+@*     <div class="row">           
+        <div class="col-12 col-md-8 col-xxl-4">
+            <EmployeeAccordion Members="members" OnRoleSubmit="HandleEmployeeInfoSubmit" />
+        </div>
+    </div> *@
+
+
+    <!--begin::Main-->
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content flex-column-fluid">
+                <!--begin::Content container-->
+                <div id="kt_app_content_container" class="app-container container-xxl">
+                    <!--begin::Team main-->
+                    <div class="d-flex flex-column flex-xl-row">
+                        <!--begin::Content-->
+                        <div class="card bg-body mb-9 mb-xl-0 me-xl-9">
+                            <div class="card-body pb-6">
+                                <!--begin::blog-->
+                                <div class="mb-17">
+                                    <!--begin::Title-->
+                                    <div class="hstack">
+                                        <div class="mb-9">
+                                            <h3 class="fs-2qx fw-bold text-gray-900">
+                                                @company.Name
+                                            </h3>
+                                            @* <span class="fs-5 fw-semibold text-gray-500">@company.</span> *@
+                                        </div>
+                                        @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true)
+                                        {
+                                            <div class="flex-grow-1 mb-auto d-flex">
+                                                <button class="ms-auto btn m-0" type="button" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+                                                    <i class="ki-duotone ki-notepad-edit fs-2x">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </button>
+                                            </div>
+                                        }
+
+                                    </div>
+                                    <!--end::Title-->
+                                    <!--begin::Wrapper-->
+                                    <div class="overlay mb-11">
+                                        <!--begin::Image-->
+                                        <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-325px" style="background-image:url('@company.ImageUrl')"></div>
+                                        <!--end::Image-->
+                                    </div>
+                                    <!--end::Wrapper-->
+                                    <!--begin::Text-->
+
+                                    <h1 class="fw-bold text-gray-900 mb-3">Our Company</h1>
+                                    <p class="fs-5 fw-semibold text-gray-600">
+                                        @company.Description
+                                    </p>
+                                    <!--end::Text-->
+                                </div>
+                                <!--end::blog-->
+                                <!--begin::Team-->
+                                <div class="m-0">
+
+
+                                    <EmployeeSection Members="members" OnRoleSubmit="HandleEmployeeInfoSubmit" />
+
+                                </div>
+                                <!--end::Team-->
+                            </div>
+                        </div>
+                        <!--end::Content-->
+                        <!--begin::Sidebar-->
+                        <div class="flex-column flex-lg-row-auto w-100 w-xl-350px">
+                            <!--begin::Careers about-->
+                            <div class="card card-flush bg-body mb-9">
+                                <!--begin::Body-->
+                                <div class="card-body">
+                                    <!--begin::Top-->
+                                    <div class="mb-7">
+                                        <!--begin::Title-->
+                                        <h2 class="fs-1 text-gray-800 w-bolder mb-6">Projects</h2>
+                                        <!--end::Title-->
+                                        <!--begin::Text-->
+                                        <p class="fw-semibold fs-6 text-gray-600">
+                                            Many of these projects are currently active, but some have been archived.
+                                        </p>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Top-->
+                                    <!--begin::Items-->
+                                    <div class="mb-0">
+                                        <!--begin::Item-->
+                                        <div class="mb-8">
+                                            <!--begin::Title-->
+                                            <h4 class="text-gray-700 w-bolder mb-0">Active</h4>
+                                            <!--end::Title-->
+                                            <!--begin::Section-->
+                                            <div class="my-2">
+                                                @foreach (ProjectDTO project in company.Projects)
+                                                {
+                                                    if (project.Archived == false)
+                                                    {
+                                                        <!--begin::Row-->
+                                                        <div class="d-flex align-items-center mb-3">
+                                                            <!--begin::Bullet-->
+                                                            <span class="bullet me-3"></span>
+                                                            <!--end::Bullet-->
+                                                            <!--begin::Label-->
+                                                            <a href="projects/@project.Id" class="text-gray-600 fw-semibold fs-6 text-hover-primary">@project.Name</a>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Row-->
+                                                    }
+                                                }
+                                            </div>
+                                            <!--end::Section-->
+                                        </div>
+                                        <!--end::Item-->
+                                        <!--begin::Item-->
+                                        <div class="mb-8">
+                                            <!--begin::Title-->
+                                            <h4 class="text-gray-700 w-bolder mb-0">Archived</h4>
+                                            <!--end::Title-->
+                                            <!--begin::Section-->
+                                            <div class="my-2">
+                                                @if (archivedProjects is not null)
+                                                {
+                                                    @foreach (ProjectDTO? project in archivedProjects)
+                                                    {
+                                                        <!--begin::Row-->
+                                                        <div class="d-flex align-items-center mb-3">
+                                                            <!--begin::Bullet-->
+                                                            <span class="bullet me-3"></span>
+                                                            <!--end::Bullet-->
+                                                            <!--begin::Label-->
+                                                            <a href="projects/@project?.Id" class="text-gray-600 fw-semibold fs-6 text-hover-primary">@project?.Name</a>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Row-->
+                                                    }                                                    
+                                                }
+                                            </div>
+                                            <!--end::Section-->
+                                        </div>
+                                        <!--end::Item-->
+                                    </div>
+                                    <!--end::Items-->
+                                    <!--begin::Link-->
+                                    <a href="/projects" class="link-primary fs-6 fw-semibold">Explore More</a>
+                                    <!--end::Link-->
+                                </div>
+                                <!--end::Body-->
+                            </div>
+                            <!--end::Careers about-->
+                        </div>
+                        <!--end::Sidebar-->
+                    </div>
+                    <!--end::Team main-->
+                </div>
+                <!--end::Content container-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Content wrapper-->
+    </div>
+    <!--end:::Main-->
+
+
+    <!-- Modal :: Edit -->
+    <div class="modal fade" tabindex="-1" id="kt_modal_1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Modal title</h3>
+
+                    <!--begin::Close-->
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                    </div>
+                    <!--end::Close-->
+                </div>
+
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
             </div>
         </div>
-        <div class="col-12 col-md-8 col-xxl-4">
-            <EmployeeAccordion Members="members" OnRoleSubmit="HandleEmployeeInfoSubmit"/>
-        </div>
     </div>
-
-
-
 }
 @code {
     #region Parameters
@@ -52,6 +219,8 @@
     UserInfo? userInfo;
 
     CompanyDTO? company;
+
+    IEnumerable<ProjectDTO?> archivedProjects = [];
 
     IEnumerable<UserDTO> members = [];
     #endregion
@@ -68,6 +237,8 @@
 
         members = await CompanyService.GetCompanyMembersAsync(userInfo.CompanyId);
         members = members.OrderBy(m => m.LastName);
+
+        archivedProjects = await ProjectService.GetArchivedProjectsAsync(userInfo.CompanyId);
     }
 
     private async Task HandleEmployeeInfoSubmit(UserDTO formMember)

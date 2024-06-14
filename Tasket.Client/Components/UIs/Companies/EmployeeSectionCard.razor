@@ -1,0 +1,122 @@
+﻿@inject ITicketDTOService TicketService
+@inject ICompanyDTOService CompanyService
+
+
+
+
+
+@if (Member is not null)
+{
+    <!--begin::Member-->
+    <a type="button" href="" class="d-flex flex-column text-center mb-11 me-5 me-lg-15" data-bs-toggle="modal" data-bs-target="#kt_modal_@Member.Id">
+        <!--begin::Photo-->
+        <div class="symbol symbol-100px symbol-lg-150px mb-4">
+            <img src="@Member.ImageUrl" class="" alt="@Member.FirstName @Member.LastName Profile Picture" />
+        </div>
+        <!--end::Photo-->
+        <!--begin::Info-->
+        <div class="text-center">
+            <!--begin::Info-->
+            <span href="" class="text-gray-900 fw-bold text-hover-primary fs-4 text-wrap">@Member.FirstName @Member.LastName</span>
+            <!--end::Info-->
+            <!--begin::Position-->
+            <span class="text-muted text-hover-primary d-block fw-semibold">@Member.Role</span>
+            <!--end::Position-->
+        </div>
+        <!--end::Info-->
+    </a>
+    <!--end::Member-->
+
+    <AuthorizeView Roles=@($"{nameof(Roles.Admin)}")>
+        @if (userInfo is not null)
+        {
+            <!--begin::Modal-->
+            <div class="modal fade" tabindex="-1" id="kt_modal_@Member.Id">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <EditForm Context="rolesContext" Model="Enum.GetValues(typeof(Roles))" OnValidSubmit="HandleSubmit" class="flex-grow-1">
+                            <DataAnnotationsValidator />
+                            <div class="modal-header">
+                                <h3 class="modal-title">@Member.FullName : Edit</h3>
+
+                                <!--begin::Close-->
+                                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                                </div>
+                                <!--end::Close-->
+                            </div>
+
+                            <div class="modal-body">
+                                <InputSelect class="form-control" @bind-Value="Member.Role">
+                                    @foreach (Roles role in Enum.GetValues(typeof(Roles)))
+                                    {
+                                        @if (role != Roles.DemoUser)
+                                        {
+                                            <option value="@role">@role.GetDisplayName()</option>
+                                        }
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => Member.Role" />
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+            <!--end::Modal-->            
+        }
+    </AuthorizeView>
+}
+
+@code {
+
+    #region Parameters
+    [Parameter, EditorRequired]
+    public UserDTO? Member { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<UserDTO> OnSubmit { get; set; }
+
+    #endregion
+
+
+
+    #region State
+    UserInfo? userInfo;
+
+    string? userRole;
+    #endregion
+
+    #region Methods
+    protected override async Task OnParametersSetAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        if (Member is not null)
+        {
+            userRole = await CompanyService.GetUserRoleAsync(Member.Id!, userInfo!.CompanyId);
+
+            Member.Role = userRole;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await OnSubmit.InvokeAsync(Member);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+    #endregion
+}

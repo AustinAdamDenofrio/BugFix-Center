@@ -1,0 +1,59 @@
+﻿@if (Members is not null)
+{
+    <!--begin::Heading-->
+    <div class="mb-9">
+        <!--begin::Title-->
+        <h1 class="fw-bold text-gray-900 mb-3">Our Great Team</h1>
+        <!--begin::Title-->
+        <!--begin::Description-->
+        <span class="fs-5 fw-semibold text-muted">Our team is the pinnical of software enhancement from every level of responsibility</span>
+        <!--begin::Description-->
+    </div>
+    <!--end::Heading-->
+    <!--begin::Members-->
+    <div class="d-flex flex-wrap w-100 mw-xxl-800px">
+        @foreach (UserDTO member in Members)
+        {
+            <EmployeeSectionCard Member="member" OnSubmit="HandleRoleSubmit" @key="@member.Id" />
+        }
+    </div>
+    <!--end::Members-->
+}
+else
+{
+    <h1>No Employees in Company</h1>
+}
+@code {
+    #region Parameter
+    [Parameter]
+    public IEnumerable<UserDTO>? Members { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<UserDTO> OnRoleSubmit { get; set; }
+
+    #endregion
+
+
+    #region States
+
+    #endregion
+
+
+
+    #region Methods
+    private async Task HandleRoleSubmit(UserDTO formMember)
+    {
+        if (formMember is not null)
+        {
+            try
+            {
+                await OnRoleSubmit.InvokeAsync(formMember);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+    #endregion
+}
