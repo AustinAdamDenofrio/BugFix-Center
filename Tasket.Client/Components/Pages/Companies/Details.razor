@@ -1,7 +1,10 @@
 ﻿@page "/company"
+@using Microsoft.AspNetCore.Authorization
 
 @inject ICompanyDTOService CompanyService
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
+
+@attribute [Authorize]
 
 <PageTitle>Company | Overview</PageTitle>
 
@@ -31,7 +34,7 @@
             </div>
         </div>
         <div class="col-12 col-md-8 col-xxl-4">
-            <EmployeeAccordion Members="members" OnRoleSubmit="HandleSubmit"/>
+            <EmployeeAccordion Members="members" OnRoleSubmit="HandleEmployeeInfoSubmit"/>
         </div>
     </div>
 
@@ -42,7 +45,6 @@
     #region Parameters
     [CascadingParameter]
     public Task<AuthenticationState>? AuthStateTask { get; set; }
-
     #endregion
 
 
@@ -60,14 +62,15 @@
     protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        if (userInfo is null) return;
 
-        company = await CompanyService.GetCompanyByIdAsync(userInfo!.CompanyId);
+        company = await CompanyService.GetCompanyByIdAsync(userInfo.CompanyId);
 
-        members = await CompanyService.GetCompanyMembersAsync(userInfo!.CompanyId);
+        members = await CompanyService.GetCompanyMembersAsync(userInfo.CompanyId);
         members = members.OrderBy(m => m.LastName);
     }
 
-    private async Task HandleSubmit(UserDTO formMember)
+    private async Task HandleEmployeeInfoSubmit(UserDTO formMember)
     {
         if (formMember is not null)
         {
@@ -75,15 +78,35 @@
             try
             {
                 userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+                if (userInfo is null) return;
 
-                string userRole = await CompanyService.GetUserRoleAsync(userInfo!.UserId, userInfo!.CompanyId);
+                string userRole = await CompanyService.GetUserRoleAsync(userInfo.UserId, userInfo.CompanyId);
 
-                await CompanyService.UpdateUserRoleAsync(formMember, userInfo!.UserId);
+                await CompanyService.UpdateUserRoleAsync(formMember, userInfo.UserId);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+        }
+    }
+
+
+    private async Task HandleCompanyUpdateSubmit()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            if (userInfo is null) return;
+            if (company is null) return;
+
+            await CompanyService.UpdateCompanyAsync(company, userInfo.UserId);
+
+            company = await CompanyService.GetCompanyByIdAsync(userInfo.CompanyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
         }
     }
     #endregion

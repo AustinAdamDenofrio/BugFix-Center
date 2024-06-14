@@ -10,13 +10,12 @@
             <p class="fs-6 mb-0">@Comment.User?.FullName</p>
             <p>@Comment.Created.ToString("hh:mm tt")</p>
             <div class="d-flex flex-column">
-                @* @if () { } not submitter *@
 
                 <p class="col-9 mb-0">
                     @Comment.Content
                 </p>
                 <div>
-                    @if (userInfo.UserId == Comment.User?.Id)
+                    @if (userInfo?.UserId == Comment.User?.Id)
                     {
                         <form @onsubmit="HandleUpdateCommentSubmit" class="col-9">
                             <InputTextArea @bind-Value="Comment.Content"
@@ -31,9 +30,9 @@
                         </form>
                     }
 
-                    @if (userInfo.UserId == Comment.User?.Id
-                           || userInfo.Roles.Contains(nameof(Roles.Admin))
-                           || userInfo.UserId == ProjectManagerId)
+                    @if (userInfo?.UserId == Comment.User?.Id
+                           || userInfo?.Roles.Contains(nameof(Roles.Admin)) == true
+                           || userInfo?.UserId == ProjectManagerId)
                     {
                         <a @onclick="HandleDelete" class="btn btn-sm btn-secondary">
                             Delete
@@ -83,13 +82,16 @@
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
 
-        if (Comment!.UserId is null)
+        if (userInfo is null) return;
+        if (Comment is null) return;
+
+        if (Comment.UserId is null)
         {
-            Comment!.UserId = userInfo!.UserId;
+            Comment.UserId = userInfo.UserId;
         }
-        if (Comment!.TicketId == 0)
+        if (Comment.TicketId == 0)
         {
-            Comment!.TicketId = TicketId;
+            Comment.TicketId = TicketId;
         }
     }
 
@@ -99,6 +101,7 @@
         try
         {
             userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            if (userInfo is null) return;
 
             await HandleOnSubmit.InvokeAsync(Comment);
             Comment = await TicketService.GetCommentByIdAsync(TicketId, userInfo!.CompanyId);
@@ -116,7 +119,9 @@
     {
         try
         {
-            await OnDelete.InvokeAsync(Comment!.Id);
+            if (Comment is null) return;
+
+            await OnDelete.InvokeAsync(Comment.Id);
 
         }
         catch (Exception ex)

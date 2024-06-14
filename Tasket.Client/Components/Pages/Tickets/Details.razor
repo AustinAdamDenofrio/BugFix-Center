@@ -43,9 +43,14 @@
                                 <p class="ps-2 text-dark">
                                     @ticket.Description
                                 </p>
-                                <div class="mt-auto pt-5 mb-3">
-                                    <UploadForm TicketId="TicketId" OnChange="HandleUpdatePage" />
-                                </div>
+                                @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true
+                                    || projectMembers.Any(m => m.Id == userInfo?.UserId))
+                                {
+                                    <div class="mt-auto pt-5 mb-3">
+                                        <UploadForm TicketId="TicketId" OnChange="HandleUpdatePage" />
+                                    </div>                                    
+                                }
+
                             </div>
                         </div>
                         <div class="col-lg-4 d-md-flex">
@@ -92,10 +97,10 @@
                             Comments
                         </h2>
                     </div>
-                    @if (userInfo.UserId == ticket.SubmitterUserId
-                   || userInfo.UserId == ticket.DeveloperUserId
-                   || userInfo.UserId == projectManager?.Id
-                   || userInfo.Roles.Contains(nameof(Roles.Admin)))
+                    @if (userInfo?.UserId == ticket.SubmitterUserId
+                      || userInfo?.UserId == ticket.DeveloperUserId
+                      || userInfo?.UserId == projectManager?.Id
+                      || userInfo?.Roles.Contains(nameof(Roles.Admin)) == true)
                     {
                         <h2>New comment</h2>
                         <form @onsubmit="HandleAddComment" class="col-12">
@@ -133,10 +138,12 @@
             <div class="card">
                 <div class="card-header mt-5">
                     <div class="hstack flex-grow-1">
-                        <h4 class="d-flex flex-grow-1 justify-content-start me-auto">Ticket Details</h4>
+                        <h4 class="d-flex flex-grow-1 justify-content-start me-auto">
+                            Ticket Details
+                        </h4>
                         <div>
                             <p class="small mb-0">Priority:</p>
-                            <h4 class="d-flex align-items-center"><span class="badge rounded-pill text-bg-info ">@ticket.Priority</span></h4>
+                            <h4 class="d-flex align-items-center"><span class="badge rounded-pill text-bg-info ">@ticket.Priority.GetDisplayName()</span></h4>
                         </div>
                     </div>
                     <div>
@@ -156,11 +163,11 @@
                         <tbody>
                             <tr>
                                 <td class="border-0 text-body-secondary py-1 px-0">Type</td>
-                                <td class="border-0 text-dark fw-medium py-1 ps-3">@ticket.Type</td>
+                                <td class="border-0 text-dark fw-medium py-1 ps-3">@ticket.Type.GetDisplayName()</td>
                             </tr>
                             <tr>
                                 <td class="border-0 text-body-secondary py-1 px-0">Status</td>
-                                <td class="border-0 text-dark fw-medium py-1 ps-3">@ticket.Status</td>
+                                <td class="border-0 text-dark fw-medium py-1 ps-3">@ticket.Status.GetDisplayName()</td>
                             </tr>
                             @if (ticket.Archived == true)
                             {
@@ -196,7 +203,7 @@
                     </p>
                     <AuthorizeView Roles="Admin, ProjectManager">
                         @if (projectDevelopers is not null && context.User.IsInRole(nameof(Roles.Admin))
-                       || projectDevelopers is not null && userInfo.UserId == projectManager?.Id)
+                          || projectDevelopers is not null && userInfo?.UserId == projectManager?.Id)
                         {
                             <form @onsubmit="UpdateTicket" class="col-9">
                                 <div class="col-12">
@@ -231,7 +238,7 @@
                             @foreach (TicketDTO ticket in project.Tickets)
                             {
                                 <div class="mb-1">
-                                    <a href="/tickets/index/@ticket.Id" class="small text-primary  ps-3 text-decoration-none">@ticket.Type</a>
+                                    <a href="/tickets/index/@ticket.Id" class="small text-primary  ps-3 text-decoration-none">@ticket.Type.GetDisplayName()</a>
                                 </div>
                             }
                         </div>
@@ -247,10 +254,10 @@
 
 
 
-    @if (userInfo.UserId == ticket.SubmitterUserId
-              || userInfo.UserId == ticket.DeveloperUserId
-              || userInfo.UserId == projectManager?.Id
-             || userInfo.Roles.Contains(nameof(Roles.Admin)))
+    @if (userInfo?.UserId == ticket.SubmitterUserId
+              || userInfo?.UserId == ticket.DeveloperUserId
+              || userInfo?.UserId == projectManager?.Id
+              || userInfo?.Roles.Contains(nameof(Roles.Admin)) == true)
     {
         <div class="modal fade" tabindex="-1" id="kt_modal_1">
             <div class="modal-dialog modal-dialog-centered">
