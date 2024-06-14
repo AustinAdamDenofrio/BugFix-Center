@@ -47,7 +47,7 @@
                                         @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true)
                                         {
                                             <div class="flex-grow-1 mb-auto d-flex">
-                                                <button class="ms-auto btn m-0" type="button" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+                                                <button class="ms-auto btn m-0" type="button" data-bs-toggle="modal" data-bs-target="#kt_modal_@company.Id">
                                                     <i class="ki-duotone ki-notepad-edit fs-2x">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
@@ -183,11 +183,12 @@
 
 
     <!-- Modal :: Edit -->
-    <div class="modal fade" tabindex="-1" id="kt_modal_1">
-        <div class="modal-dialog">
+    <div class="modal fade" tabindex="-1" id="kt_modal_@company.Id">
+        <form @onsubmit="HandleCompanyUpdateSubmit">
+            <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">Modal title</h3>
+                    <h3 class="modal-title">@company.Name : Edit</h3>
 
                     <!--begin::Close-->
                     <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -196,16 +197,19 @@
                     <!--end::Close-->
                 </div>
 
-                <div class="modal-body">
-                    <p>Modal body text goes here.</p>
+                    <div class="modal-body">
+                        <img class="img-fluid rounded-5" style="max-height: 350px"
+                             src="@(string.IsNullOrEmpty(company.ImageUrl) ? FileHelper.DefaultCompanyImage : company.ImageUrl)" />
+                        <InputFile OnChange="OnFileChange" class="form-control mt-3" accept=".png,.jpg,.jpeg,.svg" />
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
                 </div>
             </div>
         </div>
+        </form>
     </div>
 }
 @code {
@@ -217,6 +221,7 @@
 
     #region States
     UserInfo? userInfo;
+    private string? imageError;
 
     CompanyDTO? company;
 
@@ -268,8 +273,10 @@
         try
         {
             userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-            if (userInfo is null) return;
+            if (userInfo is null || userInfo.Roles.Any(r => r == nameof(Roles.Admin)) == false) return;
             if (company is null) return;
+
+
 
             await CompanyService.UpdateCompanyAsync(company, userInfo.UserId);
 
@@ -278,6 +285,33 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+        }
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        imageError = null;
+        if (company is null) return;
+
+        if (changeEvent.File is null)
+        {
+            company.ImageUrl = FileHelper.DefaultCompanyImage;
+        }
+        else if (changeEvent.File.Size > FileHelper.MaxFileSize)
+        {
+            imageError = "Images must be less than 5 MB";
+        }
+        else
+        {
+            try
+            {
+                company.ImageUrl = await FileHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
         }
     }
     #endregion

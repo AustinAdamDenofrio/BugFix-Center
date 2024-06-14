@@ -104,9 +104,37 @@ namespace Tasket.Services
             return companyUsers;
         }
 
-        public Task UpdateCompanyAsync(Company company, string adminId)
+        public async Task UpdateCompanyAsync(Company company, string adminId)
         {
-            throw new NotImplementedException();
+            using ApplicationDbContext context = contextFactory.CreateDbContext();
+
+            bool shouldUpdate = await context.Companies.AnyAsync(c => c.Id == company.Id
+                                                    && c.Members.Any(m => m.Id == adminId));
+            if (shouldUpdate)
+            {
+                FileUpload? oldImage = null;
+
+                if (company.Image is not null)
+                {
+                    //save the new image
+                    context.Uploads.Add(company.Image);
+
+                    //check for old image
+                    oldImage = await context.Uploads.FirstOrDefaultAsync(i => i.Id == company.ImageId);
+
+                    //fix foreign key
+                    company.ImageId = company.Image.Id;
+                }
+
+                context.Companies.Update(company);
+                await context.SaveChangesAsync();
+
+                if (oldImage is not null)
+                {
+                    context.Uploads.Remove(oldImage);
+                    await context.SaveChangesAsync();
+                }
+            }
         }
 
 
