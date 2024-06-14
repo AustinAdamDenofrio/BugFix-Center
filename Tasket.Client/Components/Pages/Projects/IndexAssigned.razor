@@ -4,7 +4,7 @@
 
 @inject IProjectDTOService ProjectService
 
-@attribute [Authorize(Roles = $"{nameof(Roles.ProjectManager)}, {nameof(Roles.Developer)}, {nameof(Roles.Submitter)}")]
+@attribute [Authorize]
 
 
 <PageTitle>My Projects</PageTitle>

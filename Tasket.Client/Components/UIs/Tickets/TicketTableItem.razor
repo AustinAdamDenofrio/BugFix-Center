@@ -3,9 +3,9 @@
 
 @if (Ticket is not null)
 {
-    <td><a href="tickets/@Ticket.Id">@Ticket.Title</a></td>
+    <td><a href="tickets/@Ticket.Id" class="lead">@Ticket.Title</a></td>
     <td>@Ticket.Created.ToString("d")</td>
-    <td><a href="projects/@Ticket.Project?.Id">@Ticket.Project?.Name</a></td>
+    <td><a href="projects/@Ticket.Project?.Id" class="lead">@Ticket.Project?.Name</a></td>
     <td>@Ticket.Status</td>
     <td>@Ticket.Priority</td>
 }

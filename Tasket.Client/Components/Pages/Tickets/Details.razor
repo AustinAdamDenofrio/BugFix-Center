@@ -20,16 +20,19 @@
                     <h1 class="mb-0">
                         @ticket.Title
                     </h1>
-                    @if (userInfo.UserId == ticket.SubmitterUserId
-                   || userInfo.UserId == ticket.DeveloperUserId
-                   || userInfo.UserId == projectManager?.Id
-                   || userInfo.Roles.Contains(nameof(Roles.Admin)))
+                    @if (userInfo is not null)
                     {
-                        <div class="ms-auto">
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
-                                Edit
-                            </button>
-                        </div>
+                        @if (userInfo.UserId == ticket.SubmitterUserId
+                            || userInfo.UserId == ticket.DeveloperUserId
+                            || userInfo.UserId == projectManager?.Id
+                            || userInfo.Roles.Contains(nameof(Roles.Admin)))
+                        {
+                            <div class="ms-auto">
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+                                    Edit
+                                </button>
+                            </div>
+                        }                        
                     }
                 </div>
                 <div class="card-body">
