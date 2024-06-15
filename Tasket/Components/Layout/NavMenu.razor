@@ -46,8 +46,6 @@
                         <div class="symbol symbol-30px me-5">
                             <img alt="User Menu" src="@userInfo?.ProfilePictureUrl" />
                         </div>
-                        <!--end::Avatar-->
-                        @* <img src="assets/media/avatars/300-3.jpg" alt="User Menu" /> *@
                     </div>
                     <!--begin::User account menu-->
                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -56,23 +54,36 @@
                         <div class="menu-item px-3">
                             <div class="menu-content d-flex align-items-center px-3">
                                 <!--begin::Username-->
-                                <div class="d-flex flex-column">
-                                    <div class="fw-bold d-flex align-items-center fs-5">
-                                        @userInfo?.FullName
-                                        <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
-                                            @if (userInfo is not null)
+                                <div class="d-flex flex-column vstack">
+                                    <div class="fw-bold align-items-center fs-5 text-wrap">
+                                        @if (userInfo is not null)
+                                        {
+                                            if (userInfo.Roles.Any() == false) return;
+                                            @foreach (Roles role in Enum.GetValues(typeof(Roles)))
                                             {
-                                                if (userInfo.Roles.Any() == false) return;
-
-                                                @foreach (string role in userInfo.Roles)
+                                                if (userInfo.Roles.Any(r => r == role.ToString()))
                                                 {
-                                                    @role
+                                                    if (role == Roles.DemoUser)
+                                                    {
+                                                        <p class="badge badge-light-success fw-bold fs-8 py-2 px-2 mb-0 mx-5">
+                                                            @role.GetDisplayName()
+                                                        </p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="badge badge-light-primary fw-bold fs-8 py-2 px-2 mb-0">
+                                                            @role.GetDisplayName()
+                                                        </p>                                                        
+                                                    }
+                                                }
+                                                if (userInfo.Roles.Any(r => r == role.ToString()))
+                                                {
                                                 }
                                             }
-                                        </span>
+                                        }
+                                        <p class="">@userInfo?.FullName</p>
                                     </div>
-                                    <p 
-                                       class="fw-semibold text-muted fs-7">
+                                    <p class="fw-semibold text-muted fs-7">
                                         @userInfo?.Email
                                     </p>
                                 </div>
