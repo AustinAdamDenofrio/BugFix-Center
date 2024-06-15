@@ -23,7 +23,7 @@
                     </div>
                     @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true)
                     {
-                        <button class="btn ms-auto hover-elevate-down" @onclick="HandleRemoveProjectManager" type="button">
+                        <button class="btn ms-auto text-hover-danger" @onclick="HandleRemoveProjectManager" type="button">
                             <i class="ki-duotone ki-trash text-dark fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -49,7 +49,7 @@
                     }
                 </InputSelect>
                 <div class="flex-grow-1 text-end">
-                    <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
+                        <button class="btn btn-light-success text-hover-danger mt-2 mb-3" type="submit">
                         Update
                     </button>
                 </div>
@@ -82,7 +82,7 @@
                         }
                     </InputSelect>
                     <div class="flex-grow-1 text-end">
-                        <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
+                        <button class="btn btn-light-success text-hover-danger mt-2 mb-3" type="submit">
                             Update
                         </button>
                     </div>
@@ -116,7 +116,7 @@
                         }
                     </InputSelect>
                     <div class="flex-grow-1 text-end">
-                        <button class="btn btn-light-success hover-scale mt-2 mb-3" type="submit">
+                        <button class="btn btn-light-success text-hover-danger mt-2 mb-3" type="submit">
                             Update
                         </button>
                     </div>
