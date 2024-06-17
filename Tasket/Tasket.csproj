@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Components\Layout\LandingPageLayout.razor" />
+    <Content Remove="wwwroot\img\Landing-Page-Animation.svg" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\Layout\LandingPageLayout.razor" />
+    <_ContentIncludedByDefault Remove="wwwroot\img\Landing-Page-Animation.svg" />
     <_ContentIncludedByDefault Remove="wwwroot\img\TasketLogoBrownBG.png" />
     <_ContentIncludedByDefault Remove="wwwroot\png\jpeg.png" />
   </ItemGroup>
@@ -37,10 +37,10 @@
 
   <ItemGroup>
     <Folder Include="Components\UIs\Projects\" />
+    <Folder Include="wwwroot\img\favicons\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Components\Layout\LandingPageLayout.razor" />
     <None Include="wwwroot\assets\js\custom\account\api-keys\api-keys.js" />
     <None Include="wwwroot\assets\js\custom\account\billing\general.js" />
     <None Include="wwwroot\assets\js\custom\account\orders\classic.js" />
@@ -1313,10 +1313,7 @@
     <None Include="wwwroot\assets\plugins\global\fonts\line-awesome\la-solid-900.svg" />
     <None Include="wwwroot\assets\plugins\global\fonts\line-awesome\la-solid-900.woff2" />
     <None Include="wwwroot\assets\plugins\global\plugins.bundle.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Layout\LandingPageLayout.razor" />
+    <None Include="wwwroot\img\Landing-Page-Animation.svg" />
   </ItemGroup>
 
 </Project>
