@@ -243,6 +243,7 @@ a {
 }
 
 
+
 [data-ad-theme="code-magic"] {
     --ad-theme-core: var(--ad-code-magic-core);
     --ad-theme-100: var(--ad-code-magic-100);
