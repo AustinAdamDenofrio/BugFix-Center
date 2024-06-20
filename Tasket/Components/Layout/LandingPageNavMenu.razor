@@ -1,4 +1,8 @@
-﻿<nav class="navbar navmenu navbar-expand-md" style="background-color: hsl(19, 50%, 16%);">
+﻿@implements IDisposable
+
+@inject NavigationManager NavigationManager
+
+<nav class="navbar navmenu navbar-expand-md" style="background-color: hsl(19, 50%, 16%);">
     <div class="container-xxl">
         <a href="/" class="navbar-brand me-3">
             <img />
@@ -16,19 +20,78 @@
                         </span>
                     </a>
                 </li>
-                <li class="nav-item ms-auto">
-                    <a class="nav-link" href="Account/Login">
-                        <i class="bi bi-person-badge fs-2"></i>
-                        <span class="fs-5 text-white">Login</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="Account/Register">
-                        <i class="bi bi-person fs-2"></i>
-                        <span class="fs-5 text-white">Register</span>
-                    </a>
-                </li>
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <li class="nav-item ms-auto">
+                            <a class="nav-link" href="/dashboard">
+                                <i class="bi bi-person-badge fs-2"></i>
+                                <span class="fs-5 text-white">Login</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Account/Register">
+                                <i class="bi bi-person fs-2"></i>
+                                <span class="fs-5 text-white">Register</span>
+                            </a>
+                        </li>
+                    </NotAuthorized>
+                    <Authorized>
+                        <li class="nav-item ms-auto">
+                            <a class="nav-link" href="/dashboard">
+                                <i class="bi bi-person-badge fs-2"></i>
+                                <span class="fs-5 text-white">
+                                    Dashboard
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <!--begin:Menu link-->
+                            <form action="Account/Logout" method="post" class="nav-link">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                <button class="fs-5 text-white btn p-0" href="Account/Manage">
+                                    Logout
+                                </button>
+                            </form>
+                            <!--end:Menu link-->
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
+
             </ul>
         </div>
     </div>
 </nav>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private string? currentUrl;
+    private UserInfo? userInfo;
+
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+}

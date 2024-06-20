@@ -1,3 +1,7 @@
+[data-kt-app-layout=dark-sidebar] .app-sidebar {
+    background-color: hsl(19, 50%, 16%);
+}
+
 .navbar-toggler {
     appearance: none;
     cursor: pointer;
