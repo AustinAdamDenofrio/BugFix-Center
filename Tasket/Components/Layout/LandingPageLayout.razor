@@ -6,52 +6,36 @@
         <LandingPageNavMenu />
     </header>
     <!-- #endregion Nav Bar -->
-
-
-    <section id="home" class="">
-        <div id="homeCover" class="">
-            <div class="mainHeader">
-                <div class="mainTitle " id="mainSmaller">
-                    <img src="/img/logo/BugTrackerHero_NoBG.png" class="mainLogo" />
-                </div>
-                <div class="w-100 mt-3 d-flex flex-grow-1 justify-content-center">
-                    <a href="#contact" class="btn btn-info">
-                        Try Bugtracker
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <main class="container-xxl flex-grow-1 py-2">
+    <main class="flex-grow-1">
         @Body
     </main>
 
-    <footer class="flex-shrink-0">
+    <footer class="flex-shrink-0" style="background-color: hsl(19, 50%, 16%);">
         <div class="footer p-3" data-bs-theme="dark">
             <div class="container-xxl text-body">
                 <div class="row row-cols-1 row-cols-md-3 align-items-center">
                     <div class="col order-last order-md-first text-center text-md-start">
                         <div class="vstack gap-2">
-                            <span>Built by: <img src="/img/logo/mark_dark.svg" height="25" /></span>
+                            <span>Built by: <img src="/img/logo/mark_dark.svg" height="30" /></span>
                             <span>&copy; @DateTime.Now.Year</span>
                         </div>
                     </div>
-                    <div class="col text-center">
-                        <img src="/img/logo/BugTracketSignature.png" height="60" />
+                    <div class="col d-none d-md-flex justify-content-md-center">
+                        <img src="/img/logo/BugTrackerMarkLogo-cropped.png" height="80" />
                     </div>
                     <div class="col text-center text-md-end">
                         <div class="vstack">
-                            <div>
-                                <a href="https://www.linkedin.com/in/austin-denofrio-286792223/" target="_blank"><i class="bi bi-linkedin"></i></a>
-                                <a href="https://twitter.com/A_Denofrio" target="_blank"><i class="bi bi-twitter"></i></a>
-                                <a href="https://github.com/AustinAdamDenofrio" target="_blank"><i class="bi bi-github"></i></a>
+                            <div class="my-3 my-md-1 ">
+                                <a href="https://www.linkedin.com/in/austin-denofrio-286792223/" target="_blank"><i class="bi bi-linkedin text-hover-info fs-1"></i></a>
+                                <a href="https://twitter.com/A_Denofrio" target="_blank"><i class="bi bi-twitter text-hover-info fs-1 ms-3"></i></a>
+                                <a href="https://github.com/AustinAdamDenofrio" target="_blank"><i class="bi bi-github text-hover-info fs-1 ms-3"></i></a>
                             </div>
-                            <div class="small">
-                                <a href="https://denofrio-fullstack-developer.netlify.app/">Portfolio</a>
-                                &bull;
-                                <a href="#">Blog</a>
-                                &bull;
-                                <a href="#">Bug Tracker</a>
+                            <div class="vstack my-3 d-md-flex flex-md-row justify-content-md-end">
+                                <a href="https://denofrio-fullstack-developer.netlify.app/" class="fs-4 text-gray-700 text-hover-info">Portfolio</a>
+                                <span class="d-none d-md-flex align-items-center mx-1">&bull;</span>
+                                <a href="#" class="fs-4 text-gray-700 text-hover-info">Blog</a>
+                                <span class="d-none d-md-flex align-items-center mx-1">&bull;</span>
+                                <a href="#" class="fs-4 text-gray-700 text-hover-info">Bug Tracker</a>
                             </div>
                         </div>
                     </div>
