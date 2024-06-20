@@ -41,7 +41,7 @@
                                         @if (userInfo?.Roles.Any(r => r == nameof(Roles.Admin)) == true)
                                         {
                                             <div class="flex-grow-1 mb-auto d-flex">
-                                                <button class="ms-auto btn m-0" type="button" data-bs-toggle="modal" data-bs-target="#kt_modal_@company.Id">
+                                                <button class="ms-auto btn m-0" type="button" data-bs-toggle="modal" data-bs-target="#kt_modal_content">
                                                     <i class="ki-duotone ki-notepad-edit fs-2x">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
@@ -55,7 +55,14 @@
                                     <!--begin::Wrapper-->
                                     <div class="overlay mb-11">
                                         <!--begin::Image-->
-                                        <div class="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-325px" style="background-image:url('@company.ImageUrl')"></div>
+                                        <div class="flex-grow-1 mb-auto d-flex bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-325px" style="background-image:url('@company.ImageUrl')">                                            
+                                                <button class="ms-auto btn m-0 d-flex justify-content-start" type="button" data-bs-toggle="modal" data-bs-target="#kt_modal_@company.Id">
+                                                    <i class="ki-duotone ki-notepad-edit fs-2x text-gray-400">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </button>
+                                        </div>
                                         <!--end::Image-->
                                     </div>
                                     <!--end::Wrapper-->
@@ -176,7 +183,7 @@
     <!--end:::Main-->
 
 
-    <!-- Modal :: Edit -->
+    <!-- Modal photos :: Edit -->
     <div class="modal fade" tabindex="-1" id="kt_modal_@company.Id">
         <form @onsubmit="HandleCompanyUpdateSubmit">
             <div class="modal-dialog">
@@ -203,6 +210,50 @@
                 </div>
             </div>
         </div>
+        </form>
+    </div>
+
+    <!-- Modal content :: Edit -->
+    <div class="modal fade" tabindex="-1" id="kt_modal_content">
+        <form @onsubmit="HandleCompanyUpdateSubmit">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Company Details : Edit</h3>
+
+                        <!--begin::Close-->
+                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-3">
+                                <h4 class="d-inline-block me-2"> Name: </h4>
+                            </div>
+                            <div class="col-9">
+                                <InputText class="" @bind-Value="@company.Name"></InputText>
+                            </div>
+                        </div>
+
+                        <div class="row my-3">
+                            <div class="col-3">
+                                <h4 class="d-inline-block me-2">Discription: </h4>
+                            </div>
+                            <div class="col-9">
+                                <InputTextArea class="col-12" Rows="3" @bind-Value="@company.Description"></InputTextArea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 }
