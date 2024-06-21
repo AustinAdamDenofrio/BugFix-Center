@@ -1,15 +1,15 @@
 ﻿@if (Attachment is not null)
 {
     <div class="hstack">
-        <a type="button" href="@Attachment.AttachmentUrl" class="vstack bg-secondary">
-            <img src="@($"png/{extension}.png")" width="90px" />
-        </a>
-        <div class="vstack flex-grow-1 justify-content-end mx-2">
-            <p class="small ms-auto">@Attachment.Description</p>
-            <button href="#" class="btn btn-icon btn-light-danger" @onclick="HandleDelete">
-                <i class="ki-outline ki-trash fs-3"></i>
-            </button>
+        <div>
+            <p class="small ms-auto mb-0">@Attachment.Description</p>
+            <a type="button" href="@Attachment.AttachmentUrl">
+                <p>Download</p>
+            </a>
         </div>
+        <button class="btn btn-icon btn-gray-400 ms-1" @onclick="HandleDelete">
+            <i class="ki-outline ki-trash fs-4"></i>
+        </button>
     </div>
 }
 

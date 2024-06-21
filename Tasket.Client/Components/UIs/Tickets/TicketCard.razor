@@ -1,6 +1,6 @@
 ﻿@if (Ticket is not null)
 {
-    <a class="card-body pb-3 text-decoration-none hover-elevate-up" href="/projects/@Ticket.Id">
+    <a class="card-body pb-3 text-decoration-none hover-elevate-up" href="/tickets/@Ticket.Id">
         <h3 class="h4 my-3">@Ticket.Title</h3>
         <a class="my-3" href="projects/@Ticket.Project?.Id">@Ticket.Project?.Name</a>
         <p class="my-3 fw-bold">Due: @Ticket.Created.ToString("d")</p>
@@ -18,9 +18,6 @@
         </div>
     </a>
 }
-
-
-@*Loop for a list of Comments*@
 
 
 @code {
