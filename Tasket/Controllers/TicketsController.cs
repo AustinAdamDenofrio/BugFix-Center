@@ -46,6 +46,30 @@ namespace Tasket.Controllers
             }
         }
 
+        [HttpGet("recent")]
+        public async Task<ActionResult<IEnumerable<TicketDTO>>> GetUsersRecentlyEditedTicketsAsync()
+        {
+            try
+            {
+                IEnumerable<TicketDTO> tickets = await _ticketService.GetUsersRecentlyEditedTicketsAsync(_companyId!.Value, _userId);
+
+                if (tickets == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return Ok(tickets);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         [HttpGet("assignments")]
         public async Task<ActionResult<IEnumerable<TicketDTO>>> GetUserTicketsAsync()
         {

@@ -33,6 +33,19 @@ namespace Tasket.Services
             return tickets;
         }
 
+        public async Task<IEnumerable<Ticket>> GetUsersRecentlyEditedTicketsAsync(int companyId, string userId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            IEnumerable<Ticket> tickets = await context.Tickets.Where(t => t.Project!.CompanyId == companyId 
+                                                                        && t.SubmitterUserId == userId
+                                                                        && t.DeveloperUserId == userId)
+                                                                .OrderByDescending(t => t.Updated)
+                                                                .Take(5)
+                                                                .ToListAsync();
+            return tickets;
+        }
+
         public async Task<IEnumerable<Ticket>> GetUserTicketsAsync(int companyId, string userId)
         {
 

@@ -29,6 +29,13 @@ namespace Tasket.Services
 
             return dtos;
         }
+        public async Task<IEnumerable<TicketDTO>> GetUsersRecentlyEditedTicketsAsync(int companyId, string userId)
+        {
+            IEnumerable<Ticket> tickets = await _repository.GetUsersRecentlyEditedTicketsAsync(companyId, userId);
+            IEnumerable<TicketDTO> dtos = tickets.Select(t => t.ToDTO());
+
+            return dtos;
+        }
 
         public async Task<IEnumerable<TicketDTO>> GetUserTicketsAsync(int companyId, string userId)
         {
