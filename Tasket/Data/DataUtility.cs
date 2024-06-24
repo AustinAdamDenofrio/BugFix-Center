@@ -28,7 +28,8 @@ namespace Tasket.Data
         public static string? GetConnectionString(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_PRIVATE_URL");  // Railway connection string
+
             return string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         }
 
@@ -37,6 +38,9 @@ namespace Tasket.Data
             //Provides an object representation of a uniform resource identifier (URI) and easy access to the parts of the URI.
             var databaseUri = new Uri(databaseUrl);
             var userInfo = databaseUri.UserInfo.Split(':');
+
+            var database = Environment.GetEnvironmentVariable("RAILWAY_SERVICE_NAME")
+            ?? typeof(DataUtility).Assembly.GetName().Name;
             //Provides a simple way to create and manage the contents of connection strings used by the NpgsqlConnection class.
             var builder = new NpgsqlConnectionStringBuilder
             {
@@ -44,7 +48,7 @@ namespace Tasket.Data
                 Port = databaseUri.Port,
                 Username = userInfo[0],
                 Password = userInfo[1],
-                Database = databaseUri.LocalPath.TrimStart('/'),
+                Database = database,
                 SslMode = SslMode.Prefer,
             };
             return builder.ToString();
