@@ -2,77 +2,95 @@
 @using Microsoft.AspNetCore.Authorization
 
 @inject ITicketDTOService TicketService
+@inject IProjectDTOService ProjectService
+
+@rendermode InteractiveServer
 
 @attribute [Authorize]
 @if (tickets is not null)
 {
-    <div class="row my-5">
-        <div class="col-8">
-            <div class="row g-5 ">
-                <div class="col-3">
-                    <div class="card bg-teal">
-                        <div class="card-body text-center">
-                            <h1 class="text-gray-100"> number</h1>
-                            <p class="text-gray-100">Active Projects</p>
+    <div class="row mt-10">
+        <div class="col-12 col-md-8">
+            <div class="col-12">
+                <div class="card bg-info">
+                    <div class="card-body">
+                        <h3></h3>
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card bg-teal">
+                                        <div class="card-body text-center">
+                                            <h1 class="text-gray-100"> number</h1>
+                                            <p class="text-gray-100">Active Projects</p>
+                                        </div>
+                                    </div>
+                                    <div class="card bg-gray-700 mt-3">
+                                        <div class="card-body text-center">
+                                            <h1 class="text-gray-100"> number</h1>
+                                            <p class="text-gray-100">Total Tickets</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card bg-orange">
+                                        <div class="card-body text-center">
+                                            <h1 class="text-gray-100"> number</h1>
+                                            <p class="text-gray-200">Resolved Tickets</p>
+                                        </div>
+                                    </div>
+                                    <div class="card bg-black mt-3">
+                                        <div class="card-body text-center">
+                                            <h1 class="text-gray-300"> number</h1>
+                                            <p class="text-gray-200">Unassigned Tickets</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="card bg-gray-700">
-                        <div class="card-body text-center">
-                            <h1 class="text-gray-100"> number</h1>
-                            <p class="text-gray-100">Total Tickets</p>
+                <div class="col-12 col-md-4">
+                    @if (tickets?.Any() == true)
+                    {
+                        <div class="col-12 d-flex align-items-end">
+                            <div class="card bg-gray-400 ">
+                                <div class="card-body text-center">
+                                    <h2 class="text-gray-100"><a href="/tickets/@recentTickets[recentTicketIndex].Id" class="text-white">@recentTickets[recentTicketIndex].Title</a></h2>
+                                    <p class="text-gray-100">Recent Tickets</p>
+                                </div>
+                                <div class="d-flex flex-grow-1 justify-content-center">
+                                    <button @onclick="DecrementRecentTicketIndex" class="btn btn-info btn-sm mx-3 my-1">
+                                        <i class="ki-duotone ki-arrow-left">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </button>
+                                    <button @onclick="IncrementRecentTicketIndex" class="btn btn-info btn-sm mx-3 my-1">
+                                        <i class="ki-duotone ki-arrow-right">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="card bg-orange">
-                        <div class="card-body text-center">
-                            <h1 class="text-gray-100"> number</h1>
-                            <p class="text-gray-200">Resolved Tickets</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="card bg-black">
-                        <div class="card-body text-center">
-                            <h1 class="text-gray-300"> number</h1>
-                            <p class="text-gray-200">Unassigned Tickets</p>
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            @if (tickets?.Any() == true)
-            {
-                <div class="col-12">
-            <div class="card bg-gray-400">
-                <div class="card-body text-center">
-                    <h1 class="text-gray-100"><a href="/tickets/@tickets[recentTicketIndex].Id">@tickets[recentTicketIndex].Title</a></h1>
-                    <p class="text-gray-100">Recent Tickets</p>
-                </div>
-                <div>
-                    <button @onclick="IncrementRecentTicketIndex">
-                        <i class="ki-duotone ki-arrow-left">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    </button>
-                    <button @onclick="DecrementRecentTicketIndex">
-                        <i class="ki-duotone ki-arrow-right">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    </button>
-                </div>
-            </div>
-        </div>                
-            }
+        <div class="col-12 col-md-4">
+        </div>
     </div>
-</div>
-}
 
+}
 @code {
     #region Parameters
     [CascadingParameter]
@@ -80,8 +98,11 @@
     #endregion
 
     #region States
-    private List<TicketDTO> tickets = [];
-    private int recentTicketIndex = 1;
+    private IEnumerable<TicketDTO> tickets = [];
+    private List<TicketDTO> recentTickets = [];
+
+    private IEnumerable<ProjectDTO> projects = [];
+    private int recentTicketIndex = 0;
 
 
     private UserInfo? userInfo;
@@ -93,19 +114,27 @@
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
         if (userInfo is null) return;
-        tickets = [.. await TicketService.GetUsersRecentlyEditedTicketsAsync(userInfo.CompanyId, userInfo.UserId)];
+
+        tickets = await TicketService.GetAllTicketsAsync(userInfo.CompanyId);
+        recentTickets = tickets.OrderByDescending(t => t.Updated).Take(5).ToList();
+        projects = await ProjectService.GetAllProjectsAsync(userInfo.CompanyId);
     }
+
+
+
+
+
 
     private void IncrementRecentTicketIndex()
     {
         if (tickets is null || !tickets.Any()) return;
-        if (recentTicketIndex < 0 || recentTicketIndex >= tickets.Count)
+        if (recentTicketIndex < 0 || recentTicketIndex >= recentTickets.Count)
         {
             recentTicketIndex = 0;
             return;
         }
 
-        if (recentTicketIndex == tickets.Count-1)
+        if (recentTicketIndex == recentTickets.Count - 1)
         {
             recentTicketIndex = 0;
             return;
@@ -117,7 +146,7 @@
     private void DecrementRecentTicketIndex()
     {
         if (tickets is null || !tickets.Any()) return;
-        if (recentTicketIndex < 0 || recentTicketIndex >= tickets.Count)
+        if (recentTicketIndex < 0 || recentTicketIndex >= recentTickets.Count)
         {
             recentTicketIndex = 0;
             return;
@@ -126,7 +155,7 @@
 
         if (recentTicketIndex == 0)
         {
-            recentTicketIndex = tickets.Count - 1;
+            recentTicketIndex = recentTickets.Count - 1;
         }
 
         recentTicketIndex--;
