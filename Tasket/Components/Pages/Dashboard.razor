@@ -3,6 +3,7 @@
 
 @inject ITicketDTOService TicketService
 @inject IProjectDTOService ProjectService
+@inject ICompanyDTOService CompanyService
 
 @rendermode InteractiveServer
 
@@ -14,7 +15,12 @@
             <div class="col-12">
                 <div class="card bg-info">
                     <div class="card-body">
-                        <h3></h3>
+                        <div class="col-12 d-flex justify-content-between">
+                            <h3 class="text-gray-200">Role: <span class="text-gray-400">@userInfo?.Roles.FirstOrDefault()</span></h3>
+                            @if(company is not null){
+                                <h3 class="text-gray-200">Company: <span class="text-gray-400">@company.Name</span></h3>
+                            }
+                        </div>
                         <p></p>
                     </div>
                 </div>
@@ -27,13 +33,13 @@
                                 <div class="col">
                                     <div class="card bg-teal">
                                         <div class="card-body text-center">
-                                            <h1 class="text-gray-100"> number</h1>
+                                            <h1 class="text-gray-100">@projects.Count(p => p.Archived == false)</h1>
                                             <p class="text-gray-100">Active Projects</p>
                                         </div>
                                     </div>
                                     <div class="card bg-gray-700 mt-3">
                                         <div class="card-body text-center">
-                                            <h1 class="text-gray-100"> number</h1>
+                                            <h1 class="text-gray-100">@tickets.Count()</h1>
                                             <p class="text-gray-100">Total Tickets</p>
                                         </div>
                                     </div>
@@ -41,13 +47,13 @@
                                 <div class="col">
                                     <div class="card bg-orange">
                                         <div class="card-body text-center">
-                                            <h1 class="text-gray-100"> number</h1>
+                                            <h1 class="text-gray-100">@tickets.Count(t => t.Archived == true && t.ArchivedByProject == true)</h1>
                                             <p class="text-gray-200">Resolved Tickets</p>
                                         </div>
                                     </div>
                                     <div class="card bg-black mt-3">
                                         <div class="card-body text-center">
-                                            <h1 class="text-gray-300"> number</h1>
+                                            <h1 class="text-gray-300">@tickets.Count(t => t.DeveloperUser is null)</h1>
                                             <p class="text-gray-200">Unassigned Tickets</p>
                                         </div>
                                     </div>
@@ -61,10 +67,10 @@
                     @if (tickets?.Any() == true)
                     {
                         <div class="col-12 d-flex align-items-end">
-                            <div class="card bg-gray-400 ">
+                            <div class="card bg-white">
                                 <div class="card-body text-center">
-                                    <h2 class="text-gray-100"><a href="/tickets/@recentTickets[recentTicketIndex].Id" class="text-white">@recentTickets[recentTicketIndex].Title</a></h2>
-                                    <p class="text-gray-100">Recent Tickets</p>
+                                    <h2 class=""><a href="/tickets/@recentTickets[recentTicketIndex].Id" class="text-gray-800 text-hover-primary">@recentTickets[recentTicketIndex].Title</a></h2>
+                                    <p class="text-gray-600">Recent Tickets</p>
                                 </div>
                                 <div class="d-flex flex-grow-1 justify-content-center">
                                     <button @onclick="DecrementRecentTicketIndex" class="btn btn-info btn-sm mx-3 my-1">
@@ -85,6 +91,9 @@
                     }
                 </div>
             </div>
+            <div class="">
+
+            </div>
         </div>
         <div class="col-12 col-md-4">
         </div>
@@ -99,11 +108,14 @@
 
     #region States
     private IEnumerable<TicketDTO> tickets = [];
+    private IEnumerable<TicketDTO> resolvedTickets = [];
     private List<TicketDTO> recentTickets = [];
 
     private IEnumerable<ProjectDTO> projects = [];
     private int recentTicketIndex = 0;
 
+    private CompanyDTO? company;
+    private string? userRole;
 
     private UserInfo? userInfo;
     #endregion
@@ -117,7 +129,10 @@
 
         tickets = await TicketService.GetAllTicketsAsync(userInfo.CompanyId);
         recentTickets = tickets.OrderByDescending(t => t.Updated).Take(5).ToList();
+
         projects = await ProjectService.GetAllProjectsAsync(userInfo.CompanyId);
+
+        company = await CompanyService.GetCompanyByIdAsync(userInfo.CompanyId);
     }
 
 
