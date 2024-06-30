@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\img\Landing-Page-Animation.svg" />
-    <_ContentIncludedByDefault Remove="wwwroot\img\TasketLogoBrownBG.png" />
     <_ContentIncludedByDefault Remove="wwwroot\png\jpeg.png" />
   </ItemGroup>
 

@@ -4,12 +4,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- Open Graph Previews-->
     <meta property="og:title" content="BugFix - Bug Tracker" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://bugfix-center-production.up.railway.app/" />
-    <meta property="og:image" content="https://bugfix-center-production.up.railway.app/img/screenshots/BTTicketIndex.png" />
-    <meta name=”description” property=”og:description” content=”Enterprise Saas bug tracker app” />
+    <meta property="og:image" content="https://bugfix-center-production.up.railway.app/img/logo/BugTrackerHero.png" />
+    <meta name=”description” property=”og:description” content=”Enterprise Saas bug tracker app. App was designed to showcase my ability to develop complex production worthy apps that can serve a functional purpose on the market” />
 
     <base href="/" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
@@ -19,7 +20,6 @@
     <!--begin::Fonts (mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter: 300, 400, 500, 600,700" />
     <!--end::Fonts-->
-    
     @*Favicons*@
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicons/favicon-32x32.png">
@@ -55,7 +55,6 @@
     <!--begin::Theme mode setup on page load-->
     <script>var defaultThemeMode = "light"; var themeMode; if (document.documentElement) { if (document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if (localStorage.getItem("data-bs-theme") !== null) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
     <!-- end::Theme mode setup on page load-->
-
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="assets/plugins/global/plugins.bundle.js"></script>
 
