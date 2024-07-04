@@ -48,3 +48,15 @@ section {
     letter-spacing: .11rem;
 }
 /*End Hero Section*/
+
+btn-warning{
+    background-color:aqua !important;
+}
+
+a {
+    color: rgb(193, 107, 68);
+}
+
+    a:hover {
+        color: hsl(19, 50%, 61%);
+    }
