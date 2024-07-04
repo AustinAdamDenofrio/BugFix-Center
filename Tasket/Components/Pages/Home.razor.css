@@ -1,7 +1,7 @@
 ﻿/*Hero Section*/
 
 #home {
-    background-image: url(/img/hero.jpg);
+    background-image: url(/img/hero-1.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: top left;
@@ -10,14 +10,13 @@
 
 #homeCover {
     position: absolute;
-    -webkit-backdrop-filter: brightness(0.85) blur(3px);
-    backdrop-filter: brightness(0.80) blur(4px);
+    -webkit-backdrop-filter: brightness(0.55) blur(7px);
+    backdrop-filter: brightness(0.50) blur(8px);
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--ad-light-color);
 }
 
 section {
@@ -55,8 +54,16 @@ btn-warning{
 
 a {
     color: rgb(193, 107, 68);
+    transition:ease 2s;
 }
 
     a:hover {
-        color: hsl(19, 50%, 61%);
+        background-color: #D1A24F !important;
+        transition: ease .2s;
     }
+
+
+        a:hover i {
+            color: #AB8441 !important;
+            transition: ease .2s;
+        }
