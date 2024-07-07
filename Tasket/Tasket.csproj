@@ -10,11 +10,13 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\img\Landing-Page-Animation.svg" />
+    <Content Remove="wwwroot\utils.js" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\img\Landing-Page-Animation.svg" />
     <_ContentIncludedByDefault Remove="wwwroot\png\jpeg.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\utils.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1313,6 +1315,7 @@
     <None Include="wwwroot\assets\plugins\global\fonts\line-awesome\la-solid-900.woff2" />
     <None Include="wwwroot\assets\plugins\global\plugins.bundle.js" />
     <None Include="wwwroot\img\Landing-Page-Animation.svg" />
+    <None Include="wwwroot\utils.js" />
   </ItemGroup>
 
 </Project>

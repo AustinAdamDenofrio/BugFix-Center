@@ -1,22 +1,28 @@
-﻿export function afterWebStarted(blazor) {
-    showActiveAccordion();
-    window.dispatchEvent(new Event('resize'));
+﻿import { refreshDataTables } from './utils.js';
 
-    blazor.addEventListener('enhancedload', () => {
-        KTComponents.init();
-        KTAppLayoutBuilder.init();
-        KTThemeModeUser.init();
-        KTThemeMode.init();
-        KTAppSidebar.init();
+export function afterWebStarted(blazor) {
+    customInit();
 
-        showActiveAccordion();
-        window.dispatchEvent(new Event('resize'));
-    });
+    blazor.addEventListener('enhancedload', ktInit);
 }
 
-function showActiveAccordion() {
+export function ktInit() {
+    KTComponents.init();
+    KTAppLayoutBuilder.init();
+    KTThemeModeUser.init();
+    KTThemeMode.init();
+    KTAppSidebar.init();
+
+    customInit();
+}
+
+function customInit() {
     const activeAccordion = document.querySelector('.menu-accordion:has(.active)');
     if (activeAccordion) {
         activeAccordion.classList.add('show', 'here');
     }
+
+    refreshDataTables();
+
+    window.dispatchEvent(new Event('resize'));
 }
