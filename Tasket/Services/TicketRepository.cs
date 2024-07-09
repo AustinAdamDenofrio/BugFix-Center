@@ -106,7 +106,8 @@ namespace Tasket.Services
                                     .Include(t => t.DeveloperUser)
                                     .Include(t => t.Attachments)
                                         .ThenInclude(a => a.Upload)
-                                    .Include(t => t.Comments)
+                                    .Include(t => t.Comments.OrderBy(c => c.Created))
+                                        .ThenInclude(c => c.User)
                                     .Include(t => t.Project)
                                     .FirstOrDefaultAsync(t => t.Id == ticketId && t.Project!.CompanyId == companyId);
             return ticket;
@@ -210,7 +211,7 @@ namespace Tasket.Services
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
             bool shouldUpdate = await context.TicketComments
-                                    .AnyAsync(t => t.Id == comment.Id && t.UserId == userId);
+                                    .AnyAsync(tc => tc.Id == comment.Id && tc.UserId == userId);
 
             if (shouldUpdate)
             {

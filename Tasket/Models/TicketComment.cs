@@ -41,9 +41,9 @@ namespace Tasket.Models
                 Id = ticketComment.Id,
                 Content = ticketComment.Content,
                 Created = ticketComment.Created,
-                TicketId = ticketComment.Id,
+                TicketId = ticketComment.TicketId,
                 User = ticketComment.User?.ToDTO(),
-                UserId = ticketComment.User?.Id,
+                UserId = ticketComment.UserId,
             };
 
             return dto;

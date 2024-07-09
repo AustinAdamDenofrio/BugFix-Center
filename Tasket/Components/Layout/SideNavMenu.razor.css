@@ -14,9 +14,9 @@
             color: #A6978F;
         }
 
-[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active {
-    background-color: transparent;
-}
+    [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active {
+        background-color: transparent;
+    }
 
 .navbar-toggler {
     appearance: none;

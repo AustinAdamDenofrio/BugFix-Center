@@ -46,7 +46,7 @@ namespace Tasket.Data
                 FirstName = appUser.FirstName,
                 LastName = appUser.LastName,
                 Email = appUser.Email,
-                ImageUrl = appUser.ProfilePictureId.HasValue ? $"/api/uploads/{appUser.ProfilePictureId}" : UploadHelper.DefaultCompanyPicture,
+                ImageUrl = appUser.ProfilePictureId.HasValue ? $"/api/uploads/{appUser.ProfilePictureId}" : UploadHelper.DefaultProfilePicture,
             };
 
             return dto;

@@ -278,6 +278,8 @@ namespace Tasket.Controllers
             if (commentId != comment.Id) return BadRequest();
             if (_companyId is null) return BadRequest();
 
+            comment.UserId = _userId;
+
             try
             {
                 TicketDTO? ticket = await _ticketService.GetTicketByIdAsync(comment.TicketId, _companyId.Value);
@@ -476,7 +478,7 @@ namespace Tasket.Controllers
         // encoded as multipart/form-data and NOT the typical JSON
         [HttpPost("{id}/attachments")]
         [Authorize]
-        public async Task<ActionResult<TicketAttachmentDTO>> PostTicketAttachment(int ticketId,
+        public async Task<ActionResult<TicketAttachmentDTO>> PostTicketAttachment([FromRoute] int ticketId,
                                                                                     [FromForm] TicketAttachmentDTO attachment,
                                                                                     [FromForm] IFormFile? file)
         {

@@ -97,12 +97,22 @@
                             Comments
                         </h2>
                     </div>
+                    @foreach (TicketCommentDTO comment in ticket.Comments)
+                    {
+                        <hr class="border-secondary" />
+                        <div class="table-responsive pt-1" @key="comment.Id">
+                            <CommentCard Comment="comment"
+                                         HandleOnSubmit="HandleUpdateComment"
+                                         OnDelete="HandleDeleteComment"
+                                         ProjectManagerId="projectManager.Id" />
+                        </div>
+                    }
                     @if (userInfo?.UserId == ticket.SubmitterUserId
                       || userInfo?.UserId == ticket.DeveloperUserId
                       || userInfo?.UserId == projectManager?.Id
                       || userInfo?.Roles.Contains(nameof(Roles.Admin)) == true)
                     {
-                        <h2>New comment</h2>
+                        <h2 class="mt-20">New comment</h2>
                         <form @onsubmit="HandleAddComment" class="col-12">
                             <InputTextArea @bind-Value="newComment.Content"
                                            id="Content"
@@ -117,16 +127,6 @@
 
                             </div>
                         </form>
-                    }
-                    @foreach (TicketCommentDTO comment in ticket.Comments)
-                    {
-                        <hr class="border-secondary" />
-                        <div class="table-responsive pt-1" @key="comment.Id">
-                            <CommentCard Comment="comment"
-                                         HandleOnSubmit="HandleUpdateComment"
-                                         OnDelete="HandleDeleteComment"
-                                         ProjectManagerId="projectManager.Id" />
-                        </div>
                     }
                 </div>
             </section>

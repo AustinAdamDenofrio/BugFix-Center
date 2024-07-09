@@ -9,7 +9,7 @@
 <div class="modal fade" id="UploadModal" tabindex="-1" aria-labelledby="UploadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <EditForm Model="newAttachment" OnSubmit="HandleSubmit" class="vstack gap-1">
+            <EditForm Context="UploadContext" Model="newAttachment" OnSubmit="HandleSubmit" class="vstack gap-1">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="UploadModalLabel">Modal title</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -54,7 +54,7 @@
 
         // fill out the fields we know about already
         newAttachment.UserId = userInfo!.UserId;
-        newAttachment.TicketId = TicketId!;
+        newAttachment.TicketId = TicketId;
         newAttachment.Created = DateTime.Now;
     }
 
