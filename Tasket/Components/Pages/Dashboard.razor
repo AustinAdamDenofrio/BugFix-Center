@@ -93,34 +93,6 @@
                     }
                 </div>
                 <div class="col-12">
-                    <div class="card bg-info-subtle mt-5">
-                        <div class="table-responsive card-body">
-                            <table id="kt_datatable_vertical_scroll" class="kt-datatable table table-striped table-row-bordered gy-5 gs-7">
-                                <thead>
-                                    <tr class="fw-semibold fs-6 text-gray-800">
-                                        <th class="pe-7">Ticket Name</th>
-                                        <th>Project</th>
-                                        <th>Status</th>
-                                        <th>Priority</th>
-                                        <th>Created</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (tickets?.Any() == true)
-                                        @foreach (TicketDTO ticket in tickets)
-                                        {
-                                            <tr>
-                                                <td>@ticket.Title</td>
-                                                <td>@ticket.Project?.Name</td>
-                                                <td>@ticket.Status</td>
-                                                <td>@ticket.Priority</td>
-                                                <td>@ticket.Created.ToString("d")</td>
-                                            </tr>
-                                        }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -128,6 +100,38 @@
             </div>
         </div>
         <div class="col-12 col-md-4">
+        </div>
+        <div class="col-12">
+            @if (tickets?.Any() == true)
+            {
+                <div class="card bg-info-subtle mt-5">
+                    <div class="table-responsive card-body">
+                        <table id="kt_datatable_vertical_scroll" class="kt-datatable table table-striped table-row-bordered gy-5 gs-7">
+                            <thead>
+                                <tr class="fw-semibold fs-6 text-gray-800">
+                                    <th class="pe-7">Ticket Name</th>
+                                    <th>Project</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (TicketDTO ticket in tickets)
+                                {
+                                    <tr>
+                                        <td><a href="tickets/@ticket.Id">@ticket.Title</a></td>
+                                        <td><a href="projects/@ticket.Project?.Id" class="">@ticket.Project?.Name</a></td>
+                                        <td>@ticket.Status.GetDisplayName()</td>
+                                        <td>@ticket.Priority</td>
+                                        <td>@ticket.Created.ToString("d")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 
