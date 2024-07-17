@@ -51,13 +51,8 @@
                             Remember me
                         </label>
                     </div>
-                    <div class="vstack gap-2">
-                        <button type="submit" class="btn btn-lg btn-primary">Log in</button>
-                        <EditForm id="demo-account" Model="Input" method="post" OnSubmit="LoginDemoUser" FormName="demo"> 
-                            <button class="btn btn-light-success" type="submit" name="Input.DemoRole" value="@Roles.Admin"> 
-                                Log in as Demo User
-                            </button>
-                        </EditForm>
+                    <div >
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                     </div>
                     <div>
                         <p class="mt-1">
@@ -70,6 +65,15 @@
                             <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
                         </p>
                     </div>
+                </EditForm>                
+                
+                <EditForm id="demo-account" Model="Input" method="post" OnSubmit="LoginDemoUser" FormName="demo"> 
+                    <h1 class="mt-10">Demo App</h1>
+                    <p> Try the app as an admin user for a company using the software.</p>
+                    <hr />
+                    <button class="w-100 btn btn-light-warning" type="submit" name="Input.DemoRole" value="@Roles.Admin"> 
+                        Log in as Demo User
+                    </button>
                 </EditForm>
             </section>
         </div>
