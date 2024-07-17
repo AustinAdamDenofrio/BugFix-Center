@@ -2,5 +2,5 @@
     "scrollY": "500px",
     "scrollCollapse": true,
     "paging": false,
-    /*"dom": "<'table-responsive'tr>"*/
+    "dom": "<'table-responsive'tr>"
 });

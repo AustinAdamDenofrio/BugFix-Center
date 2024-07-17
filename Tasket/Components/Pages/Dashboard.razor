@@ -105,7 +105,9 @@
             @if (tickets?.Any() == true)
             {
                 <div class="card bg-info-subtle mt-5">
-                    <div class="table-responsive card-body">
+                    <div class="card-body">
+                    <h2 class="text-center pb-3">Company Tickets</h2>
+                        <div class="table-responsive px-1">
                         <table id="kt_datatable_vertical_scroll" class="kt-datatable table table-striped table-row-bordered gy-5 gs-7">
                             <thead>
                                 <tr class="fw-semibold fs-6 text-gray-800">
@@ -129,6 +131,7 @@
                                 }
                             </tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
             }
