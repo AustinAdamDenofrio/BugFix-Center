@@ -14,14 +14,25 @@
 
 <PageTitle>Log in</PageTitle>
 <div class="container-xxl flex-grow-1 py-2 my-5">
-    <h1>Log in</h1>
+    <div class="hstack">
+        <h1 class="me-auto">Log in</h1> 
+        <div class="d-md-none">            
+            <EditForm id="demo-account" Model="Input" method="post" OnSubmit="LoginDemoUser" FormName="demo2"> 
+                <div class="vstack text-center gap-2 px-3">
+                    <button class="btn btn-info" type="submit" name="Input.DemoRole" value="@Roles.Admin"> 
+                        Demo App 
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-4">
             <section>
                 <StatusMessage Message="@errorMessage" />
                 <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                     <DataAnnotationsValidator />
-                    <h2>Use a local account to log in.</h2>
+                    <h2>Use a company account to log in.</h2>
                     <hr />
                     <ValidationSummary class="text-danger" role="alert" />
                     <div class="form-floating mb-3">
@@ -40,8 +51,13 @@
                             Remember me
                         </label>
                     </div>
-                    <div>
-                        <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                    <div class="vstack gap-2">
+                        <button type="submit" class="btn btn-lg btn-primary">Log in</button>
+                        <EditForm id="demo-account" Model="Input" method="post" OnSubmit="LoginDemoUser" FormName="demo"> 
+                            <button class="btn btn-light-success" type="submit" name="Input.DemoRole" value="@Roles.Admin"> 
+                                Log in as Demo User
+                            </button>
+                        </EditForm>
                     </div>
                     <div>
                         <p class="mt-1">
@@ -56,21 +72,6 @@
                     </div>
                 </EditForm>
             </section>
-        </div>
-        <div class="col-md-6 col-md-offset-2">
-            <div class="card col-5">
-                <div class="card-body">
-                    <h3 class="card-title">Log in as a Demo User</h3>
-                    <p>Click one of the buttons below to log in with a demo account</p>
-                    <EditForm id="demo-account" Model="Input" method="post" OnSubmit="LoginDemoUser" FormName="demo"> 
-                        <div class="vstack text-center gap-2 px-3">
-                            <button class="btn btn-primary" type="submit" name="Input.DemoRole" value="@Roles.Admin"> 
-                                Admin
-                            </button>
-                        </div>
-                    </EditForm>
-                </div>
-            </div>
         </div>
     </div>
 
