@@ -33,23 +33,19 @@ namespace Tasket.Data
             return string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         }
 
-        public static string BuildConnectionString(string databaseUrl)
+        private static string BuildConnectionString(string databaseUrl)
         {
-            //Provides an object representation of a uniform resource identifier (URI) and easy access to the parts of the URI.
             var databaseUri = new Uri(databaseUrl);
             var userInfo = databaseUri.UserInfo.Split(':');
-
-            var database = Environment.GetEnvironmentVariable("RAILWAY_SERVICE_NAME")
-            ?? typeof(DataUtility).Assembly.GetName().Name;
-            //Provides a simple way to create and manage the contents of connection strings used by the NpgsqlConnection class.
             var builder = new NpgsqlConnectionStringBuilder
             {
                 Host = databaseUri.Host,
                 Port = databaseUri.Port,
                 Username = userInfo[0],
                 Password = userInfo[1],
-                Database = database,
-                SslMode = SslMode.Prefer,
+                Database = databaseUri.LocalPath.TrimStart('/'),
+                SslMode = SslMode.Require,
+                TrustServerCertificate = true
             };
             return builder.ToString();
         }
