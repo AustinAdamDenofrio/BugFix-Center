@@ -28,7 +28,7 @@ namespace Tasket.Data
         public static string? GetConnectionString(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            var databaseUrl = Environment.GetEnvironmentVariable("postgresql://postgres:VmuztovLKJcMeVRpZAUQAcXXfbcdvTIZ@postgres.railway.internal:5432/railway");  // Railway connection string
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");  // Railway connection string
 
             return string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         }
