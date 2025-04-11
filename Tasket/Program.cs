@@ -11,6 +11,7 @@ using Tasket.Client.Services.Interfaces;
 using Tasket.Components;
 using Tasket.Components.Account;
 using Tasket.Data;
+using Tasket.Helper;
 using Tasket.Services;
 using Tasket.Services.Interfaces;
 
@@ -102,6 +103,7 @@ using (var scope = app.Services.CreateScope())
 {
     await DataUtility.ManageDataAsync(scope.ServiceProvider);
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
