@@ -1,9 +1,11 @@
 [data-kt-app-layout=dark-sidebar] .app-sidebar {
-    background-color: hsl(19, 50%, 16%);
+    /* background-color: hsl(19, 50%, 16%); */
+    background: linear-gradient(to right, #E6E6FA, #E0F2F1);
 }
 
     [data-kt-app-layout=dark-sidebar] .app-sidebar .app-sidebar-toggle {
-        background-color: #87492D;
+        /*background-color: #87492D;*/
+        background-color: #6B5B95;
     }
 
         [data-kt-app-layout=dark-sidebar] .app-sidebar .app-sidebar-toggle > i {
